@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="workstation">
+  <!--
+    Canonical table frame.
+    Tune visual/collision origin here once, then keep scene placement simple.
+  -->
+  <link name="workstation_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- STL is in millimeters; convert to meters. -->
+        <mesh filename="workstation.STL"/>
+      </geometry>
+      <material name="workstation_gray">
+        <color rgba="0.6 0.6 0.6 1.0"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="workstation.STL"/>
+      </geometry>
+    </collision>
+
+    <!-- Simple placeholder inertial properties. -->
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="50.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!--
+    User-tunable coordinate frame #1.
+    Edit xyz/rpy in workstation_to_coord_1 to place this frame.
+  -->
+  <!-- <link name="arm_table_connection"/>
+  <joint name="workstation_to_coord_1" type="fixed">
+    <parent link="workstation_link"/>
+    <child link="workstation_coord_1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!--
+    User-tunable coordinate frame #2.
+    Edit xyz/rpy in workstation_to_coord_2 to place this frame.
+  -->
+  <link name="workstation_coord_2"/>
+  <joint name="workstation_to_coord_2" type="fixed">
+    <parent link="workstation_link"/>
+    <child link="workstation_coord_2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint> -->
+</robot>
