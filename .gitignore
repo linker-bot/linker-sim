@@ -1,1 +1,30 @@
+# Keep optional local IsaacLab clones out of this repo history.
 IsaacLab/
+docs/IsaacLab/
+
+# Python bytecode and caches.
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments and local Python tooling.
+.venv/
+venv/
+.python-version
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Build and packaging artifacts.
+build/
+dist/
+*.egg-info/
+
+# Logs and runtime leftovers.
+*.log
+
+# Editor/OS files.
+.idea/
+.vscode/
+.DS_Store
+.cursor
