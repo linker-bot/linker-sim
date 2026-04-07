@@ -42,10 +42,6 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-  <!--
-    User-tunable coordinate frame #2.
-    Edit xyz/rpy in workstation_to_coord_2 to place this frame.
-  -->
   <link name="workstation_coord_2"/>
   <joint name="workstation_to_coord_2" type="fixed">
     <parent link="workstation_link"/>
