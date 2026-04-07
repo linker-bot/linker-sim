@@ -8,7 +8,6 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <!-- STL is in millimeters; convert to meters. -->
         <mesh filename="workstation.STL"/>
       </geometry>
       <material name="workstation_gray">
@@ -31,21 +30,4 @@
     </inertial>
   </link>
 
-  <!--
-    User-tunable coordinate frame #1.
-    Edit xyz/rpy in workstation_to_coord_1 to place this frame.
-  -->
-  <!-- <link name="arm_table_connection"/>
-  <joint name="workstation_to_coord_1" type="fixed">
-    <parent link="workstation_link"/>
-    <child link="workstation_coord_1"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint>
-
-  <link name="workstation_coord_2"/>
-  <joint name="workstation_to_coord_2" type="fixed">
-    <parent link="workstation_link"/>
-    <child link="workstation_coord_2"/>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-  </joint> -->
 </robot>

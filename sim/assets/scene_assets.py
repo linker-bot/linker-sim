@@ -5,7 +5,7 @@ from pathlib import Path
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 
-from .robots import AR5_L6_LEFT_CFG
+from .robots import AR5_L6_LEFT_CFG, AR5_L6_RIGHT_CFG
 
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -15,9 +15,26 @@ WORKSTATION_URDF_PATH = _REPO_ROOT / "assets" / "urdf" / "workstation.urdf"
 WORKSTATION_TABLE_POS = (0.0, 0.0, 0.0)
 WORKSTATION_TABLE_ROT = (1.0, 0.0, 0.0, 0.0)
 
-# Robot root pose in env frame, relative to workstation origin (tune here for all scenes).
-ROBOT_POS_REL_TO_WORKSTATION = (0.0637, 0.715, 1.267)
-ROBOT_ROT_REL_TO_WORKSTATION = (0.5, -0.5, 0.5, 0.5)
+# Robot root pose in env frame, relative to workstation origin.
+# Tune left/right independently.
+ROBOT_LEFT_POS_REL_TO_WORKSTATION = (0.0637, 0.715, 1.267)
+ROBOT_LEFT_ROT_REL_TO_WORKSTATION = (0.5, -0.5, 0.5, 0.5)
+ROBOT_RIGHT_POS_REL_TO_WORKSTATION = (0.0637, 0.536, 1.267)
+ROBOT_RIGHT_ROT_REL_TO_WORKSTATION = (0.5, 0.5, 0.5, -0.5)
+
+# Backward-compatible aliases (existing code may still import these).
+ROBOT_POS_REL_TO_WORKSTATION = ROBOT_LEFT_POS_REL_TO_WORKSTATION
+ROBOT_ROT_REL_TO_WORKSTATION = ROBOT_LEFT_ROT_REL_TO_WORKSTATION
+
+
+def get_robot_default_pose(side: str = "left") -> tuple[tuple[float, float, float], tuple[float, float, float, float]]:
+    """Return default (pos, rot-wxyz) for the requested robot side."""
+    side_norm = side.lower()
+    if side_norm == "left":
+        return ROBOT_LEFT_POS_REL_TO_WORKSTATION, ROBOT_LEFT_ROT_REL_TO_WORKSTATION
+    if side_norm == "right":
+        return ROBOT_RIGHT_POS_REL_TO_WORKSTATION, ROBOT_RIGHT_ROT_REL_TO_WORKSTATION
+    raise ValueError(f"Unknown robot side: {side!r}. Expected 'left' or 'right'.")
 
 
 def make_ar5_l6_left_robot_cfg(
@@ -26,14 +43,47 @@ def make_ar5_l6_left_robot_cfg(
     rot: tuple[float, float, float, float] | None = None,
 ) -> ArticulationCfg:
     """Left arm + hand with default pose relative to the workstation (env frame)."""
+    default_pos, default_rot = get_robot_default_pose("left")
     if pos is None:
-        pos = ROBOT_POS_REL_TO_WORKSTATION
+        pos = default_pos
     if rot is None:
-        rot = ROBOT_ROT_REL_TO_WORKSTATION
+        rot = default_rot
     return AR5_L6_LEFT_CFG.replace(
         prim_path=prim_path,
         init_state=AR5_L6_LEFT_CFG.init_state.replace(pos=pos, rot=rot),
     )
+
+
+def make_ar5_l6_right_robot_cfg(
+    prim_path: str = "{ENV_REGEX_NS}/Robot",
+    pos: tuple[float, float, float] | None = None,
+    rot: tuple[float, float, float, float] | None = None,
+) -> ArticulationCfg:
+    """Right arm + hand with default pose relative to the workstation (env frame)."""
+    default_pos, default_rot = get_robot_default_pose("right")
+    if pos is None:
+        pos = default_pos
+    if rot is None:
+        rot = default_rot
+    return AR5_L6_RIGHT_CFG.replace(
+        prim_path=prim_path,
+        init_state=AR5_L6_RIGHT_CFG.init_state.replace(pos=pos, rot=rot),
+    )
+
+
+def make_ar5_l6_robot_cfg(
+    side: str = "left",
+    prim_path: str = "{ENV_REGEX_NS}/Robot",
+    pos: tuple[float, float, float] | None = None,
+    rot: tuple[float, float, float, float] | None = None,
+) -> ArticulationCfg:
+    """Build left/right AR5_L6 robot cfg from a common entrypoint."""
+    side_norm = side.lower()
+    if side_norm == "left":
+        return make_ar5_l6_left_robot_cfg(prim_path=prim_path, pos=pos, rot=rot)
+    if side_norm == "right":
+        return make_ar5_l6_right_robot_cfg(prim_path=prim_path, pos=pos, rot=rot)
+    raise ValueError(f"Unknown robot side: {side!r}. Expected 'left' or 'right'.")
 
 
 def make_workspace_table_cfg(
@@ -52,7 +102,8 @@ def make_workspace_table_cfg(
     urdf_cfg = sim_utils.UrdfFileCfg(
         asset_path=str(WORKSTATION_URDF_PATH),
         fix_base=True,
-        merge_fixed_joints=False,
+        # Keep conversion behavior aligned with robot importer settings.
+        merge_fixed_joints=True,
         make_instanceable=False,
         joint_drive=sim_utils.UrdfConverterCfg.JointDriveCfg(
             gains=sim_utils.UrdfConverterCfg.JointDriveCfg.PDGainsCfg(
