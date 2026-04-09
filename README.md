@@ -42,6 +42,37 @@ Optional dual-arm smoke test:
 python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side both
 ```
 
+### Tuning joint stiffness / damping (Gain Tuner)
+
+Isaac Sim’s **Gain Tuner** adjusts PhysX drive **stiffness** and **damping** on the articulation. This repo enables it and spawns the same test scene as the smoke test:
+
+```bash
+python sim/envs/test/gain_tuner_scene.py --num_envs 1 --robot_side left
+```
+
+Do not use `--headless`. The script defaults to a **passive command stream** mode so Isaac Lab does not overwrite per-step joint targets while tuning. In the app, open the Gain Tuner (menu path may vary by version; see [Isaac Sim joint tuning](https://docs.isaacsim.omniverse.nvidia.com/latest/robot_setup_tutorials/joint_tuning.html)), select the robot, and tune.
+
+This repo now supports **per-joint PD arrays** (simtoolreal-style):
+
+- Static defaults live in `sim/assets/robots.py` as per-joint lists/maps.
+- Runtime-editable gains live in `sim/envs/test/joint_gains.json`.
+- Optional runtime feed-forward torque offsets can be added in the same JSON under `offset`.
+
+While `gain_tuner_scene.py` is running, edits to `joint_gains.json` are hot-reloaded automatically (default every `0.5s`) and applied in-place to the active articulation, so you do not need to restart Isaac Sim for stiffness/damping changes.
+
+To print realtime joint effort estimates in the console while tuning:
+
+```bash
+python sim/envs/test/gain_tuner_scene.py --num_envs 1 --robot_side left --print_joint_effort
+```
+
+Optional controls:
+- `--joint_effort_print_hz 5.0` (print rate)
+- `--joint_effort_env_id 0` (which env to print)
+- `--no-joint_effort_arm_only` (print hand joints too)
+
+To pass through extra Kit flags (for example another extension), use Isaac Lab’s `--kit_args` as documented for `AppLauncher`.
+
 Expected behavior:
 
 - Isaac Sim app launches.

@@ -72,11 +72,18 @@ Right-arm mode:
 python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side right
 ```
 
-Dual-arm (multi-robot) mode:
+Dual-arm mode:
 
 ```bash
 python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side both --reset_interval 600
 ```
+
+Multi-env mode: 
+
+```bash
+python sim/envs/test/spawn_scene.py --num_envs 16 --reset_interval 120 --reset_envs_per_event 4
+```
+
 
 ## Troubleshooting
 
