@@ -69,6 +69,8 @@
     <parent link="AR5_5_07L_W4C4A2_base"/>
     <child link="AR5_5_07L_W4C4A2_link1"/>
     <limit effort="108" lower="-3.1067" upper="3.1067" velocity="3.0543261909900763"/>
+    <!-- Added damping and friction for Rokae all joints according to HMI -->
+    <dynamics damping="14.22378" friction="1.234293"/>
     <axis xyz="0 0 1"/>
     <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
   </joint>
@@ -107,6 +109,7 @@
     <parent link="AR5_5_07L_W4C4A2_link1"/>
     <child link="AR5_5_07L_W4C4A2_link2"/>
     <limit effort="108" lower="-2.0944" upper="2.0944" velocity="3.0543261909900763"/>
+    <dynamics damping="13.710972" friction="3.073299"/>
     <axis xyz="0 1 0"/>
     <origin rpy="0 0 0" xyz="0.0 0.0 0.1745"/>
   </joint>
@@ -145,6 +148,7 @@
     <parent link="AR5_5_07L_W4C4A2_link2"/>
     <child link="AR5_5_07L_W4C4A2_link3"/>
     <limit effort="66" lower="-3.1067" upper="3.1067" velocity="4.71238898038469"/>
+    <dynamics damping="3.791042" friction="0.352159"/>
     <axis xyz="0 0 1"/>
     <origin rpy="0 0 0" xyz="0.0 0.0 0.314"/>
   </joint>
@@ -183,6 +187,7 @@
     <parent link="AR5_5_07L_W4C4A2_link3"/>
     <child link="AR5_5_07L_W4C4A2_link4"/>
     <limit effort="66" lower="-1.0472" upper="2.5307" velocity="5.235987755982989"/>
+    <dynamics damping="0.333154" friction="1.926179"/>
     <!--     lower="-1.0472" upper="1.0472" -->
     <axis xyz="0 1 0"/>
     <!--     <origin rpy="0 0 0" xyz=0.01 0.0 0.0/> -->
@@ -223,6 +228,7 @@
     <parent link="AR5_5_07L_W4C4A2_link4"/>
     <child link="AR5_5_07L_W4C4A2_link5"/>
     <limit effort="19" lower="-3.1067" upper="3.1067" velocity="4.1887902047863905"/>
+    <dynamics damping="4.136716" friction="0.295156"/>
     <axis xyz="0 0 1"/>
     <origin rpy="0 0 0" xyz="-0.01 0.0 0.272"/>
   </joint>
@@ -261,6 +267,7 @@
     <parent link="AR5_5_07L_W4C4A2_link5"/>
     <child link="AR5_5_07L_W4C4A2_link6"/>
     <limit effort="19" lower="-1.0472" upper="1.0472" velocity="4.1887902047863905"/>
+    <dynamics damping="4.748679" friction="1.322494"/>
     <axis xyz="0 1 0"/>
     <origin rpy="0.0 0.0 0" xyz="0.0 0.0 0.0"/>
   </joint>
@@ -299,6 +306,7 @@
     <parent link="AR5_5_07L_W4C4A2_link6"/>
     <child link="AR5_5_07L_W4C4A2_link7"/>
     <limit effort="19" lower="-1.0472" upper="1.0472" velocity="4.1887902047863905"/>
+    <dynamics damping="3.667978" friction="0.926051"/>
     <axis xyz="1 0 0"/>
     <origin rpy="0.0 0.0 0" xyz="0.0 0.0 0.0"/>
   </joint>
