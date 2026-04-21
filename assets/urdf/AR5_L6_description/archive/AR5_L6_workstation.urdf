@@ -62,7 +62,7 @@
   <joint name="workstation_to_left_arm_base" type="fixed">
     <parent link="workstation_link"/>
     <child link="AR5_5_07L_W4C4A2_base"/>
-    <origin xyz="0.0637 0.715 1.267" rpy="-1.5708 1.5708 0"/>
+    <origin xyz="0.0637 0.716 1.267" rpy="-1.5708 1.5708 0"/>
   </joint>
   <joint name="workstation_to_right_arm_base" type="fixed">
     <parent link="workstation_link"/>

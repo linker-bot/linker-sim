@@ -1,0 +1,30 @@
+{
+  "motion_stiffness_task": [
+    150.0,
+    150.0,
+    150.0,
+    80.0,
+    80.0,
+    80.0
+  ],
+  "motion_damping_ratio_task": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "nullspace_stiffness": 10.0,
+  "arm_action_scale_pos": 0.05,
+  "arm_action_scale_rot": 0.25,
+  "hand_hold_default_pose": true,
+  "probe_command": {
+    "mode": "sine",
+    "pos_axis": 0,
+    "rot_axis": 3,
+    "pos_amplitude": 0.25,
+    "rot_amplitude": 0.0,
+    "period_s": 4.0
+  }
+}

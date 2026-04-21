@@ -58,31 +58,39 @@ Key commands from IsaacLab script usage:
 - `./isaaclab.sh -i`: install IsaacLab extensions + RL extras
 - `./isaaclab.sh -p <script.py ...>`: run python with IsaacLab runtime context
 
-## 4) Run this repository smoke test (single and multi-robot)
+## 4) Run this repository OSC smoke test (single and multi-robot)
 
-From repository root, run one of the smoke-test modes:
+From repository root, run one of the OSC smoke-test modes:
 
 ```bash
-python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side left
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side left
 ```
 
 Right-arm mode:
 
 ```bash
-python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side right
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side right
 ```
 
 Dual-arm mode:
 
 ```bash
-python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side both --reset_interval 600
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side both
 ```
 
 Multi-env mode: 
 
 ```bash
-python sim/envs/test/spawn_scene.py --num_envs 16 --reset_interval 120 --reset_envs_per_event 4
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 16
 ```
+
+## 5) Tune OSC gains (optional, recommended)
+
+```bash
+python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --robot_side left
+```
+
+This creates `sim/envs/test_osc/osc_gains.json` on first run and hot-reloads updates while running.
 
 
 ## Troubleshooting

@@ -73,6 +73,12 @@ AR5_L6_RIGHT_ARM_DAMPING_MAP = _joint_gain_map(AR5_L6_RIGHT_ARM_JOINTS, AR5_L6_R
 AR5_L6_RIGHT_HAND_STIFFNESS_MAP = _joint_gain_map(AR5_L6_RIGHT_HAND_JOINTS, AR5_L6_RIGHT_HAND_STIFFNESS)
 AR5_L6_RIGHT_HAND_DAMPING_MAP = _joint_gain_map(AR5_L6_RIGHT_HAND_JOINTS, AR5_L6_RIGHT_HAND_DAMPING)
 
+# Optional OSC-oriented arm gains (lower stiffness than legacy joint-space defaults).
+AR5_L6_LEFT_ARM_OSC_STIFFNESS_MAP = _joint_gain_map(AR5_L6_LEFT_ARM_JOINTS, [150.0] * len(AR5_L6_LEFT_ARM_JOINTS))
+AR5_L6_LEFT_ARM_OSC_DAMPING_MAP = _joint_gain_map(AR5_L6_LEFT_ARM_JOINTS, [8.0] * len(AR5_L6_LEFT_ARM_JOINTS))
+AR5_L6_RIGHT_ARM_OSC_STIFFNESS_MAP = _joint_gain_map(AR5_L6_RIGHT_ARM_JOINTS, [150.0] * len(AR5_L6_RIGHT_ARM_JOINTS))
+AR5_L6_RIGHT_ARM_OSC_DAMPING_MAP = _joint_gain_map(AR5_L6_RIGHT_ARM_JOINTS, [8.0] * len(AR5_L6_RIGHT_ARM_JOINTS))
+
 
 AR5_L6_LEFT_CFG = ArticulationCfg(
     spawn=sim_utils.UrdfFileCfg(
@@ -146,3 +152,37 @@ AR5_L6_RIGHT_CFG = ArticulationCfg(
     soft_joint_pos_limit_factor=1.0,
 )
 """AR5 + L6 right robot loaded directly from URDF."""
+
+
+AR5_L6_LEFT_OSC_CFG = AR5_L6_LEFT_CFG.replace(
+    actuators={
+        "arm": ImplicitActuatorCfg(
+            joint_names_expr=["AR5_5_07L_W4C4A2_joint_[1-7]"],
+            stiffness=AR5_L6_LEFT_ARM_OSC_STIFFNESS_MAP,
+            damping=AR5_L6_LEFT_ARM_OSC_DAMPING_MAP,
+        ),
+        "hand": ImplicitActuatorCfg(
+            joint_names_expr=["lh_.*"],
+            stiffness=AR5_L6_LEFT_HAND_STIFFNESS_MAP,
+            damping=AR5_L6_LEFT_HAND_DAMPING_MAP,
+        ),
+    }
+)
+"""AR5 + L6 left robot with OSC-oriented arm gains."""
+
+
+AR5_L6_RIGHT_OSC_CFG = AR5_L6_RIGHT_CFG.replace(
+    actuators={
+        "arm": ImplicitActuatorCfg(
+            joint_names_expr=["AR5_5_07R_W4C4A2_joint_[1-7]"],
+            stiffness=AR5_L6_RIGHT_ARM_OSC_STIFFNESS_MAP,
+            damping=AR5_L6_RIGHT_ARM_OSC_DAMPING_MAP,
+        ),
+        "hand": ImplicitActuatorCfg(
+            joint_names_expr=["rh_.*"],
+            stiffness=AR5_L6_RIGHT_HAND_STIFFNESS_MAP,
+            damping=AR5_L6_RIGHT_HAND_DAMPING_MAP,
+        ),
+    }
+)
+"""AR5 + L6 right robot with OSC-oriented arm gains."""

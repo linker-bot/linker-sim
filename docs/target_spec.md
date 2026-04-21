@@ -12,31 +12,31 @@ This doc defines the *deterministic interface* between simulation, perception, a
 - **Joint limits (rad / deg; units must be consistent):**
   - `base_rotation: [{{min}}, {{max}}] {{units}}`
   - `{{joint_name}}: [{{min}}, {{max}}] {{units}}`
-- **Actuation / control mode:** `position | velocity | torque` (choose one) = `{{fill}}`
+- **Actuation / control mode:** `position | velocity | torque` (choose one) = `torque (OSC-generated)`
 - **Control input representation to policy/controller:**
-  - Commanded values are interpreted as: `q_des | qdot_des | tau_des`
-  - Saturation/clipping behavior: `{{fill}}`
+  - Commanded values are interpreted as: `delta_eef_pose(6D) -> OSC -> tau_des`
+  - Saturation/clipping behavior: `policy action clipped to [-1, 1], then scaled by env cfg`
 
 **Hand / Gripper**
 - **Hand DoF:** `{{fill}}`
 - **Joint list (order matters):** `{{fill}}`
 - **Joint limits:** `{{fill}}`
-- **Actuation / control mode:** `position | velocity | torque` = `{{fill}}`
+- **Actuation / control mode:** `position | velocity | torque` = `position`
 - **Grasping actuation notes (e.g., parallel jaw closure rule):** `{{fill}}`
 
 **Coordinate frames**
 - **World frame definition:** `{{fill}}`
 - **Robot base frame definition:** `{{fill}}`
-- **End-effector / hand frame definition:** `{{fill}}`
+- **End-effector / hand frame definition:** `default = tcp link (AR5_5_07*_W4C4A2_tcp), optional wrist link7`
 - **Object pose frame definition (what point on the object?):** `{{fill}}`
 
 ### 2) Control Loop Timing
 
-- **Control frequency target:** `{{fill}}` Hz (e.g., 20 / 50 / 100)
+- **Control frequency target:** `30` Hz (with `dt=1/120` and `decimation=4`)
 - **Simulation step / policy step relation:**
-  - Isaac Sim physics timestep: `{{fill}}` s
-  - Policy action period: `{{fill}}` steps of physics
-  - Action hold / interpolation: `{{fill}}`
+  - Isaac Sim physics timestep: `1/120` s
+  - Policy action period: `4` steps of physics
+  - Action hold / interpolation: `zero-order hold over decimation window`
 - **Latency between perception and control:** `{{fill}}` s (or ms)
 - **Receding-horizon behavior (if any):** `{{fill}}` (e.g., single-step MPC, fixed horizon)
 

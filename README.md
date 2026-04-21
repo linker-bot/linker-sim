@@ -10,12 +10,13 @@ RL simulation workspace for AR5 + Linkerhand L6 robots using IsaacLab/Isaac Sim.
 
 ## Current status
 
-This repository is in active setup/prototyping stage. The current runnable entrypoint is a smoke-test scene under `sim/envs/test`. The task spec in `docs/target_spec.md` is a draft template and not fully filled.
+This repository is in active setup/prototyping stage. The default control pipeline is now OSC (end-effector pose control) under `sim/envs/test_osc`.
 
 ## Project layout
 
 - `sim/assets`: robot and scene asset configs (URDF-backed `ArticulationCfg`/`AssetBaseCfg`)
-- `sim/envs/test`: smoke-test scene configs and runner script
+- `sim/envs/test_osc`: OSC-first scene runners, gain tuner, and optional RL env
+- `sim/envs/test`: legacy joint-space test env (deprecated)
 - `docs/target_spec.md`: deterministic interface template for RL task definition
 - `docs/installation.md`: setup guide (including local IsaacLab clone workflow)
 
@@ -30,16 +31,22 @@ Use the setup guide in `docs/installation.md` for:
 
 ## Quick start
 
-After completing `docs/installation.md`, run the smoke-test scene:
+After completing `docs/installation.md`, run the OSC smoke test:
 
 ```bash
-python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side left
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side left
 ```
 
 Optional dual-arm smoke test:
 
 ```bash
-python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side both
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side both
+```
+
+Legacy joint-space smoke test remains available but deprecated:
+
+```bash
+python sim/envs/test/spawn_scene.py --num_envs 1 --robot_side left
 ```
 
 ### Tuning joint stiffness / damping (Gain Tuner)
@@ -70,6 +77,19 @@ Optional controls:
 - `--joint_effort_print_hz 5.0` (print rate)
 - `--joint_effort_env_id 0` (which env to print)
 - `--no-joint_effort_arm_only` (print hand joints too)
+
+### Tuning OSC gains (Runtime Hot Reload)
+
+Use the OSC tuner for end-effector-space controller tuning (not joint-drive PD tuning):
+
+```bash
+python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --robot_side left
+```
+
+Runtime tuning file:
+- `sim/envs/test_osc/osc_gains.json`
+
+The file is auto-created on first run and hot-reloaded while the script is running.
 
 To pass through extra Kit flags (for example another extension), use Isaac Lab’s `--kit_args` as documented for `AppLauncher`.
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Literal
+import warnings
 
 import torch
 
@@ -42,11 +43,16 @@ class MinimalAR5RLEnvCfg(DirectRLEnvCfg):
 
 
 class MinimalAR5RLEnv(DirectRLEnv):
-    """Minimal RL-ready environment using the existing table + AR5/L6 scene."""
+    """Deprecated joint-space env. Prefer sim.envs.test_osc.TestOscRLEnv."""
 
     cfg: MinimalAR5RLEnvCfg
 
     def __init__(self, cfg: MinimalAR5RLEnvCfg, render_mode: str | None = None, **kwargs):
+        warnings.warn(
+            "MinimalAR5RLEnv is deprecated (joint-space). Use sim.envs.test_osc.TestOscRLEnv for OSC control.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         # Resolve scene layout before parent constructor creates the scene.
         side = cfg.robot_side.lower()
         if side == "both":

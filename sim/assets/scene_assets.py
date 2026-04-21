@@ -5,7 +5,7 @@ from pathlib import Path
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 
-from .robots import AR5_L6_LEFT_CFG, AR5_L6_RIGHT_CFG
+from .robots import AR5_L6_LEFT_CFG, AR5_L6_LEFT_OSC_CFG, AR5_L6_RIGHT_CFG, AR5_L6_RIGHT_OSC_CFG
 
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -17,7 +17,7 @@ WORKSTATION_TABLE_ROT = (1.0, 0.0, 0.0, 0.0)
 
 # Robot root pose in env frame, relative to workstation origin.
 # Tune left/right independently.
-ROBOT_LEFT_POS_REL_TO_WORKSTATION = (0.0637, 0.715, 1.267)
+ROBOT_LEFT_POS_REL_TO_WORKSTATION = (0.0637, 0.719, 1.267)
 ROBOT_LEFT_ROT_REL_TO_WORKSTATION = (0.5, -0.5, 0.5, 0.5)
 ROBOT_RIGHT_POS_REL_TO_WORKSTATION = (0.0637, 0.536, 1.267)
 ROBOT_RIGHT_ROT_REL_TO_WORKSTATION = (0.5, 0.5, 0.5, -0.5)
@@ -41,6 +41,7 @@ def make_ar5_l6_left_robot_cfg(
     prim_path: str = "{ENV_REGEX_NS}/Robot",
     pos: tuple[float, float, float] | None = None,
     rot: tuple[float, float, float, float] | None = None,
+    control_mode: str = "joint",
 ) -> ArticulationCfg:
     """Left arm + hand with default pose relative to the workstation (env frame)."""
     default_pos, default_rot = get_robot_default_pose("left")
@@ -48,9 +49,10 @@ def make_ar5_l6_left_robot_cfg(
         pos = default_pos
     if rot is None:
         rot = default_rot
-    return AR5_L6_LEFT_CFG.replace(
+    base_cfg = AR5_L6_LEFT_OSC_CFG if control_mode.lower() == "osc" else AR5_L6_LEFT_CFG
+    return base_cfg.replace(
         prim_path=prim_path,
-        init_state=AR5_L6_LEFT_CFG.init_state.replace(pos=pos, rot=rot),
+        init_state=base_cfg.init_state.replace(pos=pos, rot=rot),
     )
 
 
@@ -58,6 +60,7 @@ def make_ar5_l6_right_robot_cfg(
     prim_path: str = "{ENV_REGEX_NS}/Robot",
     pos: tuple[float, float, float] | None = None,
     rot: tuple[float, float, float, float] | None = None,
+    control_mode: str = "joint",
 ) -> ArticulationCfg:
     """Right arm + hand with default pose relative to the workstation (env frame)."""
     default_pos, default_rot = get_robot_default_pose("right")
@@ -65,9 +68,10 @@ def make_ar5_l6_right_robot_cfg(
         pos = default_pos
     if rot is None:
         rot = default_rot
-    return AR5_L6_RIGHT_CFG.replace(
+    base_cfg = AR5_L6_RIGHT_OSC_CFG if control_mode.lower() == "osc" else AR5_L6_RIGHT_CFG
+    return base_cfg.replace(
         prim_path=prim_path,
-        init_state=AR5_L6_RIGHT_CFG.init_state.replace(pos=pos, rot=rot),
+        init_state=base_cfg.init_state.replace(pos=pos, rot=rot),
     )
 
 
@@ -76,13 +80,14 @@ def make_ar5_l6_robot_cfg(
     prim_path: str = "{ENV_REGEX_NS}/Robot",
     pos: tuple[float, float, float] | None = None,
     rot: tuple[float, float, float, float] | None = None,
+    control_mode: str = "joint",
 ) -> ArticulationCfg:
     """Build left/right AR5_L6 robot cfg from a common entrypoint."""
     side_norm = side.lower()
     if side_norm == "left":
-        return make_ar5_l6_left_robot_cfg(prim_path=prim_path, pos=pos, rot=rot)
+        return make_ar5_l6_left_robot_cfg(prim_path=prim_path, pos=pos, rot=rot, control_mode=control_mode)
     if side_norm == "right":
-        return make_ar5_l6_right_robot_cfg(prim_path=prim_path, pos=pos, rot=rot)
+        return make_ar5_l6_right_robot_cfg(prim_path=prim_path, pos=pos, rot=rot, control_mode=control_mode)
     raise ValueError(f"Unknown robot side: {side!r}. Expected 'left' or 'right'.")
 
 
