@@ -28,6 +28,7 @@ dist/
 .vscode/
 .DS_Store
 .cursor
+.claude
 assets/usd_generated/
 *.usd
 *.usda
