@@ -42,10 +42,15 @@ class OscWorkstationSceneCfg(InteractiveSceneCfg):
     Use `scene_cfg.workstation_name = "<name>"` to point at a different
     workstation (defaults to `ar5_l6_bench`, the left-arm variant). The
     spawner in `__post_init__` rebuilds the robot cfg from that name.
+
+    `workstation_name` / `control_mode` are consumed in `__post_init__`
+    and then set to `None` so `InteractiveScene._add_entities_from_cfg`
+    skips them (it only recognizes asset cfgs; plain strings trip the
+    "Unknown asset config type" branch).
     """
 
-    workstation_name: str = "ar5_l6_bench"
-    control_mode: str = "osc"
+    workstation_name: str | None = "ar5_l6_bench"
+    control_mode: str | None = "osc"
 
     ground = AssetBaseCfg(prim_path="/World/defaultGroundPlane", spawn=sim_utils.GroundPlaneCfg())
     dome_light = AssetBaseCfg(
@@ -63,10 +68,12 @@ class OscWorkstationSceneCfg(InteractiveSceneCfg):
     def __post_init__(self):
         super().__post_init__()
         self.robot = _workstation_robot_cfg(
-            workstation_name=self.workstation_name,
+            workstation_name=self.workstation_name or "ar5_l6_bench",
             prim_path="{ENV_REGEX_NS}/Robot",
-            control_mode=self.control_mode,
+            control_mode=self.control_mode or "osc",
         )
+        self.workstation_name = None
+        self.control_mode = None
 
 
 # -------------------- legacy: kept for transition ------------------------- #

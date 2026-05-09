@@ -408,6 +408,42 @@ This works for local dev and git but requires `tar --dereference`
 when packaging a workstation tarball for a real-robot driver. Flag
 for a future packaging task; no composer change.
 
+### Phantom-link warning spam on Isaac URDF import
+
+Loading a composed workstation into Isaac Sim 5.1 prints a noisy but
+harmless mix of URDF-importer and USD warnings:
+
+- `No mass specified for link <X>` + `Link <X> has no colliders, and no
+  inertia was imported; assigning a small isotropic inertia matrix`
+- `Unresolved reference prim path @.../configuration/workstation_*.usd@
+  </visuals/<X>>` — repeated many times per link because IsaacLab's
+  URDF→USD converter stages three sublayers (`workstation_base.usd`,
+  `workstation_physics.usd`, `workstation.usd`) and the warning fires
+  per recomposition pass × per layer.
+
+Affected links — all composer-introduced and intentionally massless:
+
+- `world` — anchor added by `freeze_base: base`
+- `base_workstation_arm_left_mount` / `_right_mount` — intermediate
+  frame links for mount joints
+
+Isaac's URDF importer auto-assigns a tiny isotropic inertia, so physics
+is correct. The `Unresolved reference` warnings come from empty
+`<visual>` groups (the links have no geometry) being re-referenced
+across the three sublayers the converter writes.
+
+Clean fix (deferred to PR #2 or whenever it becomes user-visible
+friction): in `tools/composer/urdf_ops.py`, emit a stub `<inertial>`
+block and either an empty resolvable `<visual>` or no visual at all for
+`make_world_link()` and the per-mount intermediate links. ~20 LoC.
+Until then: ignore the spam; it does not affect simulation.
+
+Also benign, unrelated to the composer:
+- `base_cameraBase / base_cameraJoint: Joint Axis is not body aligned
+  with X, Y or Z primary axis` — axis in the `bench_table` component's
+  original URDF. PhysX silently reorients. Fix at the base URDF level
+  if ever re-authored.
+
 ### Hardcoded `_tcp_to_wrist` naming convention
 `TestOscRLEnv._tcp_to_wrist` assumes component EE link names end in
 `_tcp` and the wrist link differs by suffix `_link7`. Works for AR5;

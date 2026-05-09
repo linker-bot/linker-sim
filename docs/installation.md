@@ -43,7 +43,7 @@ mkdir -p ~/opt
 cd ~/opt
 git clone https://github.com/isaac-sim/IsaacLab.git
 cd IsaacLab
-git checkout v2.3.2     # pin to a tag matching Isaac Sim 5.x
+git checkout v2.3.2     # pin to a tag matching Isaac Sim 5.1 (see §2c below)
 ```
 
 > **Do not clone IsaacLab into this repo.** Earlier versions of this guide put it under `docs/IsaacLab/`; that convention is retired. `docs/` is for documentation only.
@@ -60,9 +60,12 @@ Run these from `~/opt/IsaacLab/` (wherever you cloned it):
 source env_isaaclab/bin/activate        # bash/zsh
 # source env_isaaclab/bin/activate.fish # fish
 
-# 2c) Install Isaac Sim 5.0 BEFORE running `-i`.
-# Isaac Lab's `-i` step assumes the `isaacsim` package is already present.
-uv pip install 'isaacsim[all,extscache]==5.0.0' \
+# 2c) Install Isaac Sim 5.1 BEFORE running `-i`.
+# Isaac Lab v2.3.2 requires isaacsim 5.1 (it pins isaacsim.asset.importer.urdf==2.4.31,
+# which ships with 5.1 — not 5.0). Using 5.0 causes `./isaaclab.sh -i` to succeed
+# but the first run of any script to fail with:
+#   [isaaclab.python-2.3.2] dependency: 'isaacsim.asset.importer.urdf' = { version='=2.4.31' } can't be satisfied
+uv pip install 'isaacsim[all,extscache]==5.1.0.0' \
     --extra-index-url https://pypi.nvidia.com
 
 # 2d) Preempt a known flatdict build failure (flatdict 4.0.1 does not
@@ -183,7 +186,8 @@ alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/dex-
 ## Troubleshooting
 
 - **`ModuleNotFoundError: isaaclab`** — Ensure IsaacLab setup (`-u` and `-i`) completed and `env_isaaclab` is active. `which python` should point inside `env_isaaclab/bin/`.
-- **`FileNotFoundError: Could not find the isaac-sim directory … _isaac_sim`** during `./isaaclab.sh -i` — `isaacsim` wasn't installed before `-i`. Install it first: `uv pip install 'isaacsim[all,extscache]==5.0.0' --extra-index-url https://pypi.nvidia.com`, then re-run `-i`.
+- **`FileNotFoundError: Could not find the isaac-sim directory … _isaac_sim`** during `./isaaclab.sh -i` — `isaacsim` wasn't installed before `-i`. Install it first: `uv pip install 'isaacsim[all,extscache]==5.1.0' --extra-index-url https://pypi.nvidia.com`, then re-run `-i`.
+- **`[isaaclab.python-…] dependency: 'isaacsim.asset.importer.urdf' = { version='=2.4.31' } can't be satisfied`** at runtime — Isaac Sim version mismatch. IsaacLab v2.3.2 needs Isaac Sim 5.1; if you installed 5.0, upgrade: `uv pip uninstall isaacsim && uv pip install 'isaacsim[all,extscache]==5.1.0' --extra-index-url https://pypi.nvidia.com && ./isaaclab.sh -i`.
 - **`Failed to build flatdict==4.0.1` / `ModuleNotFoundError: No module named 'pkg_resources'`** — Install flatdict with build isolation disabled: `uv pip install setuptools && uv pip install flatdict==4.0.1 --no-build-isolation`, then re-run `-i`.
 - **Isaac Sim import errors about Python version / ABI mismatch** — Confirm your venv Python is 3.11 (`python --version`). Isaac Sim 5.x does not load under 3.10 or 3.12.
 - **`ModuleNotFoundError: sim` or `tools`** — You haven't run `uv pip install -e '.[tools]'` in the active env, or the wrong env is active.

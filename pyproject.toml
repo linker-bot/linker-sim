@@ -32,7 +32,10 @@ mujoco = [
 # `./isaaclab.sh -i` from the IsaacLab clone — see docs/installation.md.
 isaac = [
     "dex-tool-rl[tools]",
-    "isaacsim[all,extscache]==5.0.0",
+    # IsaacLab v2.3.2 requires Isaac Sim 5.1 (it pins
+    # isaacsim.asset.importer.urdf==2.4.31, which ships with 5.1 — not 5.0).
+    # See docs/installation.md troubleshooting for the symptom.
+    "isaacsim[all,extscache]==5.1.0.0",
     # flatdict 4.0.1 lacks a pkg_resources build dep declaration and
     # modern setuptools no longer exposes it implicitly. Pinned here;
     # install with `--no-build-isolation` per docs/installation.md.

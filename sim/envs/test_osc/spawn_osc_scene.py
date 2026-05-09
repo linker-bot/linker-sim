@@ -143,7 +143,11 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import traceback
     try:
         main()
+    except Exception:
+        traceback.print_exc()
+        raise
     finally:
         simulation_app.close()
