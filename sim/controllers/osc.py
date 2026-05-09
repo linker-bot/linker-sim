@@ -43,8 +43,14 @@ class OscControllerCfg:
     nullspace_damping_ratio: float = 1.0
 
     # Actuator-gain override (PD drive lowered so effort dominates).
+    # When `gain_profile` is set, it wins over the literal values below.
     actuator_stiffness: float = 150.0
     actuator_damping: float = 8.0
+    gain_profile: str | None = "osc"
+    """Name of a profile in `handle.gain_profiles[role]` to read actuator
+    gains from. Falls back to `actuator_stiffness`/`actuator_damping` if
+    the handle doesn't declare it. Set to None to always use the literal
+    values."""
 
 
 class OscController:
@@ -92,13 +98,21 @@ class OscController:
         self._controller = OperationalSpaceController(
             ctrl_cfg, robot.num_envs, str(robot.device)
         )
-        # Lower the actuator PD so effort dominates.
-        robot.write_gains(
-            self.role,
-            stiffness=self.cfg.actuator_stiffness,
-            damping=self.cfg.actuator_damping,
-        )
+        # Lower the actuator PD so effort dominates. If the component's
+        # manifest declares a named gain profile, prefer that; else fall
+        # back to the literal cfg values.
+        stiffness, damping = self._resolve_actuator_gains(robot)
+        robot.write_gains(self.role, stiffness=stiffness, damping=damping)
         self._last_command = torch.zeros((robot.num_envs, 6), device=robot.device)
+
+    def _resolve_actuator_gains(self, robot: Robot) -> tuple[float, float]:
+        profile_name = self.cfg.gain_profile
+        if profile_name:
+            profiles = robot.handle.gain_profiles.get(self.role, {})
+            if profile_name in profiles:
+                gains = profiles[profile_name]
+                return float(gains.stiffness), float(gains.damping)
+        return float(self.cfg.actuator_stiffness), float(self.cfg.actuator_damping)
 
     def set_command(self, command: torch.Tensor, robot: Robot) -> None:
         # Command is (B, 6) delta pose in [-1, 1]; scale per-axis.

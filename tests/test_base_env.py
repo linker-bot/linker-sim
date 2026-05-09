@@ -30,6 +30,7 @@ def _make_handle(n_arm=7, n_hand=6) -> WorkstationHandle:
         ee_link="arm_tcp",
         base_link="arm_base",
         default_gains={"arm": Gains(1.0, 0.1), "hand": Gains(2.0, 0.2)},
+        gain_profiles={},
         components={"arm": ComponentRef("arms/fake", "left", "x")},
         raw_manifest={},
     )
@@ -102,6 +103,7 @@ class FakeBackend:
         self.device = torch.device("cpu")
         self.dt = 1 / 60
         self.robots = {"robot": FakeRobot(num_envs=3)}
+        self.rigid_bodies: dict = {}
         self.env_origins = torch.zeros(3, 3)
         self.step_count = 0
         self.reset_calls: list = []

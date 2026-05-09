@@ -138,18 +138,60 @@ class Robot(Protocol):
 
 
 @runtime_checkable
+class RigidBody(Protocol):
+    """Sim-agnostic view of a single rigid body (e.g. task object).
+
+    Minimal surface — tasks use it to read object pose/vel and to
+    teleport the body on reset. No contact or attachment hooks here;
+    those live on the backend when needed (stub for now).
+    """
+
+    name: str
+    num_envs: int
+    device: torch.device
+
+    @property
+    def root_pos_w(self) -> torch.Tensor:
+        """`(B, 3)` world-frame position."""
+        ...
+
+    @property
+    def root_quat_w(self) -> torch.Tensor:
+        """`(B, 4)` world-frame orientation, wxyz."""
+        ...
+
+    @property
+    def root_lin_vel_w(self) -> torch.Tensor:
+        """`(B, 3)` world-frame linear velocity."""
+        ...
+
+    def write_root_pose(
+        self,
+        pose: torch.Tensor,                 # (B, 7)
+        env_ids: torch.Tensor | None = None,
+    ) -> None: ...
+
+    def write_root_velocity(
+        self,
+        velocity: torch.Tensor,             # (B, 6)
+        env_ids: torch.Tensor | None = None,
+    ) -> None: ...
+
+
+@runtime_checkable
 class SimBackend(Protocol):
     """Sim-agnostic simulator frontend.
 
-    Owns the physics loop, scene, and set of robots. `BaseEnv` drives
-    the backend; tasks/controllers go through it to read state and
-    write commands.
+    Owns the physics loop, scene, and set of robots / rigid bodies.
+    `BaseEnv` drives the backend; tasks/controllers go through it to
+    read state and write commands.
     """
 
     num_envs: int
     device: torch.device
     dt: float                           # physics dt (seconds)
     robots: dict[str, Robot]            # role-name -> Robot
+    rigid_bodies: dict[str, RigidBody]  # name -> RigidBody
     env_origins: torch.Tensor           # (num_envs, 3)
 
     def step(self) -> None:

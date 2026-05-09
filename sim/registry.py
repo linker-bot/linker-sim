@@ -63,6 +63,7 @@ class WorkstationHandle:
 
     # Merged component + recipe overrides.
     default_gains: dict[str, Gains]    # role -> gains
+    gain_profiles: dict[str, dict[str, Gains]]  # role -> profile_name -> gains
 
     # Provenance — useful for debugging which component/variant produced
     # which prefix.
@@ -181,6 +182,16 @@ def load(name: str, root: Path | None = None) -> WorkstationHandle:
                 damping=float(g["damping"]),
             )
             for role, g in (m.get("default_gains") or {}).items()
+        },
+        gain_profiles={
+            role: {
+                pname: Gains(
+                    stiffness=float(g["stiffness"]),
+                    damping=float(g["damping"]),
+                )
+                for pname, g in profiles.items()
+            }
+            for role, profiles in (m.get("gain_profiles") or {}).items()
         },
         components={
             role: ComponentRef(

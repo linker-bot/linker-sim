@@ -130,6 +130,11 @@ class ComponentMeta:
     mimic_joints: list[str]
     drive: DriveMode
     default_gains: DefaultGains | None
+    gain_profiles: dict[str, DefaultGains]
+    """Optional named PD profiles (e.g. `joint`, `osc`). Controllers
+    pick one at runtime via `handle.gain_profiles[role][profile]`.
+    `default_gains` is preserved as a backward-compat alias for the
+    single-profile case."""
     source_dir: Path  # directory containing this meta.yaml
 
     @staticmethod
@@ -172,6 +177,17 @@ class ComponentMeta:
         dg_raw = d.get("default_gains")
         default_gains = DefaultGains.from_dict(dg_raw, f"{where}.default_gains") if dg_raw else None
 
+        profiles_raw = d.get("gain_profiles", {})
+        if not isinstance(profiles_raw, dict):
+            raise SchemaError(f"{where}.gain_profiles: must be a mapping")
+        gain_profiles: dict[str, DefaultGains] = {}
+        for pname, pdata in profiles_raw.items():
+            if not isinstance(pdata, dict):
+                raise SchemaError(f"{where}.gain_profiles.{pname}: must be a mapping")
+            gain_profiles[str(pname)] = DefaultGains.from_dict(
+                pdata, f"{where}.gain_profiles.{pname}"
+            )
+
         return ComponentMeta(
             schema_version=int(d.get("schema_version", 1)),
             kind=kind,
@@ -184,6 +200,7 @@ class ComponentMeta:
             mimic_joints=[str(j) for j in d.get("mimic_joints", [])],
             drive=drive,
             default_gains=default_gains,
+            gain_profiles=gain_profiles,
             source_dir=path.parent.resolve(),
         )
 
@@ -369,6 +386,7 @@ class Manifest:
     ee_link: str
     base_link: str
     default_gains: dict[str, DefaultGains]  # role -> merged gains
+    gain_profiles: dict[str, dict[str, DefaultGains]]  # role -> profile_name -> gains
 
     def to_dict(self) -> dict:
         return {
@@ -398,6 +416,13 @@ class Manifest:
             "default_gains": {
                 role: {"stiffness": g.stiffness, "damping": g.damping}
                 for role, g in self.default_gains.items()
+            },
+            "gain_profiles": {
+                role: {
+                    pname: {"stiffness": g.stiffness, "damping": g.damping}
+                    for pname, g in profiles.items()
+                }
+                for role, profiles in self.gain_profiles.items()
             },
         }
 

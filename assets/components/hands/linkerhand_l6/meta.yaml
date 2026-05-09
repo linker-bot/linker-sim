@@ -46,3 +46,8 @@ mimic_joints:
 default_gains:
   stiffness: 20.0
   damping: 2.0
+
+gain_profiles:
+  joint:
+    stiffness: 20.0
+    damping: 2.0

@@ -16,65 +16,19 @@ Step loop::
       # post-physics: observe, reward, done
       # if any env done: reset(env_ids)
 
-For PR #2a, the task surface is deliberately narrow (a `Task` Protocol
-with `reset/observe/reward/done`). PR #2b replaces `LegacyOscTask` with
-a proper `ReachTask` / `PickPlaceTask` plus object-spawn hooks on the
-backend.
+The `Task` Protocol (obs/reward/done) lives in `sim.tasks.base`;
+concrete tasks live under `sim/tasks/`.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Protocol, runtime_checkable
+from dataclasses import dataclass
 
 import torch
 
 from sim.backends.base import Robot, SimBackend
 from sim.controllers.base import Controller
-
-
-# ---------------------------------------------------------------------------- #
-# Task protocol (temporary home; moves to sim/tasks/base.py in PR #2b)
-# ---------------------------------------------------------------------------- #
-
-
-@runtime_checkable
-class Task(Protocol):
-    """Minimal task surface used by `BaseEnv`.
-
-    A task owns obs/reward/done plus any task-local reset state (target
-    pose sampling, object spawns). PR #2b formalizes this and moves it
-    under `sim/tasks/`; for PR #2a we define enough to get OSC parity.
-    """
-
-    observation_dim: int
-    action_dim: int  # sum of controller command_dims, cross-checked on attach
-
-    def reset(self, backend: SimBackend, env_ids: torch.Tensor) -> None: ...
-
-    def observe(
-        self,
-        backend: SimBackend,
-        last_action: torch.Tensor,
-    ) -> torch.Tensor: ...
-
-    def reward(
-        self,
-        backend: SimBackend,
-        last_action: torch.Tensor,
-    ) -> torch.Tensor: ...
-
-    def done(
-        self,
-        backend: SimBackend,
-        step_count: torch.Tensor,
-        max_steps: int,
-    ) -> tuple[torch.Tensor, torch.Tensor]: ...
-
-
-# ---------------------------------------------------------------------------- #
-# BaseEnv
-# ---------------------------------------------------------------------------- #
+from sim.tasks.base import Task
 
 
 @dataclass
@@ -153,11 +107,7 @@ class BaseEnv:
             )
         env_ids = env_ids.to(device=self.backend.device, dtype=torch.long)
 
-        # Backend-level reset (root pose + default joint state).
         self.backend.reset(env_ids=env_ids)
-
-        # Re-apply the reset-joint-noise jitter on top of the backend's
-        # default state so the env starts slightly randomized.
         self._jitter_joints(env_ids)
 
         for c in self.controllers:
@@ -193,11 +143,6 @@ class BaseEnv:
         done_mask = terminated | truncated
         if done_mask.any():
             done_env_ids = torch.nonzero(done_mask, as_tuple=False).squeeze(-1)
-            # Reset done envs in-place. Gym convention: the returned obs
-            # already reflects the terminal state; callers typically use
-            # the next step's obs post-reset. We follow `DirectRLEnv`'s
-            # behavior: reset envs here so the next step observes a
-            # freshly reset state.
             self.backend.reset(env_ids=done_env_ids)
             self._jitter_joints(done_env_ids)
             for c in self.controllers:
@@ -220,8 +165,6 @@ class BaseEnv:
         return slices
 
     def _jitter_joints(self, env_ids: torch.Tensor) -> None:
-        """Add `cfg.reset_joint_noise_scale` uniform jitter to the
-        default joint pose on `env_ids`."""
         if self.cfg.reset_joint_noise_scale <= 0.0:
             return
         robot = self._robot
@@ -245,75 +188,3 @@ class BaseEnv:
     @property
     def max_steps(self) -> int:
         return self._max_steps
-
-
-# ---------------------------------------------------------------------------- #
-# OSC parity task (temporary — used for PR #2a parity test)
-# ---------------------------------------------------------------------------- #
-
-
-@dataclass
-class LegacyOscTaskCfg:
-    """Matches the reward/obs of `TestOscRLEnv` for parity testing."""
-
-    ee_frame: str | None = None  # None -> robot.handle.ee_link (tcp)
-    action_penalty_scale: float = 0.01
-    joint_vel_penalty_scale: float = 0.001
-    pose_error_penalty_scale: float = 1.0
-    action_dim: int = 12  # 6 arm + 6 hand (AR5 + linker_l6)
-    # `observation_dim` is computed from the robot at attach time, but
-    # the task protocol needs a value up front — the env cross-checks.
-    # Set by LegacyOscTask.__init__ once it reads the handle.
-    observation_dim: int = field(default=0, init=False)
-
-
-class LegacyOscTask:
-    """Reward + obs matching `sim/envs/test_osc/osc_rl_env.py`.
-
-    Only exists for PR #2a to drive a parity test. PR #2b replaces it
-    with a `ReachTask` that uses an explicit target pose.
-    """
-
-    def __init__(self, robot: Robot, cfg: LegacyOscTaskCfg | None = None):
-        self.cfg = cfg or LegacyOscTaskCfg()
-        joint_dim = int(robot.joint_pos.shape[1])
-        # [q, qd, ee_pose(7), ee_vel(6), last_action]
-        self.observation_dim = int(2 * joint_dim + 13 + self.cfg.action_dim)
-        self.action_dim = self.cfg.action_dim
-
-    def reset(self, backend: SimBackend, env_ids: torch.Tensor) -> None:
-        return
-
-    def observe(self, backend: SimBackend, last_action: torch.Tensor) -> torch.Tensor:
-        robot = next(iter(backend.robots.values()))
-        chunks = [
-            robot.joint_pos,
-            robot.joint_vel,
-            robot.ee_pose_b(self.cfg.ee_frame),
-            robot.ee_vel_b(self.cfg.ee_frame),
-            last_action,
-        ]
-        return torch.cat(chunks, dim=-1)
-
-    def reward(self, backend: SimBackend, last_action: torch.Tensor) -> torch.Tensor:
-        robot = next(iter(backend.robots.values()))
-        action_pen = torch.sum(last_action ** 2, dim=-1)
-        vel_pen = torch.sum(robot.joint_vel ** 2, dim=-1)
-        ee_pos_b = robot.ee_pose_b(self.cfg.ee_frame)[:, :3]
-        pose_pen = torch.sum(ee_pos_b ** 2, dim=-1)
-        return (
-            1.0
-            - self.cfg.action_penalty_scale * action_pen
-            - self.cfg.joint_vel_penalty_scale * vel_pen
-            - self.cfg.pose_error_penalty_scale * pose_pen
-        )
-
-    def done(
-        self,
-        backend: SimBackend,
-        step_count: torch.Tensor,
-        max_steps: int,
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        terminated = torch.zeros_like(step_count, dtype=torch.bool)
-        truncated = step_count >= (max_steps - 1)
-        return terminated, truncated

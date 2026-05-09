@@ -40,9 +40,21 @@ actuated_joints:
   - "AR5_5_07{V}_W4C4A2_joint_6"
   - "AR5_5_07{V}_W4C4A2_joint_7"
 
-# PhysX implicit-actuator defaults from sim/assets/robots.py (legacy "joint"
-# control mode). Use an OSC profile via recipe physics_overrides when
-# switching to end-effector control.
+# PhysX implicit-actuator defaults from the original AR5 URDF (high
+# stiffness for direct joint-space PD). Runtime controllers can pick a
+# different profile via `gain_profiles` below.
 default_gains:
   stiffness: 1000.0
   damping: 4.0
+
+# Named PD profiles. Controllers select one via
+# `handle.gain_profiles["arm"][<name>]` and apply it at attach time
+# (e.g. OscController.attach overrides the arm's actuator gains to the
+# `osc` profile so effort commands dominate).
+gain_profiles:
+  joint:
+    stiffness: 1000.0
+    damping: 4.0
+  osc:
+    stiffness: 150.0
+    damping: 8.0

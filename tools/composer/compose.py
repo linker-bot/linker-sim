@@ -228,6 +228,20 @@ def compose(paths: Paths) -> ComposeResult:
             damping=(override.damping if override.damping is not None else base.damping),
         )
 
+    # Per-role named gain profiles. Components declare them under
+    # `gain_profiles:` in meta.yaml; runtime controllers select one via
+    # `handle.gain_profiles[role][name]`. Includes an implicit `default`
+    # profile mirroring `default_gains` so callers always have a fallback.
+    gain_profiles: dict[str, dict[str, DefaultGains]] = {}
+    for c in compiled:
+        role_profiles: dict[str, DefaultGains] = {}
+        if c.meta.default_gains:
+            role_profiles["default"] = c.meta.default_gains
+        for pname, pgains in c.meta.gain_profiles.items():
+            role_profiles[pname] = pgains
+        if role_profiles:
+            gain_profiles[c.role] = role_profiles
+
     # Frames we surface in the manifest: every mount frame from every
     # component, namespaced role:frame so multiple components' "mount"
     # frames don't collide.
@@ -254,6 +268,7 @@ def compose(paths: Paths) -> ComposeResult:
         ee_link=ee_link,
         base_link=base_link,
         default_gains=merged_gains,
+        gain_profiles=gain_profiles,
     )
     manifest_yaml = yaml.safe_dump(
         manifest.to_dict(),

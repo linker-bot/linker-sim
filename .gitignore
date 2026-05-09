@@ -33,3 +33,6 @@ assets/usd_generated/
 *.usd
 *.usda
 *.usdc
+
+# Data
+outputs/

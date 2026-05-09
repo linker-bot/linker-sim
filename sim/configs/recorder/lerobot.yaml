@@ -1,0 +1,11 @@
+# @package _global_
+recorder:
+  _target_: sim.io.recorder.Recorder
+  sink:
+    _target_: sim.io.recorder.LeRobotSink
+    out_dir: ${hydra:runtime.output_dir}/episodes
+    fps: 30.0
+  cfg:
+    _target_: sim.io.recorder.RecorderCfg
+    enabled: true
+    record_every_env: false

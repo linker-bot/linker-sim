@@ -10,11 +10,11 @@ components:
   arm:
     name: arms/ar5
     variant: right
-    sha256: a9a159538652f635c33c1c53af925acb5705727f61157107cbc0bc24be474f5e
+    sha256: 6ee494c858f42fbb70ecda1fdf9306174c4b6337cb7bd800cc68d0f6f1d4bece
   hand:
     name: hands/linkerhand_l6
     variant: right
-    sha256: 79849d127dcad1038ae958ae06151a64bad2d2a8a39c848387d9b3b87d76eef3
+    sha256: 46820090f0e3bf8ba117cb4ee8d3a0ca5960ef326983892635770e61528738e5
 artifacts:
   urdf: workstation.urdf
   mjcf: null
@@ -62,3 +62,21 @@ default_gains:
   hand:
     stiffness: 20.0
     damping: 2.0
+gain_profiles:
+  arm:
+    default:
+      stiffness: 1000.0
+      damping: 4.0
+    joint:
+      stiffness: 1000.0
+      damping: 4.0
+    osc:
+      stiffness: 150.0
+      damping: 8.0
+  hand:
+    default:
+      stiffness: 20.0
+      damping: 2.0
+    joint:
+      stiffness: 20.0
+      damping: 2.0

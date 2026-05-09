@@ -1,0 +1,10 @@
+# @package _global_
+# Isaac Sim backend selection. The actual `IsaacBackendCfg` is built
+# inside scripts/run.py from the fields below (hydra instantiate is
+# awkward with AppLauncher timing, so we build the cfg manually).
+backend:
+  name: isaac
+  dt: ${div:1,120}
+  render_interval: ${decimation}
+  ground: true
+  dome_light: true

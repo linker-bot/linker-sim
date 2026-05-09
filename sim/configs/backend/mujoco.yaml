@@ -1,0 +1,7 @@
+# @package _global_
+# Stub; scripts/run.py refuses to proceed with this backend (PR #1b
+# blocks the full MuJoCo impl). Kept so `backend=mujoco` is a valid
+# config node.
+backend:
+  name: mujoco
+  dt: ${div:1,500}

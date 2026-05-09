@@ -15,9 +15,11 @@ requires-python = ">=3.11,<3.12"
 
 [project.optional-dependencies]
 # Composer, validator, registry CLI. Stdlib + pyyaml. Safe on any Python
-# 3.11 env without a GPU.
+# 3.11 env without a GPU. Hydra is included here because `scripts/run.py`
+# imports it on the happy-path and it's pure Python.
 tools = [
     "pyyaml>=6.0",
+    "hydra-core>=1.3",
 ]
 
 # MJCF authoring + validation (PR #1b). Pulls MuJoCo on top of [tools].
@@ -42,6 +44,13 @@ isaac = [
     "flatdict==4.0.1",
 ]
 
+# LeRobot-compatible parquet sink (sim.io.recorder.LeRobotSink). Opt-in
+# because pyarrow is heavy and not needed for JSONL recording.
+lerobot = [
+    "dex-tool-rl[tools]",
+    "pyarrow>=14.0",
+]
+
 dev = [
     "ruff>=0.6",
     "pytest>=8.0",
@@ -49,7 +58,7 @@ dev = [
 
 # Convenience: everything except dev tools.
 all = [
-    "dex-tool-rl[tools,mujoco,isaac]",
+    "dex-tool-rl[tools,mujoco,isaac,lerobot]",
 ]
 
 # --------------------------- uv configuration ----------------------------- #

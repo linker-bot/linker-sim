@@ -3,17 +3,10 @@
 Composes `isaaclab.sim.SimulationContext` + `isaaclab.scene.InteractiveScene`
 directly — does not subclass `ManagerBasedRLEnv` or `DirectRLEnv` (D9).
 `BaseEnv` drives this backend; controllers and tasks talk through
-`self.robots[name]` which are `IsaacRobot`s.
-
-The scene builder (`build_scene_cfg`) lives here too — scene assembly
-is a backend concern, not an env concern, and moving it out of
-`sim/envs/test_osc/scene_cfg.py` lets every backend own its native
-scene primitives.
+`self.robots[name]` / `self.rigid_bodies[name]`.
 
 Caller responsibility: AppLauncher must have been constructed and its
-`SimulationApp` must be live before this module is imported. Every
-Isaac-dependent script does this at the top; see
-`sim/envs/test_osc/spawn_osc_scene.py`.
+`SimulationApp` must be live before this module is imported.
 """
 
 from __future__ import annotations
@@ -24,7 +17,7 @@ from typing import Any
 import torch
 
 import isaaclab.sim as sim_utils
-from isaaclab.assets import AssetBaseCfg
+from isaaclab.assets import AssetBaseCfg, RigidObject, RigidObjectCfg
 from isaaclab.scene import InteractiveScene, InteractiveSceneCfg
 from isaaclab.utils import configclass
 
@@ -40,6 +33,22 @@ from sim.registry import load as load_workstation
 
 
 @dataclass
+class RigidBodySpec:
+    """Lightweight cfg for a task-object rigid body.
+
+    Supports a minimal subset (box shape, mass, initial pose). Enough
+    for the pick-place task in PR #2b; extend as needed.
+    """
+
+    shape: str = "box"                            # only "box" supported today
+    size: tuple[float, float, float] = (0.04, 0.04, 0.04)
+    mass: float = 0.05
+    init_pos: tuple[float, float, float] = (0.4, 0.0, 0.05)
+    init_quat_wxyz: tuple[float, float, float, float] = (1.0, 0.0, 0.0, 0.0)
+    color: tuple[float, float, float] = (0.8, 0.3, 0.2)
+
+
+@dataclass
 class IsaacBackendCfg:
     """Per-backend settings.
 
@@ -48,9 +57,13 @@ class IsaacBackendCfg:
     `assets/workstations/<name>/`. For now single-robot scenes are the
     only tested path; multi-robot support lands with the bimanual
     recipe in PR #3.
+
+    `rigid_bodies` pre-declares task objects. They get spawned at scene
+    construction and are reachable via `backend.rigid_bodies[name]`.
     """
 
     workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_l6_bench"})
+    rigid_bodies: dict[str, RigidBodySpec] = field(default_factory=dict)
     num_envs: int = 1
     env_spacing: float = 2.5
     dt: float = 1.0 / 120.0
@@ -68,10 +81,12 @@ class IsaacBackendCfg:
 def build_scene_cfg(cfg: IsaacBackendCfg) -> InteractiveSceneCfg:
     """Assemble an `InteractiveSceneCfg` for `cfg.workstations`.
 
-    Restricted to a single robot for PR #2a. Multi-robot scenes will
-    require either a dynamically-built configclass (messy) or a shift
-    to multiple articulations per env (bimanual recipe path). For now
-    we enforce one entry and build the tidy single-robot class below.
+    Restricted to a single robot for PR #2a/b (bimanual is PR #3).
+    `rigid_bodies` are attached dynamically in `__post_init__` — they
+    need per-instance names but the configclass dataclass machinery
+    only supports statically-declared fields, so we punt and stash
+    them on a private attribute the backend reads after scene
+    construction.
     """
     if len(cfg.workstations) != 1:
         raise NotImplementedError(
@@ -86,24 +101,28 @@ def build_scene_cfg(cfg: IsaacBackendCfg) -> InteractiveSceneCfg:
         workstation_name=ws_name,
         ground=cfg.ground,
         dome_light=cfg.dome_light,
+        rigid_bodies=dict(cfg.rigid_bodies),
     )
 
 
 @configclass
 class _SingleRobotSceneCfg(InteractiveSceneCfg):
-    """Single-robot scene. `robot_name` / `workstation_name` are consumed
-    in `__post_init__` and then set to `None` so `InteractiveScene`'s
-    attribute iteration skips them (only asset cfgs are valid there)."""
+    """Single-robot scene cfg. Consumed fields are nulled in
+    `__post_init__` so `InteractiveScene`'s attribute iteration skips
+    them (only asset cfgs are valid there)."""
 
     robot_name: str | None = "robot"
     workstation_name: str | None = "ar5_l6_bench"
     ground: bool | None = True
     dome_light: bool | None = True
+    rigid_bodies: dict | None = None  # name -> RigidBodySpec
 
     # Concrete assets are materialized in __post_init__.
     robot: Any = None
     ground_plane: Any = None
     light: Any = None
+    # Rigid-body attr names follow the pattern `obj_<name>`; created
+    # dynamically in __post_init__.
 
     def __post_init__(self):
         super().__post_init__()
@@ -123,22 +142,79 @@ class _SingleRobotSceneCfg(InteractiveSceneCfg):
                 prim_path="/World/Light",
                 spawn=sim_utils.DomeLightCfg(intensity=3000.0, color=(0.75, 0.75, 0.75)),
             )
-        # Null out everything that isn't an asset cfg so
-        # InteractiveScene._add_entities_from_cfg skips it.
+
+        rigid_specs: dict = self.rigid_bodies or {}
+        self._rigid_attr_names: dict[str, str] = {}
+        for name, spec in rigid_specs.items():
+            attr = f"obj_{name}"
+            setattr(self, attr, _rigid_body_cfg(name, spec))
+            self._rigid_attr_names[name] = attr
+
+        # Null out non-asset fields so the scene iterator skips them.
         self.robot_name = None
         self.workstation_name = None
         self.ground = None
         self.dome_light = None
-        # The scene pulls entities by attribute name; expose the robot
-        # under the requested key. configclass doesn't let us set
-        # arbitrary names at class-def time, so we punt by always using
-        # the canonical attribute `robot` and having the backend look it
-        # up under that name (see IsaacSimBackend._scene_robot_key).
+        self.rigid_bodies = None
         self._robot_key = robot_name  # stored for the backend to read
 
 
 def _pascal(name: str) -> str:
     return "".join(p.capitalize() for p in name.replace("-", "_").split("_"))
+
+
+def _rigid_body_cfg(name: str, spec: RigidBodySpec) -> RigidObjectCfg:
+    """Build an `isaaclab.assets.RigidObjectCfg` from a `RigidBodySpec`."""
+    if spec.shape != "box":
+        raise NotImplementedError(f"rigid body shape {spec.shape!r} not yet supported")
+    prim_path = "{ENV_REGEX_NS}/" + _pascal(name)
+    return RigidObjectCfg(
+        prim_path=prim_path,
+        spawn=sim_utils.CuboidCfg(
+            size=tuple(spec.size),
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(),
+            mass_props=sim_utils.MassPropertiesCfg(mass=float(spec.mass)),
+            collision_props=sim_utils.CollisionPropertiesCfg(),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=tuple(spec.color)),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(
+            pos=tuple(spec.init_pos),
+            rot=tuple(spec.init_quat_wxyz),
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------- #
+# Rigid-body adapter
+# ---------------------------------------------------------------------------- #
+
+
+class IsaacRigidBody:
+    """Adapter over `isaaclab.assets.RigidObject`."""
+
+    def __init__(self, name: str, obj: RigidObject):
+        self.name = name
+        self._obj = obj
+        self.num_envs = obj.num_instances
+        self.device = torch.device(obj.device)
+
+    @property
+    def root_pos_w(self) -> torch.Tensor:
+        return self._obj.data.root_pos_w
+
+    @property
+    def root_quat_w(self) -> torch.Tensor:
+        return self._obj.data.root_quat_w
+
+    @property
+    def root_lin_vel_w(self) -> torch.Tensor:
+        return self._obj.data.root_lin_vel_w
+
+    def write_root_pose(self, pose: torch.Tensor, env_ids: torch.Tensor | None = None) -> None:
+        self._obj.write_root_pose_to_sim(pose, env_ids=env_ids)
+
+    def write_root_velocity(self, velocity: torch.Tensor, env_ids: torch.Tensor | None = None) -> None:
+        self._obj.write_root_velocity_to_sim(velocity, env_ids=env_ids)
 
 
 # ---------------------------------------------------------------------------- #
@@ -147,17 +223,7 @@ def _pascal(name: str) -> str:
 
 
 class IsaacSimBackend(SimBackend):
-    """Concrete Isaac backend.
-
-    Owns the `SimulationContext` + `InteractiveScene`. Exposes
-    `self.robots[name] -> IsaacRobot`. Driver (`BaseEnv` or a CLI
-    script) calls `step()` / `reset()` / `write_data()` in a loop.
-
-    Construction order mirrors the manual script:
-        SimulationContext(cfg.sim)   # physics dt, device, render
-        InteractiveScene(scene_cfg)  # spawns prims
-        sim.reset()                  # starts physx + populates handles
-    """
+    """Concrete Isaac backend. See module docstring."""
 
     def __init__(
         self,
@@ -175,6 +241,19 @@ class IsaacSimBackend(SimBackend):
         self._sim.set_camera_view(eye=[1.8, -1.4, 1.2], target=[0.4, 0.0, 0.4])
 
         self._scene_cfg = scene_cfg if scene_cfg is not None else build_scene_cfg(cfg)
+
+        # Read our private bookkeeping off the scene cfg BEFORE passing it
+        # to InteractiveScene. IsaacLab iterates `cfg.__dict__` for asset
+        # attributes and raises on any non-base-class, non-None value —
+        # including our `_rigid_attr_names` dict and `_robot_key` str.
+        # Null them on the cfg so the iteration skips them, but save the
+        # values locally because we still need them to wire up the
+        # backend's robots / rigid_bodies dicts after construction.
+        scene_key = getattr(self._scene_cfg, "_robot_key", None) or "robot"
+        rigid_attr_map = dict(getattr(self._scene_cfg, "_rigid_attr_names", None) or {})
+        self._scene_cfg._robot_key = None
+        self._scene_cfg._rigid_attr_names = None
+
         self._scene = InteractiveScene(self._scene_cfg)
         self._sim.reset()
 
@@ -183,18 +262,15 @@ class IsaacSimBackend(SimBackend):
         self.dt = float(cfg.dt)
         self.env_origins = self._scene.env_origins
 
-        # Build Robot adapters. The scene indexes articulations by their
-        # attribute name on the scene cfg; `_SingleRobotSceneCfg` parks
-        # the articulation under `robot` and stashes the user-facing
-        # role name in `_robot_key`.
-        scene_key = getattr(self._scene_cfg, "_robot_key", None) or "robot"
         self.robots: dict[str, IsaacRobot] = {}
         for role_name, ws_name in cfg.workstations.items():
             handle = load_workstation(ws_name)
-            # Only `scene_key` lives in the scene for a single-robot cfg;
-            # future multi-robot impls will build a per-role lookup here.
             articulation = self._scene[scene_key]
             self.robots[role_name] = IsaacRobot(articulation, handle)
+
+        self.rigid_bodies: dict[str, IsaacRigidBody] = {}
+        for name, attr in rigid_attr_map.items():
+            self.rigid_bodies[name] = IsaacRigidBody(name, self._scene[attr])
 
     # -- SimBackend interface -------------------------------------------- #
 
@@ -206,15 +282,13 @@ class IsaacSimBackend(SimBackend):
         self._scene.write_data_to_sim()
 
     def reset(self, env_ids: torch.Tensor | None = None) -> None:
-        """Reset `env_ids` (or all envs) to the default articulation
-        state. Controllers should be reset separately by the env."""
         all_env_ids = torch.arange(self.num_envs, device=self.device, dtype=torch.long)
         ids = all_env_ids if env_ids is None else env_ids.to(self.device)
         if ids.numel() == 0:
             return
 
         for robot in self.robots.values():
-            art = robot._art  # fine inside the same subsystem
+            art = robot._art
             root_state = art.data.default_root_state[ids].clone()
             root_state[:, :3] += self.env_origins[ids]
             robot.write_root_state(root_state[:, :7], root_state[:, 7:], env_ids=ids)
@@ -222,14 +296,16 @@ class IsaacSimBackend(SimBackend):
             joint_vel = art.data.default_joint_vel[ids].clone()
             robot.write_joint_state(joint_pos, joint_vel, env_ids=ids)
 
-        # IsaacLab caches some per-scene buffers; the scene's own reset
-        # handles those. Pass a python list per its signature.
+        for body in self.rigid_bodies.values():
+            obj = body._obj
+            default_state = obj.data.default_root_state[ids].clone()
+            default_state[:, :3] += self.env_origins[ids]
+            body.write_root_pose(default_state[:, :7], env_ids=ids)
+            body.write_root_velocity(default_state[:, 7:], env_ids=ids)
+
         self._scene.reset(ids.tolist())
 
     def close(self) -> None:
-        # SimulationContext has no explicit close (the SimulationApp
-        # owns the lifecycle); this is a no-op here so callers can treat
-        # the backend as a context-managed resource uniformly.
         pass
 
     # -- convenience accessors ------------------------------------------- #

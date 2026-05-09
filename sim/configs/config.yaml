@@ -1,0 +1,38 @@
+# Top-level config for `scripts/run.py`. Composed by hydra from the
+# groups under sim/configs/<group>/<name>.yaml.
+defaults:
+  - backend: isaac
+  - robot: ar5_l6_bench
+  - controller: osc
+  - task: reach
+  - recorder: disabled   # YAML 1.1 keywords (null/off/on/yes/no/true/false) break hydra defaults parsing.
+  - _self_
+
+# Env-level knobs (BaseEnvCfg fields).
+num_envs: 1
+env_spacing: 2.5
+decimation: 4
+episode_length_s: 8.0
+reset_joint_noise_scale: 0.02
+
+# Rollout knobs. `max_steps: 0` means "run until the user closes the Isaac
+# window"; BaseEnv resets done envs in-place so episodes roll over cleanly.
+max_steps: 0
+seed: 0
+headless: false
+device: cuda:0
+
+# Action policy for the rollout. "zeros" holds the robot at its default
+# pose through the implicit PD; "random_walk" uniformly samples a delta
+# action each step (good for smoke tests). Override per-task by passing
+# +policy=... on the CLI.
+policy: zeros
+
+hydra:
+  run:
+    dir: ./outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: ./outputs/sweeps/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}
+  job:
+    chdir: false

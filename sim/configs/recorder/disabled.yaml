@@ -1,0 +1,9 @@
+# @package _global_
+recorder:
+  _target_: sim.io.recorder.Recorder
+  sink:
+    _target_: sim.io.recorder.NullSink
+  cfg:
+    _target_: sim.io.recorder.RecorderCfg
+    enabled: false
+    record_every_env: false

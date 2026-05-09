@@ -37,6 +37,7 @@ def test_protocol_structural_conformance():
         device = torch.device("cpu")
         dt = 1 / 60
         robots: dict = {}
+        rigid_bodies: dict = {}
         env_origins = torch.zeros(1, 3)
 
         def step(self): pass
