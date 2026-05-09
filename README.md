@@ -1,4 +1,4 @@
-# dex-tool-rl
+# Workstation simulation
 
 RL simulation workspace for AR5 + Linkerhand L6 robots using IsaacLab/Isaac Sim.
 
