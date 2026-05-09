@@ -4,13 +4,16 @@ Converts sim-agnostic `WorkstationHandle`s from `sim.registry` into
 IsaacLab-native cfgs (`ArticulationCfg`). The registry stays pure (no
 Isaac imports); everything Isaac-specific lives here.
 
-This is the only module in PR #1a that imports `isaaclab`. PR #2 adds a
-matching `sim/backends/mujoco/loaders.py` once component MJCFs are
-authored (see docs/component_mjcf_authoring.md).
+PR #2a change: the OSC gain override that used to live here
+(`control_mode="osc" -> kp=150, kd=8 on the arm role`) is gone.
+`OscController.attach()` now writes the gains at runtime via
+`robot.write_gains(...)`, so the `control_mode` kwarg is deprecated
+and no-ops with a DeprecationWarning. It will be removed in PR #2b.
 """
 
 from __future__ import annotations
 
+import warnings
 from typing import Literal
 
 import isaaclab.sim as sim_utils
@@ -20,20 +23,11 @@ from isaaclab.assets import ArticulationCfg
 from sim.registry import WorkstationHandle
 
 
-# Gains used when `control_mode="osc"` is selected. Applied to the `arm`
-# role only — all other roles keep the handle's default gains.
-# TODO(PR #2): move to component `meta.yaml` as a named `gain_profiles`
-# section; let recipes select a profile. Hardcoded here for parity with
-# the legacy `AR5_L6_*_OSC_CFG` values in sim/assets/robots.py.
-_OSC_ARM_STIFFNESS = 150.0
-_OSC_ARM_DAMPING = 8.0
-
-
 def to_articulation_cfg(
     handle: WorkstationHandle,
     *,
     prim_path: str = "{ENV_REGEX_NS}/Robot",
-    control_mode: Literal["joint", "osc"] = "joint",
+    control_mode: Literal["joint", "osc"] | None = None,
 ) -> ArticulationCfg:
     """Build an `ArticulationCfg` from a composed workstation handle.
 
@@ -51,11 +45,21 @@ def to_articulation_cfg(
         USD prim path for the spawned articulation. Usually
         `{ENV_REGEX_NS}/<Name>`.
     control_mode:
-        `"joint"` keeps the component-declared default gains (high
-        stiffness for direct joint-space control). `"osc"` swaps the
-        arm role to the OSC profile (lower stiffness, applied on top
-        of damping).
+        Deprecated. Previously swapped in a lower-stiffness OSC profile
+        for the arm role. Controllers now own their gain profile and
+        apply it on attach via `robot.write_gains(...)`. Passing this
+        arg emits a DeprecationWarning and has no effect.
     """
+    if control_mode is not None:
+        warnings.warn(
+            "to_articulation_cfg(control_mode=...) is deprecated and has no "
+            "effect. Gains are now applied by the controller on attach "
+            "(sim.controllers.OscController.attach -> robot.write_gains). "
+            "The argument will be removed in PR #2b.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
     actuators: dict[str, ImplicitActuatorCfg] = {}
     for role, actuated in handle.joints.items():
         mimic = handle.mimic_joints.get(role, [])
@@ -67,15 +71,11 @@ def to_articulation_cfg(
         if gains is None:
             # Role has joints but no declared gains — skip the actuator
             # group. Isaac will fall back to its built-in PD defaults;
-            # the component's meta.yaml should declare default_gains to
-            # avoid this.
+            # the component's meta.yaml should declare default_gains.
             continue
 
         kp = gains.stiffness
         kd = gains.damping
-        if control_mode == "osc" and role == "arm":
-            kp = _OSC_ARM_STIFFNESS
-            kd = _OSC_ARM_DAMPING
 
         actuators[role] = ImplicitActuatorCfg(
             joint_names_expr=list(joint_list),
