@@ -58,7 +58,8 @@ class WorkstationHandle:
     joints: dict[str, list[str]]       # role -> ordered actuated joints
     mimic_joints: dict[str, list[str]] # role -> ordered mimic joints
     frames: dict[str, str]             # "role:frame" -> prefixed link name
-    ee_link: str                       # prefixed
+    ee_link: str                       # prefixed — first arm-role's ee (back-compat)
+    ee_links: dict[str, str]           # role -> prefixed ee link (one per arm role)
     base_link: str                     # prefixed
 
     # Merged component + recipe overrides.
@@ -175,6 +176,7 @@ def load(name: str, root: Path | None = None) -> WorkstationHandle:
         mimic_joints={k: list(v) for k, v in (m.get("mimic_joints") or {}).items()},
         frames=dict(m.get("frames") or {}),
         ee_link=str(m.get("ee_link") or ""),
+        ee_links={str(role): str(link) for role, link in (m.get("ee_links") or {}).items()},
         base_link=str(m.get("base_link") or ""),
         default_gains={
             role: Gains(

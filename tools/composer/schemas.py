@@ -384,6 +384,7 @@ class Manifest:
     mimic_joints: dict[str, list[str]]
     frames: dict[str, str]  # frame_name -> prefixed link name (e.g. "ee": "arm_...")
     ee_link: str
+    ee_links: dict[str, str]  # role -> prefixed ee link (one entry per arm role)
     base_link: str
     default_gains: dict[str, DefaultGains]  # role -> merged gains
     gain_profiles: dict[str, dict[str, DefaultGains]]  # role -> profile_name -> gains
@@ -412,6 +413,7 @@ class Manifest:
             "mimic_joints": {role: list(js) for role, js in self.mimic_joints.items()},
             "frames": dict(self.frames),
             "ee_link": self.ee_link,
+            "ee_links": dict(self.ee_links),
             "base_link": self.base_link,
             "default_gains": {
                 role: {"stiffness": g.stiffness, "damping": g.damping}

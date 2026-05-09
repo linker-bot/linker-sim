@@ -28,6 +28,7 @@ def _make_handle(n_arm=7, n_hand=6) -> WorkstationHandle:
         mimic_joints={"arm": [], "hand": []},
         frames={},
         ee_link="arm_tcp",
+        ee_links={"arm": "arm_tcp"},
         base_link="arm_base",
         default_gains={"arm": Gains(1.0, 0.1), "hand": Gains(2.0, 0.2)},
         gain_profiles={},

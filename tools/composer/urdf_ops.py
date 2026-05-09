@@ -384,16 +384,31 @@ def compose_urdf(
 
     # <mujoco> blocks carried through so URDF→MuJoCo loading preserves
     # equality constraints (mimic joints) and compiler hints. If multiple
-    # components ship <mujoco> blocks we concatenate them; a real merge of
-    # `<compiler>` attributes across components is deferred (flagged as an
-    # error below to avoid silent bad merges).
+    # components ship <mujoco> blocks we concatenate them; <compiler>
+    # elements can't be duplicated, so we require them to agree and keep
+    # only the first (happens for bimanual: two identical hand blocks).
     if len(mujoco_blocks) > 1:
-        compilers = [b.find("compiler") for b in mujoco_blocks]
-        if sum(1 for c in compilers if c is not None) > 1:
-            raise SchemaError(
-                "multiple components declare <mujoco><compiler>; merging is "
-                "not implemented — drop all but one or hand-author MJCF"
-            )
+        compilers = [b.find("compiler") for b in mujoco_blocks if b.find("compiler") is not None]
+        if len(compilers) > 1:
+            first_attrib = dict(compilers[0].attrib)
+            for c in compilers[1:]:
+                if dict(c.attrib) != first_attrib:
+                    raise SchemaError(
+                        "multiple components declare <mujoco><compiler> with "
+                        "differing attributes; merge not implemented — drop "
+                        "all but one or hand-author MJCF"
+                    )
+            # Strip <compiler> from every mujoco block except the first
+            # that carried one.
+            seen_compiler = False
+            for b in mujoco_blocks:
+                c = b.find("compiler")
+                if c is None:
+                    continue
+                if not seen_compiler:
+                    seen_compiler = True
+                    continue
+                b.remove(c)
     for b in mujoco_blocks:
         out.append(b)
 

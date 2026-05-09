@@ -25,6 +25,7 @@ if str(REPO_ROOT) not in sys.path:
 _ROBOT_SIDE_TO_WORKSTATION = {
     "left": "ar5_l6_bench",
     "right": "ar5_l6_bench_right",
+    "both": "ar5_l6_bench_bimanual",
 }
 
 
@@ -41,8 +42,8 @@ parser.add_argument(
     type=str,
     default="left",
     choices=["left", "right", "both"],
-    help="Convenience flag: 'left' -> ar5_l6_bench, 'right' -> ar5_l6_bench_right. "
-    "'both' is temporarily unsupported pending a bimanual workstation recipe.",
+    help="Convenience flag: 'left' -> ar5_l6_bench, 'right' -> ar5_l6_bench_right, "
+    "'both' -> ar5_l6_bench_bimanual.",
 )
 parser.add_argument(
     "--reset_interval",
@@ -70,14 +71,6 @@ from sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend  # noqa:
 def _resolve_workstation(args) -> str:
     if args.workstation:
         return args.workstation
-    if args.robot_side == "both":
-        raise SystemExit(
-            "error: --robot_side=both is temporarily unsupported.\n"
-            "A bimanual workstation recipe (ar5_l6_bench_bimanual) is on the "
-            "deferred list; see docs/PR1_PROGRESS.md.\n"
-            "Use --robot_side left/right or pass --workstation <name> "
-            "to run a single-arm variant."
-        )
     return _ROBOT_SIDE_TO_WORKSTATION[args.robot_side]
 
 

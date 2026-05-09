@@ -54,6 +54,8 @@ frames:
   arm:tool0: arm_AR5_5_07L_W4C4A2_tcp
   hand:wrist_mount: hand_lh_hand_base_link
 ee_link: arm_AR5_5_07L_W4C4A2_tcp
+ee_links:
+  arm: arm_AR5_5_07L_W4C4A2_tcp
 base_link: base_workstation_link
 default_gains:
   arm:

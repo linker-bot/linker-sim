@@ -54,9 +54,10 @@ class IsaacBackendCfg:
 
     `workstations` maps a scene-level robot name (the key used in
     `backend.robots[...]`) to a workstation name registered under
-    `assets/workstations/<name>/`. For now single-robot scenes are the
-    only tested path; multi-robot support lands with the bimanual
-    recipe in PR #3.
+    `assets/workstations/<name>/`. One entry — a composed workstation
+    may carry any number of roles (single-arm, bimanual, …); what's
+    not supported is several independent articulations in the same
+    scene.
 
     `rigid_bodies` pre-declares task objects. They get spawned at scene
     construction and are reachable via `backend.rigid_bodies[name]`.
@@ -81,7 +82,12 @@ class IsaacBackendCfg:
 def build_scene_cfg(cfg: IsaacBackendCfg) -> InteractiveSceneCfg:
     """Assemble an `InteractiveSceneCfg` for `cfg.workstations`.
 
-    Restricted to a single robot for PR #2a/b (bimanual is PR #3).
+    One composed workstation (one articulation) per scene. Bimanual is
+    modeled as a single workstation with multiple role keys
+    (`arm_left` / `arm_right` / `hand_left` / `hand_right`) — see
+    `assets/workstations/ar5_l6_bench_bimanual`. Multi-articulation
+    scenes (several independent robots in one env) are not supported;
+    that requires a separate InteractiveScene layout.
     `rigid_bodies` are attached dynamically in `__post_init__` — they
     need per-instance names but the configclass dataclass machinery
     only supports statically-declared fields, so we punt and stash
@@ -90,8 +96,9 @@ def build_scene_cfg(cfg: IsaacBackendCfg) -> InteractiveSceneCfg:
     """
     if len(cfg.workstations) != 1:
         raise NotImplementedError(
-            "Multi-robot scenes require a bimanual workstation recipe "
-            "(deferred to PR #3). Use a single composed workstation for now."
+            "Multi-articulation scenes are not supported. Bimanual "
+            "workstations compose both arms into one articulation — "
+            "use e.g. workstations={'robot': 'ar5_l6_bench_bimanual'}."
         )
     (robot_name, ws_name), = cfg.workstations.items()
     return _SingleRobotSceneCfg(

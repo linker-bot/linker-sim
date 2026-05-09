@@ -127,7 +127,8 @@ Explicit workstation selection:
 python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --workstation ar5_l6_bench
 ```
 
-> `--robot_side both` is temporarily unsupported. It will be restored once a bimanual workstation recipe lands. See [PR1_PROGRESS.md](PR1_PROGRESS.md#deferred-work).
+> Pass `--robot_side both` or `--workstation ar5_l6_bench_bimanual` to
+> spawn the bimanual workstation. See [PR3_PROGRESS.md](PR3_PROGRESS.md).
 
 Multi-env:
 

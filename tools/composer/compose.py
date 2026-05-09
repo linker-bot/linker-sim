@@ -203,12 +203,16 @@ def compose(paths: Paths) -> ComposeResult:
     mimic_joints = {c.role: list(c.mimic_joints) for c in compiled}
 
     # Resolve the end-effector frame from the first component that declares
-    # ee_frame (conventionally the arm role).
+    # ee_frame (conventionally the arm role). For multi-arm workstations we
+    # ALSO surface a per-role map so tasks can address either arm's ee.
     ee_link = ""
+    ee_links: dict[str, str] = {}
     for c in compiled:
         if c.meta.ee_frame:
-            ee_link = c.mount_frames[c.meta.ee_frame]
-            break
+            link = c.mount_frames[c.meta.ee_frame]
+            ee_links[c.role] = link
+            if not ee_link:
+                ee_link = link
 
     base_link = ""
     if recipe.freeze_base:
@@ -266,6 +270,7 @@ def compose(paths: Paths) -> ComposeResult:
         mimic_joints=mimic_joints,
         frames=frames,
         ee_link=ee_link,
+        ee_links=ee_links,
         base_link=base_link,
         default_gains=merged_gains,
         gain_profiles=gain_profiles,
