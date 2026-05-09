@@ -1,0 +1,31 @@
+schema_version: 1
+kind: base
+name: bench_table
+
+# Single variant — the workstation table is mirror-symmetric and ships
+# one mesh set with fixed mount pads for both arms.
+variants:
+  default:
+    vars: {}
+    urdf: variants/default/base.urdf
+    mjcf: variants/default/base.mjcf     # PR #1b will author this
+    meshdir: variants/default/meshes
+
+# The table is rigid; its root link is the table body itself.
+root_link: workstation_link
+
+# Pads welded to the table at the legacy left/right arm positions (offsets
+# preserved from sim/assets/scene_assets.py). Recipes attach an arm's
+# `base_mount` to one of these.
+mount_frames:
+  arm_left_mount:
+    parent: workstation_arm_left_mount
+  arm_right_mount:
+    parent: workstation_arm_right_mount
+  # The camera is currently baked into the base URDF. A future
+  # sensor/workstation_camera component can replace it by dropping these
+  # fixed joints from the base URDF and adding a sensor component here.
+  camera_mount:
+    parent: camera_base_link
+
+# No actuated joints — the base is static.

@@ -1,6 +1,8 @@
 # Installation Guide
 
-This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installed separately, then used to run this repository.
+This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installed **outside this repo** at a shared location; this repo's Python packages (`sim/`, `tools/`) install on top via `pip`.
+
+One Python environment is used end-to-end: the IsaacLab-managed `env_isaaclab`. Composer, validator, registry tools, and runtime all share it.
 
 ## Prerequisites
 
@@ -11,140 +13,196 @@ This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installe
 - `uv` package manager
 - **Python 3.11 exactly** (required by Isaac Sim 5.x; 3.10 and 3.12 will not work)
 
-On Ubuntu 24.04 the system default is Python 3.12, and Python 3.11 is not available from the default apt repos. Use one of:
+### Python 3.11 on Ubuntu 24.04
 
-- **Recommended — let `uv` fetch a standalone 3.11 build (no apt / PPA needed):**
+The system default is Python 3.12, and 3.11 is not available from the default apt repos. Use one of:
 
+- **Recommended — let `uv` fetch a standalone 3.11 build:**
   ```bash
   uv python install 3.11
   ```
-
-- **Alternative — install from the deadsnakes PPA:**
-
+- **Alternative — deadsnakes PPA:**
   ```bash
   sudo add-apt-repository ppa:deadsnakes/ppa
   sudo apt update
   sudo apt install python3.11 python3.11-venv
   ```
 
-Install `uv` (if needed):
+### Install `uv`
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-## 1) Create and activate local venv (uv)
+## 1) Clone IsaacLab (outside this repo)
 
-From repo root, pin the venv to Python 3.11:
-
-```bash
-uv venv .venv --python 3.11
-source .venv/bin/activate
-python --version  # should report 3.11.x
-```
-
-## 2) Install repo-level Python requirements
+IsaacLab is a shared system dependency, not a vendored part of this repo. Put it at a canonical location such as `~/opt/IsaacLab/` so multiple projects can share one install.
 
 ```bash
-uv pip install -r requirements.txt
-```
-
-Note: this `requirements.txt` is only for this repo's extra dependencies. IsaacLab/Isaac Sim packages are managed in the IsaacLab setup step below.
-
-## 3) Install IsaacLab under `docs/`
-
-This repository does not vendor IsaacLab source. Clone IsaacLab locally into `docs/IsaacLab` and check out a released tag that matches Isaac Sim 5.x (pinning avoids surprises from `main`):
-
-```bash
-cd docs
+mkdir -p ~/opt
+cd ~/opt
 git clone https://github.com/isaac-sim/IsaacLab.git
 cd IsaacLab
-git checkout v2.3.2
-./isaaclab.sh --help
+git checkout v2.3.2     # pin to a tag matching Isaac Sim 5.x
 ```
 
-Recommended flow (uv environment managed by IsaacLab tooling):
+> **Do not clone IsaacLab into this repo.** Earlier versions of this guide put it under `docs/IsaacLab/`; that convention is retired. `docs/` is for documentation only.
+
+## 2) Create the IsaacLab venv + install Isaac Sim + Lab extensions
+
+Run these from `~/opt/IsaacLab/` (wherever you cloned it):
 
 ```bash
-# 3a) Create the IsaacLab-managed uv environment (Python 3.11)
+# 2a) Create the IsaacLab uv env (Python 3.11). Creates ./env_isaaclab/
 ./isaaclab.sh -u
 
-# 3b) Activate it so subsequent `uv pip` calls target the right env
+# 2b) Activate it. All subsequent installs target this env.
 source env_isaaclab/bin/activate        # bash/zsh
 # source env_isaaclab/bin/activate.fish # fish
 
-# 3c) Install Isaac Sim 5.0 into the env BEFORE running `-i`.
-# Isaac Lab's `-i` step installs the Lab extensions, but it assumes
-# the `isaacsim` package is already present in the environment.
+# 2c) Install Isaac Sim 5.0 BEFORE running `-i`.
+# Isaac Lab's `-i` step assumes the `isaacsim` package is already present.
 uv pip install 'isaacsim[all,extscache]==5.0.0' \
     --extra-index-url https://pypi.nvidia.com
 
-# 3d) Preempt a known flatdict build failure (flatdict 4.0.1 does not
+# 2d) Preempt a known flatdict build failure (flatdict 4.0.1 does not
 # declare pkg_resources as a build dep, which modern setuptools 80+
-# no longer exposes implicitly). Install it first without build isolation.
+# no longer exposes implicitly).
 uv pip install setuptools
 uv pip install flatdict==4.0.1 --no-build-isolation
 
-# 3e) Now install Isaac Lab extensions + RL extras
+# 2e) Now install Isaac Lab extensions + RL extras
 ./isaaclab.sh -i
 ```
 
-Key commands from IsaacLab script usage:
+IsaacLab scripts of note:
 
-- `./isaaclab.sh -u`: create IsaacLab uv environment
-- `./isaaclab.sh -i`: install IsaacLab extensions + RL extras (requires `isaacsim` already installed)
-- `./isaaclab.sh -p <script.py ...>`: run python with IsaacLab runtime context
+- `./isaaclab.sh -u`: create IsaacLab uv env (`env_isaaclab/`)
+- `./isaaclab.sh -i`: install IsaacLab extensions (requires `isaacsim` already present in the active env)
+- `./isaaclab.sh -p <script.py …>`: run Python with IsaacLab runtime context
 
-To run this repo's scripts you must have the IsaacLab env active (`source docs/IsaacLab/env_isaaclab/bin/activate[.fish]`), or invoke scripts via `./docs/IsaacLab/isaaclab.sh -p <script.py ...>`.
+## 3) Install this repo's packages into the same env
 
-## 4) Run this repository OSC smoke test (single and multi-robot)
-
-From repository root, run one of the OSC smoke-test modes:
+From this repo's root, with `env_isaaclab` still activated:
 
 ```bash
+cd /path/to/dex-tool-rl
+uv pip install -e '.[tools]'          # composer / validator / registry
+# Or: `.[all]` once you want MJCF tooling (PR #1b, pulls mujoco).
+```
+
+This installs `sim/` and `tools/` into the active env (`env_isaaclab`), pulls `pyyaml` for the composer, and registers the project for editable imports so `from sim.registry import load` works without `sys.path` hacks.
+
+Optional extras:
+
+- `.[tools]` — composer + validator + registry (CPU-safe; no Isaac)
+- `.[mujoco]` — the above plus `mujoco` (for MJCF authoring/validation)
+- `.[isaac]` — Isaac Sim + flatdict (only needed if you're *not* installing IsaacLab's Isaac Sim from step 2c; most users skip this)
+- `.[dev]` — `ruff`, `pytest`
+- `.[all]` — `tools` + `mujoco` + `isaac`
+
+For daily work with IsaacLab already installed, `.[tools]` is usually enough.
+
+## 4) Verify — OSC smoke test
+
+With `env_isaaclab` activated:
+
+```bash
+cd /path/to/dex-tool-rl
 python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side left
 ```
 
-Right-arm mode:
+Right-arm variant:
 
 ```bash
 python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side right
 ```
 
-Dual-arm mode:
+Explicit workstation selection:
 
 ```bash
-python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side both
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --workstation ar5_l6_bench
 ```
 
-Multi-env mode: 
+> `--robot_side both` is temporarily unsupported. It will be restored once a bimanual workstation recipe lands. See [PR1_PROGRESS.md](PR1_PROGRESS.md#deferred-work).
+
+Multi-env:
 
 ```bash
 python sim/envs/test_osc/spawn_osc_scene.py --num_envs 16
 ```
 
-## 5) Tune OSC gains (optional, recommended)
+## 5) Tune OSC gains (optional)
 
 ```bash
 python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --robot_side left
 ```
 
-This creates `sim/envs/test_osc/osc_gains.json` on first run and hot-reloads updates while running.
+Creates `sim/envs/test_osc/osc_gains.json` on first run and hot-reloads while running.
 
+## 6) Compose and validate workstations
+
+The composer and validator don't need Isaac Sim — just `.[tools]`.
+
+```bash
+# Recompose one workstation after editing its recipe / a referenced component
+python -m tools.composer.compose assets/workstations/ar5_l6_bench
+
+# Recompose everything
+for ws in assets/workstations/*/; do python -m tools.composer.compose "$ws"; done
+
+# Validate (8 checks: manifest hashes, kinematic structure, mesh resolution, composer drift)
+python tools/validate_workstation.py assets/workstations/ar5_l6_bench
+
+# List composed workstations
+python tools/registry_show.py
+
+# Dump the registry handle for one workstation
+python tools/registry_show.py ar5_l6_bench
+
+# CI drift check (fails if committed artifacts are stale)
+bash tools/ci/check_drift.sh
+```
+
+## Daily activation
+
+After setup, a typical day looks like:
+
+```bash
+source ~/opt/IsaacLab/env_isaaclab/bin/activate
+cd /path/to/dex-tool-rl
+# ... work ...
+```
+
+Alias it if you want:
+
+```bash
+alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/dex-tool-rl'
+```
 
 ## Troubleshooting
 
-- `ModuleNotFoundError: isaaclab`
-  - Ensure IsaacLab setup has been completed (`-u` and `-i`), and you are using the intended environment.
-- `FileNotFoundError: Could not find the isaac-sim directory ... _isaac_sim` during `./isaaclab.sh -i`
-  - The `isaacsim` pip package was not installed before `-i`. Install it first: `uv pip install 'isaacsim[all,extscache]==5.0.0' --extra-index-url https://pypi.nvidia.com`, then re-run `-i`.
-- `Failed to build flatdict==4.0.1` / `ModuleNotFoundError: No module named 'pkg_resources'`
-  - Install flatdict with build isolation disabled: `uv pip install setuptools && uv pip install flatdict==4.0.1 --no-build-isolation`, then re-run `-i`.
-- Isaac Sim import errors about Python version / ABI mismatch
-  - Confirm your venv Python is 3.11 (`python --version`). Isaac Sim 5.x will not load under 3.10 or 3.12.
-- Isaac Sim window does not launch or crashes early
-  - Verify NVIDIA driver/GPU compatibility and system graphics stack.
-- Wrong Python interpreter in shell
-  - Check `which python` and re-activate your virtual environment.
-- Asset path errors
-  - Run commands from repository root so relative paths resolve correctly.
+- **`ModuleNotFoundError: isaaclab`** — Ensure IsaacLab setup (`-u` and `-i`) completed and `env_isaaclab` is active. `which python` should point inside `env_isaaclab/bin/`.
+- **`FileNotFoundError: Could not find the isaac-sim directory … _isaac_sim`** during `./isaaclab.sh -i` — `isaacsim` wasn't installed before `-i`. Install it first: `uv pip install 'isaacsim[all,extscache]==5.0.0' --extra-index-url https://pypi.nvidia.com`, then re-run `-i`.
+- **`Failed to build flatdict==4.0.1` / `ModuleNotFoundError: No module named 'pkg_resources'`** — Install flatdict with build isolation disabled: `uv pip install setuptools && uv pip install flatdict==4.0.1 --no-build-isolation`, then re-run `-i`.
+- **Isaac Sim import errors about Python version / ABI mismatch** — Confirm your venv Python is 3.11 (`python --version`). Isaac Sim 5.x does not load under 3.10 or 3.12.
+- **`ModuleNotFoundError: sim` or `tools`** — You haven't run `uv pip install -e '.[tools]'` in the active env, or the wrong env is active.
+- **Isaac Sim window doesn't launch / crashes early** — Verify NVIDIA driver/GPU compatibility and system graphics stack.
+- **Wrong Python interpreter in shell** — `which python` and re-activate the intended venv.
+- **Asset path errors** — Composed workstation URDFs use relative paths like `../../components/…/meshes/…`. Run commands from this repo's root so paths resolve correctly, or pass absolute paths.
+
+## Migrating from the old layout
+
+If you previously had IsaacLab cloned under `docs/IsaacLab/` plus a repo-root `.venv/`:
+
+```bash
+# 1. Remove the old repo-local venv (no longer used)
+rm -rf .venv
+
+# 2. Move IsaacLab clone out of the repo (or re-clone outside)
+mv docs/IsaacLab ~/opt/IsaacLab
+# ... env_isaaclab paths inside env_isaaclab/bin/activate may hold the old
+# prefix. Simplest fix is to delete env_isaaclab and re-run `./isaaclab.sh -u`.
+
+# 3. Proceed with step 2 above, then 3 (install this repo's packages).
+```

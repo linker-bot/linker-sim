@@ -1,4 +1,0 @@
-# Project-level dependencies outside IsaacLab core.
-# Keep this file minimal. IsaacLab/Isaac Sim dependencies are installed via IsaacLab tooling.
-
-# Currently no extra runtime packages are required for sim/envs/test scripts.

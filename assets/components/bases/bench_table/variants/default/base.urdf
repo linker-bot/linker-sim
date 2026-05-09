@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot name="workstation">
+  <link name="workstation_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/workstation.STL" />
+      </geometry>
+      <material name="workstation_gray">
+        <color rgba="0.6 0.6 0.6 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/workstation.STL" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="50.0" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+  </link>
+  <link name="camera_base_link">
+    <inertial>
+      <origin xyz="0.0538773695271655 0.0404431717089871 0.0338436903808578" rpy="0 0 0" />
+      <mass value="0.120253078965696" />
+      <inertia ixx="0.00024086634809874" ixy="1.11484097335586E-05" ixz="3.07915341770146E-05" iyy="0.000340317013404989" iyz="-5.88336477049719E-05" izz="0.000187914824387855" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/camera_base_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/camera_base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="cameraBase" type="fixed">
+    <origin xyz="0.0335 0.67 1.2974" rpy="-1.5708 0 -1.5708" />
+    <parent link="workstation_link" />
+    <child link="camera_base_link" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="camera">
+    <inertial>
+      <origin xyz="0.435583906706681 -0.114517909806556 -0.00087379797028906" rpy="0 0 0" />
+      <mass value="0.170230158191785" />
+      <inertia ixx="0.000388607098441677" ixy="-3.21389374232659E-06" ixz="1.01075980515721E-06" iyy="0.000353185511381015" iyz="-0.000100865226288639" izz="6.42979907249093E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/camera.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/camera.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="cameraJoint" type="fixed">
+    <origin xyz="0.0801999999999972 0.193139853702623 -0.275851476149329" rpy="-1.26599037580869 -0.643554017997773 -1.5707963267949" />
+    <parent link="camera_base_link" />
+    <child link="camera" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="workstation_arm_left_mount" />
+  <joint name="weld_workstation_arm_left_mount" type="fixed">
+    <origin xyz="0.0637 0.719 1.267" rpy="0 1.57079633 1.57079633" />
+    <parent link="workstation_link" />
+    <child link="workstation_arm_left_mount" />
+  </joint>
+  <link name="workstation_arm_right_mount" />
+  <joint name="weld_workstation_arm_right_mount" type="fixed">
+    <origin xyz="0.0637 0.536 1.267" rpy="0 1.57079633 -1.57079633" />
+    <parent link="workstation_link" />
+    <child link="workstation_arm_right_mount" />
+  </joint>
+</robot>

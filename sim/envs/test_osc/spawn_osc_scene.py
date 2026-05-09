@@ -10,9 +10,31 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-parser = argparse.ArgumentParser(description="Spawn OSC test scene with AR5_L6 robot(s) and workspace table.")
+# Map the legacy `--robot_side` flag onto workstation names. "both" is
+# flagged until a bimanual workstation recipe lands (PR1_PROGRESS.md §
+# Deferred).
+_ROBOT_SIDE_TO_WORKSTATION = {
+    "left": "ar5_l6_bench",
+    "right": "ar5_l6_bench_right",
+}
+
+
+parser = argparse.ArgumentParser(description="Spawn OSC test scene over a composed workstation.")
 parser.add_argument("--num_envs", type=int, default=1)
-parser.add_argument("--robot_side", type=str, default="left", choices=["left", "right", "both"])
+parser.add_argument(
+    "--workstation",
+    type=str,
+    default=None,
+    help="Composed workstation name (e.g. 'ar5_l6_bench'). Overrides --robot_side.",
+)
+parser.add_argument(
+    "--robot_side",
+    type=str,
+    default="left",
+    choices=["left", "right", "both"],
+    help="Convenience flag: 'left' -> ar5_l6_bench, 'right' -> ar5_l6_bench_right. "
+    "'both' is temporarily unsupported pending a bimanual workstation recipe.",
+)
 parser.add_argument(
     "--reset_interval",
     type=int,
@@ -31,12 +53,25 @@ args_cli = parser.parse_args()
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
-import torch
-import isaaclab.sim as sim_utils
-from isaaclab.scene import InteractiveScene
+import torch  # noqa: E402
+import isaaclab.sim as sim_utils  # noqa: E402
+from isaaclab.scene import InteractiveScene  # noqa: E402
 
-from sim.assets import make_ar5_l6_robot_cfg
-from sim.envs.test_osc.scene_cfg import TestOscDualSceneCfg, TestOscSceneCfg
+from sim.envs.test_osc.scene_cfg import OscWorkstationSceneCfg  # noqa: E402
+
+
+def _resolve_workstation(args) -> str:
+    if args.workstation:
+        return args.workstation
+    if args.robot_side == "both":
+        raise SystemExit(
+            "error: --robot_side=both is temporarily unsupported.\n"
+            "A bimanual workstation recipe (ar5_l6_bench_bimanual) is on the "
+            "PR #1 deferred list; see docs/PR1_PROGRESS.md.\n"
+            "Use --robot_side left/right or pass --workstation <name> "
+            "to run a single-arm variant."
+        )
+    return _ROBOT_SIDE_TO_WORKSTATION[args.robot_side]
 
 
 def run_simulator(
@@ -84,27 +119,24 @@ def run_simulator(
 
 
 def main() -> None:
+    workstation_name = _resolve_workstation(args_cli)
     sim_cfg = sim_utils.SimulationCfg(device=args_cli.device)
     sim = sim_utils.SimulationContext(sim_cfg)
     sim.set_camera_view(eye=[1.8, -1.4, 1.2], target=[0.4, 0.0, 0.4])
 
-    if args_cli.robot_side == "both":
-        scene_cfg = TestOscDualSceneCfg(num_envs=args_cli.num_envs, env_spacing=2.5)
-        robot_names = ["robot_left", "robot_right"]
-    else:
-        scene_cfg = TestOscSceneCfg(num_envs=args_cli.num_envs, env_spacing=2.5)
-        scene_cfg.robot = make_ar5_l6_robot_cfg(
-            side=args_cli.robot_side, prim_path="{ENV_REGEX_NS}/Robot", control_mode="osc"
-        )
-        robot_names = ["robot"]
-
+    scene_cfg = OscWorkstationSceneCfg(
+        num_envs=args_cli.num_envs,
+        env_spacing=2.5,
+        workstation_name=workstation_name,
+        control_mode="osc",
+    )
     scene = InteractiveScene(scene_cfg)
     sim.reset()
-    print("[INFO] OSC test scene setup complete.")
+    print(f"[INFO] OSC test scene setup complete for workstation {workstation_name!r}.")
     run_simulator(
         sim,
         scene,
-        robot_names=robot_names,
+        robot_names=["robot"],
         reset_interval=max(1, args_cli.reset_interval),
         reset_envs_per_event=max(0, args_cli.reset_envs_per_event),
     )

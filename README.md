@@ -24,9 +24,9 @@ This repository is in active setup/prototyping stage. The default control pipeli
 
 Use the setup guide in `docs/installation.md` for:
 
-- `uv` + `venv` environment setup
-- dependency installation via `requirements.txt`
-- IsaacLab clone/setup and integration
+- `uv` + `env_isaaclab` environment setup (single shared env)
+- IsaacLab clone at a canonical external location (e.g. `~/opt/IsaacLab/`)
+- Installing this repo's packages via `uv pip install -e '.[tools]'`
 - first-run troubleshooting
 
 ## Quick start
@@ -103,4 +103,4 @@ Expected behavior:
 
 - Keep generated artifacts out of git (`__pycache__`, virtual envs, logs).
 - Put feature work on dedicated branches and commit before switching branches.
-- Keep local third-party checkouts (for example `docs/IsaacLab`) out of this repo history.
+- IsaacLab lives outside this repo (e.g. `~/opt/IsaacLab/`) and is shared across projects; see [docs/installation.md](docs/installation.md).

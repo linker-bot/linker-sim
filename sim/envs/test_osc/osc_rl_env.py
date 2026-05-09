@@ -1,3 +1,15 @@
+"""OSC RL env over a composed workstation.
+
+PR #1a rewires this to drive the composed workstation via the registry
+instead of the legacy `make_ar5_l6_robot_cfg` path. Joint and body names
+come from `sim.registry.load(cfg.workstation_name)` — no hardcoded
+regexes. One articulation per env; `workstation_name` selects left vs
+right variant (or a future bimanual variant).
+
+Legacy `--robot_side both` (dual articulation) is temporarily unsupported
+and will return with a bimanual workstation recipe. See PR1_PROGRESS.md.
+"""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -12,8 +24,8 @@ from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass
 
-from sim.assets import make_ar5_l6_robot_cfg
-from sim.envs.test_osc.scene_cfg import TestOscDualSceneCfg, TestOscSceneCfg
+from sim.envs.test_osc.scene_cfg import OscWorkstationSceneCfg
+from sim.registry import WorkstationHandle, load as load_workstation
 
 
 @configclass
@@ -26,8 +38,11 @@ class TestOscRLEnvCfg(DirectRLEnvCfg):
     observation_space: int = 1
 
     sim: sim_utils.SimulationCfg = sim_utils.SimulationCfg(dt=1.0 / 120.0, render_interval=4)
-    scene: InteractiveSceneCfg = TestOscSceneCfg(num_envs=64, env_spacing=2.5)
-    robot_side: Literal["left", "right", "both"] = "left"
+    scene: InteractiveSceneCfg = OscWorkstationSceneCfg(num_envs=64, env_spacing=2.5)
+
+    # Name of the workstation to spawn. Must exist under
+    # `assets/workstations/<name>/` with a composed `workstation.urdf`.
+    workstation_name: str = "ar5_l6_bench"
 
     ee_frame: Literal["tcp", "wrist"] = "tcp"
     arm_action_scale_pos: float = 0.05
@@ -50,21 +65,21 @@ class TestOscRLEnv(DirectRLEnv):
     cfg: TestOscRLEnvCfg
 
     def __init__(self, cfg: TestOscRLEnvCfg, render_mode: str | None = None, **kwargs):
-        side = cfg.robot_side.lower()
-        if side == "both":
-            cfg.scene = TestOscDualSceneCfg(num_envs=cfg.scene.num_envs, env_spacing=cfg.scene.env_spacing)
-            self._robot_names = ["robot_left", "robot_right"]
-        else:
-            cfg.scene = TestOscSceneCfg(num_envs=cfg.scene.num_envs, env_spacing=cfg.scene.env_spacing)
-            cfg.scene.robot = make_ar5_l6_robot_cfg(side=side, prim_path="{ENV_REGEX_NS}/Robot", control_mode="osc")
-            self._robot_names = ["robot"]
-        self._robot_side = side
+        cfg.scene = OscWorkstationSceneCfg(
+            num_envs=cfg.scene.num_envs,
+            env_spacing=cfg.scene.env_spacing,
+            workstation_name=cfg.workstation_name,
+            control_mode="osc",
+        )
+        self._robot_names = ["robot"]
+        self._handle: WorkstationHandle = load_workstation(cfg.workstation_name)
         super().__init__(cfg=cfg, render_mode=render_mode, **kwargs)
 
     def _setup_scene(self):
         pass
 
     def _configure_gym_env_spaces(self):
+        handle = self._handle
         self._robots = [self.scene[name] for name in self._robot_names]
         self._arm_joint_ids: list[torch.Tensor] = []
         self._hand_joint_ids: list[torch.Tensor] = []
@@ -74,21 +89,37 @@ class TestOscRLEnv(DirectRLEnv):
         self._arm_action_dims: list[int] = []
         self._hand_action_dims: list[int] = []
         self._joint_dims: list[int] = []
-        self._sides: list[str] = []
+
+        # Joint and body names come from the workstation manifest. Arm
+        # ordering follows the component's meta.actuated_joints (composer
+        # preserves it in manifest.joints). Hand joint list includes mimic
+        # joints so Isaac's actuator drives apply to all 11; the URDF
+        # <mimic> tag constrains the 5 coupled ones at solve time.
+        arm_joint_names = list(handle.joints.get("arm", []))
+        hand_joint_names = list(handle.joints.get("hand", [])) + list(
+            handle.mimic_joints.get("hand", [])
+        )
+        if not arm_joint_names:
+            raise ValueError(
+                f"workstation {handle.name!r} has no 'arm' role — cannot run "
+                f"TestOscRLEnv against it (need at least one arm role)"
+            )
+
+        # EE frame selection. Manifest's ee_link is the arm's tool0 (TCP);
+        # the legacy env also supported a "wrist" mode using link7 for
+        # comparison. Derive the wrist link from the ee link by stripping
+        # the _tcp suffix and appending _link7 — works for AR5 naming,
+        # error-surfaced otherwise.
+        if self.cfg.ee_frame == "tcp":
+            ee_name = handle.ee_link
+        elif self.cfg.ee_frame == "wrist":
+            ee_name = _tcp_to_wrist(handle.ee_link)
+        else:
+            raise ValueError(f"cfg.ee_frame must be 'tcp' or 'wrist', got {self.cfg.ee_frame!r}")
 
         for robot in self._robots:
-            left_side = any(name.startswith("AR5_5_07L_") for name in robot.joint_names)
-            side = "left" if left_side else "right"
-            self._sides.append(side)
-
-            if side == "left":
-                arm_ids, _ = robot.find_joints("AR5_5_07L_W4C4A2_joint_[1-7]")
-                hand_ids, _ = robot.find_joints("lh_.*")
-                ee_name = "AR5_5_07L_W4C4A2_tcp" if self.cfg.ee_frame == "tcp" else "AR5_5_07L_W4C4A2_link7"
-            else:
-                arm_ids, _ = robot.find_joints("AR5_5_07R_W4C4A2_joint_[1-7]")
-                hand_ids, _ = robot.find_joints("rh_.*")
-                ee_name = "AR5_5_07R_W4C4A2_tcp" if self.cfg.ee_frame == "tcp" else "AR5_5_07R_W4C4A2_link7"
+            arm_ids, _ = robot.find_joints(arm_joint_names)
+            hand_ids, _ = robot.find_joints(hand_joint_names)
             body_ids, _ = robot.find_bodies(ee_name)
             if len(body_ids) != 1:
                 raise ValueError(f"Expected one body for ee frame '{ee_name}', found {len(body_ids)}")
@@ -239,3 +270,20 @@ class TestOscRLEnv(DirectRLEnv):
         ee_vel_b[:, 0:3] = math_utils.quat_apply_inverse(robot.data.root_quat_w, relative_vel_w[:, 0:3])
         ee_vel_b[:, 3:6] = math_utils.quat_apply_inverse(robot.data.root_quat_w, relative_vel_w[:, 3:6])
         return ee_vel_b
+
+
+def _tcp_to_wrist(ee_link: str) -> str:
+    """Derive the wrist-link name from the TCP link name for AR5-style naming.
+
+    Component names follow `..._tcp` for the tool-center-point and
+    `..._link7` for the wrist. The registry surfaces the TCP as ee_link;
+    the legacy env allowed picking the wrist for comparison. Works for
+    AR5 components; fails loudly for components that don't follow this
+    convention so the mismatch surfaces at env setup instead of deeper.
+    """
+    if ee_link.endswith("_tcp"):
+        return ee_link[: -len("_tcp")] + "_link7"
+    raise ValueError(
+        f"cannot derive wrist link from ee_link={ee_link!r}: expected suffix '_tcp'. "
+        f"Set cfg.ee_frame='tcp' or extend _tcp_to_wrist for this component naming."
+    )

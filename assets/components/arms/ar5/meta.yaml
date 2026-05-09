@@ -1,0 +1,48 @@
+schema_version: 1
+kind: arm
+name: ar5
+drive: position
+
+# Two mirrored variants with pre-baked mesh sets. The composer substitutes
+# {V} -> L or R in every link/joint name derived from templates below.
+variants:
+  left:
+    vars: {V: L}
+    urdf: variants/left/arm.urdf
+    mjcf: variants/left/arm.mjcf        # PR #1b will author this
+    meshdir: variants/left/meshes
+  right:
+    vars: {V: R}
+    urdf: variants/right/arm.urdf
+    mjcf: variants/right/arm.mjcf
+    meshdir: variants/right/meshes
+
+root_link: "AR5_5_07{V}_W4C4A2_base"
+
+# Mount frames this component exposes.
+#   base_mount — bolted to the parent surface; composer's freeze_base /
+#                recipe mounts attach this to the workstation's pad.
+#   tool0      — the tool-center-point used as the end-effector for OSC.
+mount_frames:
+  base_mount:
+    parent: "AR5_5_07{V}_W4C4A2_base"
+  tool0:
+    parent: "AR5_5_07{V}_W4C4A2_tcp"
+
+ee_frame: tool0
+
+actuated_joints:
+  - "AR5_5_07{V}_W4C4A2_joint_1"
+  - "AR5_5_07{V}_W4C4A2_joint_2"
+  - "AR5_5_07{V}_W4C4A2_joint_3"
+  - "AR5_5_07{V}_W4C4A2_joint_4"
+  - "AR5_5_07{V}_W4C4A2_joint_5"
+  - "AR5_5_07{V}_W4C4A2_joint_6"
+  - "AR5_5_07{V}_W4C4A2_joint_7"
+
+# PhysX implicit-actuator defaults from sim/assets/robots.py (legacy "joint"
+# control mode). Use an OSC profile via recipe physics_overrides when
+# switching to end-effector control.
+default_gains:
+  stiffness: 1000.0
+  damping: 4.0

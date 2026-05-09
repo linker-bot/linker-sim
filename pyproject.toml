@@ -1,0 +1,80 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dex-tool-rl"
+version = "0.1.0"
+description = "Multi-robot, multi-sim RL simulation backbone (Isaac Sim + MuJoCo)."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+# No root-level runtime dependencies. Workflows (tools / mujoco / isaac)
+# install their own subsets — see [project.optional-dependencies]. A
+# CI runner that only validates asset composition needs `[tools]`, nothing
+# more.
+
+[project.optional-dependencies]
+# Composer, validator, registry CLI. Stdlib + pyyaml. Safe on any Python
+# 3.11 env without a GPU.
+tools = [
+    "pyyaml>=6.0",
+]
+
+# MJCF authoring + validation (PR #1b). Pulls MuJoCo on top of [tools].
+mujoco = [
+    "dex-tool-rl[tools]",
+    "mujoco>=3.1",
+]
+
+# Isaac Sim 5 + IsaacLab extensions. Isaac Sim wheels come from NVIDIA's
+# pypi index (see [[tool.uv.index]] below). IsaacLab's own extensions
+# (isaaclab, isaaclab_assets, ...) are installed separately via
+# `./isaaclab.sh -i` from the IsaacLab clone — see docs/installation.md.
+isaac = [
+    "dex-tool-rl[tools]",
+    "isaacsim[all,extscache]==5.0.0",
+    # flatdict 4.0.1 lacks a pkg_resources build dep declaration and
+    # modern setuptools no longer exposes it implicitly. Pinned here;
+    # install with `--no-build-isolation` per docs/installation.md.
+    "flatdict==4.0.1",
+]
+
+dev = [
+    "ruff>=0.6",
+    "pytest>=8.0",
+]
+
+# Convenience: everything except dev tools.
+all = [
+    "dex-tool-rl[tools,mujoco,isaac]",
+]
+
+# --------------------------- uv configuration ----------------------------- #
+# NVIDIA's pypi hosts the isaacsim wheels. uv resolves isaacsim from this
+# index when [isaac] is active; other packages continue to resolve from
+# the default index.
+
+[[tool.uv.index]]
+name = "nvidia"
+url = "https://pypi.nvidia.com"
+explicit = true
+
+[tool.uv.sources]
+isaacsim = { index = "nvidia" }
+
+# ----------------------------- hatch packaging ---------------------------- #
+
+[tool.hatch.build.targets.wheel]
+packages = ["sim", "tools"]
+
+# ----------------------------- ruff -------------------------------------- #
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    "E501",  # line length handled by formatter
+]

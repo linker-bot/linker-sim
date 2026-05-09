@@ -1,6 +1,6 @@
-# Keep optional local IsaacLab clones out of this repo history.
+# Safety net: catches an accidental IsaacLab clone at the repo root.
+# The documented location is outside the repo (see docs/installation.md).
 IsaacLab/
-docs/IsaacLab/
 
 # Python bytecode and caches.
 __pycache__/

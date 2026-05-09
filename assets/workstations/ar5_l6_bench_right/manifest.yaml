@@ -1,0 +1,64 @@
+schema_version: 1
+name: ar5_l6_bench_right
+composer_version: 0.1.0
+recipe_sha256: 9d4d4981d3d6b36c6f7d103b27927447cea3d0b60f84876e5846405d72feee8b
+components:
+  base:
+    name: bases/bench_table
+    variant: default
+    sha256: 8c54549310f5027c637fe51445eafee7a7e0ac927beffb1d6f3f3fdf8870bb05
+  arm:
+    name: arms/ar5
+    variant: right
+    sha256: a9a159538652f635c33c1c53af925acb5705727f61157107cbc0bc24be474f5e
+  hand:
+    name: hands/linkerhand_l6
+    variant: right
+    sha256: 79849d127dcad1038ae958ae06151a64bad2d2a8a39c848387d9b3b87d76eef3
+artifacts:
+  urdf: workstation.urdf
+  mjcf: null
+  urdf_sha256: 403ef69d6faeadd7877e5315152534ff9ebc3f6067ef20b221f16fbb9941a860
+  mjcf_sha256: null
+joints:
+  base: []
+  arm:
+  - arm_AR5_5_07R_W4C4A2_joint_1
+  - arm_AR5_5_07R_W4C4A2_joint_2
+  - arm_AR5_5_07R_W4C4A2_joint_3
+  - arm_AR5_5_07R_W4C4A2_joint_4
+  - arm_AR5_5_07R_W4C4A2_joint_5
+  - arm_AR5_5_07R_W4C4A2_joint_6
+  - arm_AR5_5_07R_W4C4A2_joint_7
+  hand:
+  - hand_rh_thumb_cmc_roll
+  - hand_rh_thumb_cmc_pitch
+  - hand_rh_index_mcp_pitch
+  - hand_rh_middle_mcp_pitch
+  - hand_rh_ring_mcp_pitch
+  - hand_rh_pinky_mcp_pitch
+mimic_joints:
+  base: []
+  arm: []
+  hand:
+  - hand_rh_thumb_dip
+  - hand_rh_index_dip
+  - hand_rh_middle_dip
+  - hand_rh_ring_dip
+  - hand_rh_pinky_dip
+frames:
+  base:arm_left_mount: base_workstation_arm_left_mount
+  base:arm_right_mount: base_workstation_arm_right_mount
+  base:camera_mount: base_camera_base_link
+  arm:base_mount: arm_AR5_5_07R_W4C4A2_base
+  arm:tool0: arm_AR5_5_07R_W4C4A2_tcp
+  hand:wrist_mount: hand_rh_hand_base_link
+ee_link: arm_AR5_5_07R_W4C4A2_tcp
+base_link: base_workstation_link
+default_gains:
+  arm:
+    stiffness: 1000.0
+    damping: 4.0
+  hand:
+    stiffness: 20.0
+    damping: 2.0
