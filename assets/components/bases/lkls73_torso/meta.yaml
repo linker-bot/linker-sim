@@ -1,0 +1,29 @@
+schema_version: 1
+kind: base
+name: lkls73_torso
+
+# Single variant — the torso ships one mesh set with fixed mount pads for
+# both arms baked at the L1_Joint / R1_Joint origins from the source URDF
+# (lkls73_i1_dual_arm_description).
+variants:
+  default:
+    vars: {}
+    urdf: variants/default/base.urdf
+    mjcf: variants/default/base.mjcf     # PR #1b will author this
+    meshdir: variants/default/meshes
+
+root_link: torso_root
+
+# Mount pads placed at the shoulder-joint origins in the source URDF:
+#   arm_left_mount  -> L1_Joint origin: (0, +0.164, 0)
+#   arm_right_mount -> R1_Joint origin: (3.32e-5, -0.164, 0)
+# Arms attach their zero-mass {V}_arm_root with identity xyz/rpy; the arm
+# URDF's first revolute (L1_Joint / R1_Joint) then recovers the original
+# kinematics (origin = [0, 0, 0] relative to arm_root).
+mount_frames:
+  arm_left_mount:
+    parent: arm_left_mount
+  arm_right_mount:
+    parent: arm_right_mount
+
+# No actuated joints — the torso is static.

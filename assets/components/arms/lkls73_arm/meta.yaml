@@ -1,0 +1,68 @@
+schema_version: 1
+kind: arm
+name: lkls73_arm
+drive: position
+
+# Two mirrored variants derived from the lkls73_i1_dual_arm_description
+# package (source robot name A7V2_50_4.27). Each variant URDF keeps the
+# source's literal L1..L8 / R1..R8 link names; the composer prefixes them
+# with <role>_ per recipe. The `{V}` placeholder expands to L / R in
+# meta.yaml fields.
+variants:
+  left:
+    vars: {V: L}
+    urdf: variants/left/arm.urdf
+    mjcf: variants/left/arm.mjcf        # PR #1b will author this
+    meshdir: variants/left/meshes
+  right:
+    vars: {V: R}
+    urdf: variants/right/arm.urdf
+    mjcf: variants/right/arm.mjcf
+    meshdir: variants/right/meshes
+
+# Zero-mass virtual link authored in each variant URDF. It takes the
+# place of the original source URDF's `base_link -> L1_Joint -> L1_Link`
+# direct connection: mounts in the recipe are fixed, so the first
+# revolute joint (L1/R1) must live inside the arm component. The
+# virtual root hosts that first revolute joint and is itself attached
+# to the torso via a fixed mount joint emitted by the composer.
+root_link: "{V}_arm_root"
+
+# Mount frames this component exposes.
+#   base_mount — the arm's virtual root; welded to torso.arm_{side}_mount.
+#   tool0      — the flange frame ({V}8_Link in the source URDF). Hands
+#                attach here. L8/R8 is a fixed 4.55 cm offset below L7/R7
+#                and carries no actual geometry of its own.
+mount_frames:
+  base_mount:
+    parent: "{V}_arm_root"
+  tool0:
+    parent: "{V}8_Link"
+
+ee_frame: tool0
+
+actuated_joints:
+  - "{V}1_Joint"
+  - "{V}2_Joint"
+  - "{V}3_Joint"
+  - "{V}4_Joint"
+  - "{V}5_Joint"
+  - "{V}6_Joint"
+  - "{V}7_Joint"
+
+# Match AR5's two-profile setup so the OSC controller works out of the
+# box and the JointPD controller retains higher stiffness for tracking.
+# Effort limits in the source URDF (80/36/18 N·m) are comparable to
+# AR5, so these gains are a sensible starting point; revisit after
+# Isaac smoke tests if tracking is slack.
+default_gains:
+  stiffness: 1000.0
+  damping: 4.0
+
+gain_profiles:
+  joint:
+    stiffness: 1000.0
+    damping: 4.0
+  osc:
+    stiffness: 150.0
+    damping: 8.0
