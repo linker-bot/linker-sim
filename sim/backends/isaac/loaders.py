@@ -89,6 +89,12 @@ def to_articulation_cfg(
             fix_base=True,
             merge_fixed_joints=False,
             make_instanceable=False,
+            # Decompose concave collision meshes into multiple convex pieces
+            # via VHACD. The default "convex_hull" wraps the whole STL in a
+            # single envelope, which for the bench table produces an invisible
+            # bulge above the visible tabletop (cube spawns then bounce off the
+            # bulge and slide off). Decomposition tracks the real geometry.
+            collider_type="convex_decomposition",
             articulation_props=sim_utils.ArticulationRootPropertiesCfg(
                 enabled_self_collisions=False,
                 solver_position_iteration_count=8,

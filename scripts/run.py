@@ -133,6 +133,10 @@ def _run_isaac(cfg: DictConfig) -> None:
     obs, _ = env.reset(seed=int(cfg.seed))
     policy = _make_policy(cfg.policy, env.action_dim, backend.num_envs, backend.device)
 
+    # Hotkey: press 'R' in the Isaac viewport to reset all envs.
+    # No-op in headless mode (no keyboard subscription possible).
+    reset_flag = _register_hotkey_reset(cfg.headless)
+
     step = 0
     # max_steps <= 0 → run until the user closes the window.
     # BaseEnv already resets done envs in-place, so the loop keeps going
@@ -145,6 +149,10 @@ def _run_isaac(cfg: DictConfig) -> None:
     while simulation_app.is_running():
         if max_steps is not None and step >= max_steps:
             break
+        if reset_flag[0]:
+            reset_flag[0] = False
+            obs, _ = env.reset()
+            print(f"[run] manual reset at step {step}")
         action = policy(step, obs)
         obs, reward, terminated, truncated, info = env.step(action)
         if recorder is not None:
@@ -160,6 +168,39 @@ def _get_simulation_app():
     # Avoid re-importing AppLauncher (which re-starts the app).
     import omni.kit.app  # type: ignore
     return omni.kit.app.get_app()
+
+
+def _register_hotkey_reset(headless: bool, key_name: str = "R") -> list:
+    """Subscribe to viewport key presses; flip the returned flag on `key_name`.
+
+    Returns a 1-element list used as a mutable bool (set to True on press,
+    consumed by the main loop). In headless mode the subscription is
+    skipped and a dead flag is returned so the main loop can check it
+    unconditionally.
+    """
+    flag = [False]
+    if headless:
+        return flag
+
+    import carb.input  # type: ignore
+    import omni.appwindow  # type: ignore
+
+    target_key = getattr(carb.input.KeyboardInput, key_name.upper())
+
+    def on_event(event, *_):
+        if (
+            event.type == carb.input.KeyboardEventType.KEY_PRESS
+            and event.input == target_key
+        ):
+            flag[0] = True
+        return True
+
+    appwindow = omni.appwindow.get_default_app_window()
+    keyboard = appwindow.get_keyboard()
+    input_iface = carb.input.acquire_input_interface()
+    input_iface.subscribe_to_keyboard_events(keyboard, on_event)
+    print(f"[run] hotkey: press '{key_name.upper()}' in the viewport to reset")
+    return flag
 
 
 def _make_policy(name: str, action_dim: int, num_envs: int, device):
