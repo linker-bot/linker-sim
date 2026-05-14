@@ -1,0 +1,31 @@
+# @package _global_
+# IK absolute-pose on both arms + joint-PD on both hands. Action layout:
+#   [arm_left(7), hand_left(6), arm_right(7), hand_right(6)]  = 26
+# Pair with task=bimanual_reach_ikpose (matching action_dim=26).
+controller:
+  name: ik_pose_bimanual
+  entries:
+    - _target_: sim.controllers.ik.IkController
+      cfg:
+        _target_: sim.controllers.ik.IkControllerCfg
+        role: arm_left
+        frame: "arm_left:tool0"
+        mode: abs_pose
+        damping: 0.05
+    - _target_: sim.controllers.joint_pd.JointPDController
+      cfg:
+        _target_: sim.controllers.joint_pd.JointPDControllerCfg
+        role: hand_left
+        action_scale: 0.2
+    - _target_: sim.controllers.ik.IkController
+      cfg:
+        _target_: sim.controllers.ik.IkControllerCfg
+        role: arm_right
+        frame: "arm_right:tool0"
+        mode: abs_pose
+        damping: 0.05
+    - _target_: sim.controllers.joint_pd.JointPDController
+      cfg:
+        _target_: sim.controllers.joint_pd.JointPDControllerCfg
+        role: hand_right
+        action_scale: 0.2
