@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """Validate a workstation's composed artifacts.
 
-Checks performed (PR #1 scope):
+Checks performed:
   1. Manifest self-consistency: recipe/component hashes match on-disk sources,
      committed workstation.urdf matches manifest.artifacts.urdf_sha256.
   2. Kinematic structure: URDF has expected actuated-joint counts per role;
      declared EE link and every mount frame resolve to existing links.
   3. Mesh resolution: every `<mesh filename=>` path resolves on disk.
   4. Drift: re-run composer in memory; committed artifacts match fresh output.
-
-Deferred to PR #1b:
-  - MJCF loading (requires hand-authored component MJCFs).
-  - Cross-sim joint-order consistency (URDF vs MJCF).
-  - Gravity-compensated hold-drift on MuJoCo.
+  5. MJCF parity (when workstation.mjcf is committed):
+     - Loads in MuJoCo with no warnings.
+     - Actuator-joint order matches manifest.joints[role] (concatenated).
+     - Every manifest.frames[role:frame] site at qpos=0 matches the
+       corresponding URDF link's world pose to 1e-5 m / 1e-5 rad.
 
 Exit codes:
   0 — all checks pass
@@ -23,13 +23,16 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
+import io
 import sys
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
+import numpy as np
 import yaml
 
 # Relative imports when invoked as a script-module.
@@ -50,6 +53,12 @@ from tools.composer.schemas import (  # noqa: E402
     SchemaError,
     resolve_variant,
 )
+from tools.validate_component_mjcf import urdf_link_world_poses  # noqa: E402
+
+try:
+    import mujoco
+except ImportError:
+    mujoco = None  # MJCF checks become SKIP if mujoco isn't installed.
 
 
 # --------------------------- Check framework ------------------------------ #
@@ -226,6 +235,138 @@ def _check_drift(paths) -> str:
     return ""
 
 
+# --------------------------- MJCF checks (#10–12) ------------------------- #
+
+
+def _urdf_root_link(urdf_path: Path) -> str:
+    """The URDF's actual root link (the one with no inbound joint)."""
+    root = ET.parse(str(urdf_path)).getroot()
+    links = {l.attrib.get("name", "") for l in root.findall("link")}
+    children = {
+        j.find("child").attrib.get("link", "")
+        for j in root.findall("joint")
+        if j.find("child") is not None
+    }
+    roots = [l for l in links if l and l not in children]
+    if len(roots) != 1:
+        raise SchemaError(
+            f"{urdf_path}: expected single URDF root, found {roots}"
+        )
+    return roots[0]
+
+
+def _check_mjcf_loads(paths) -> str:
+    if mujoco is None:
+        return "mujoco not installed"
+    if not paths.out_mjcf.is_file():
+        return f"missing {paths.out_mjcf}"
+    errs = io.StringIO()
+    try:
+        with contextlib.redirect_stderr(errs):
+            mujoco.MjModel.from_xml_path(str(paths.out_mjcf))
+    except Exception as e:
+        return f"load error: {e}"
+    warn = errs.getvalue().strip()
+    if warn:
+        return f"warnings: {warn}"
+    return ""
+
+
+def _check_mjcf_actuator_order(paths, manifest: dict) -> str:
+    """Actuator transmission joints, in MuJoCo's compiled order, must match
+    manifest.joints[role] concatenated in role declaration order. This is
+    what runtime controllers rely on to slice ctrl[] per-role.
+    """
+    if mujoco is None:
+        return "mujoco not installed"
+    model = mujoco.MjModel.from_xml_path(str(paths.out_mjcf))
+    model_act_joints = [
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, model.actuator_trnid[i, 0])
+        for i in range(model.nu)
+    ]
+    expected: list[str] = []
+    for role, jlist in (manifest.get("joints") or {}).items():
+        expected.extend(jlist)
+    if model_act_joints != expected:
+        return f"order mismatch: expected {expected}, got {model_act_joints}"
+    return ""
+
+
+def _check_mjcf_self_contact(paths) -> str:
+    """Active contacts at qpos=0 clamp joints via friction (same failure
+    mode as the per-component SELF_CONTACT check in §9 #8). The composer
+    auto-emits mount-seam excludes for ancestor-descendant component
+    pairs; this check catches anything missed.
+    """
+    if mujoco is None:
+        return "mujoco not installed"
+    model = mujoco.MjModel.from_xml_path(str(paths.out_mjcf))
+    data = mujoco.MjData(model)
+    mujoco.mj_forward(model, data)
+    if data.ncon == 0:
+        return ""
+    pairs = set()
+    for i in range(data.ncon):
+        c = data.contact[i]
+        b1 = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY,
+                               model.geom_bodyid[c.geom1])
+        b2 = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY,
+                               model.geom_bodyid[c.geom2])
+        pairs.add(tuple(sorted([b1, b2])))
+    listing = "; ".join(f"{a} <-> {b}" for a, b in sorted(pairs))
+    return f"{data.ncon} contacts at qpos=0 between {len(pairs)} pair(s): {listing}"
+
+
+def _check_mjcf_frame_parity(paths, manifest: dict) -> str:
+    """At qpos=0, every manifest.frames[role:frame] site in the MJCF must
+    sit on the corresponding URDF link's world frame to 1e-5 m / 1e-5 rad.
+
+    This is the cross-sim correctness check — catches axis-sign, euler-
+    sequence, and origin-transcription bugs that per-component validators
+    can miss at the workstation seam (mount xyz/rpy applied differently).
+    """
+    if mujoco is None:
+        return "mujoco not installed"
+
+    model = mujoco.MjModel.from_xml_path(str(paths.out_mjcf))
+    data = mujoco.MjData(model)
+    mujoco.mj_forward(model, data)
+
+    urdf_root = _urdf_root_link(paths.out_urdf)
+    urdf_world = urdf_link_world_poses(paths.out_urdf, urdf_root)
+
+    POS_TOL = 1e-5
+    ROT_TOL = 1e-5
+    problems: list[str] = []
+    checked = 0
+    for key, urdf_link in (manifest.get("frames") or {}).items():
+        site_name = key.replace(":", "_")
+        sid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, site_name)
+        if sid < 0:
+            problems.append(f"{key}: site '{site_name}' not in MJCF")
+            continue
+        if urdf_link not in urdf_world:
+            # Link sits inside a placeholder branch; skip rather than fail.
+            continue
+        urdf_pos, urdf_R = urdf_world[urdf_link]
+        mjcf_pos = np.array(data.site_xpos[sid])
+        mjcf_R = np.array(data.site_xmat[sid]).reshape(3, 3)
+        pos_err = float(np.max(np.abs(mjcf_pos - urdf_pos)))
+        rot_err = float(np.max(np.abs(mjcf_R - urdf_R)))
+        if pos_err > POS_TOL:
+            problems.append(f"{key}: pos_err={pos_err:.3e}")
+        elif rot_err > ROT_TOL:
+            problems.append(f"{key}: rot_err={rot_err:.3e}")
+        checked += 1
+    if not problems and checked == 0:
+        return "no frames matched between manifest and URDF tree"
+    if problems:
+        head = "; ".join(problems[:5])
+        suffix = f" (+{len(problems) - 5} more)" if len(problems) > 5 else ""
+        return head + suffix
+    return ""
+
+
 # --------------------------- Driver --------------------------------------- #
 
 
@@ -260,6 +401,15 @@ def validate(workstation_dir: Path, assets_root: Path | None) -> int:
         ("urdf.single_tree", lambda: _check_single_tree(paths)),
         ("composer.drift", lambda: _check_drift(paths)),
     ]
+    # MJCF checks gated on a committed workstation.mjcf — they're skipped
+    # for components that haven't authored their MJCFs yet.
+    if paths.out_mjcf.is_file():
+        checks.extend([
+            ("mjcf.loads", lambda: _check_mjcf_loads(paths)),
+            ("mjcf.actuator_order", lambda: _check_mjcf_actuator_order(paths, manifest)),
+            ("mjcf.self_contact", lambda: _check_mjcf_self_contact(paths)),
+            ("mjcf.frame_parity", lambda: _check_mjcf_frame_parity(paths, manifest)),
+        ])
     results = _run(checks)
 
     ws_name = paths.workstation_dir.name

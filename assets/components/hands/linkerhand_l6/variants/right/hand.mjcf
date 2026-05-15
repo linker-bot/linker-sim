@@ -1,0 +1,191 @@
+<mujoco model="linkerhand_l6_right">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="hand_linkerhand_l6_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="hand_linkerhand_l6_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+    <default class="hand_linkerhand_l6_joint">
+      <joint armature="3.4707e-08" damping="5.0" frictionloss="0.5"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="hand_base"             file="hand_base_link.STL"/>
+    <mesh name="thumb_metacarpals_base1" file="thumb_metacarpals_base1.STL"/>
+    <mesh name="thumb_metacarpals"     file="thumb_metacarpals.STL"/>
+    <mesh name="thumb_distal"          file="thumb_distal.STL"/>
+    <mesh name="index_proximal"        file="index_proximal.STL"/>
+    <mesh name="index_distal"          file="index_distal.STL"/>
+    <mesh name="middle_proximal"       file="middle_proximal.STL"/>
+    <mesh name="middle_distal"         file="middle_distal.STL"/>
+    <mesh name="ring_proximal"         file="ring_proximal.STL"/>
+    <mesh name="ring_distal"           file="ring_distal.STL"/>
+    <mesh name="pinky_proximal"        file="pinky_proximal.STL"/>
+    <mesh name="pinky_distal"          file="pinky_distal.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="rh_hand_base_link" pos="0 0 0">
+      <inertial pos="0.0019900000 0.0009100000 0.0583810000" mass="0.4185"
+                fullinertia="0.0004998 0.0003567 0.0002301 -1.2853e-05 -8.317e-06 -1.0354e-05"/>
+      <geom class="hand_linkerhand_l6_visual" mesh="hand_base"/>
+      <geom class="hand_linkerhand_l6_collision" mesh="hand_base"/>
+      <site name="wrist_mount" pos="0 0 0"/>
+
+      <body name="rh_thumb_metacarpals_base1" pos="0.0078133 0.030812 0.025678" euler="-0.034907 0 0">
+        <inertial pos="0.0018663000 0.0066406000 0.0015330000" mass="0.01"
+                  fullinertia="3.3724e-07 2.9457e-07 4.903e-07 -1.11e-07 -3.6039e-08 -5.7181e-08"/>
+        <joint name="rh_thumb_cmc_roll" class="hand_linkerhand_l6_joint" type="hinge" axis="0 0.034899 -0.99939"
+               range="-0.087266 1.256637"/>
+        <geom class="hand_linkerhand_l6_visual" mesh="thumb_metacarpals_base1"/>
+        <geom class="hand_linkerhand_l6_collision" mesh="thumb_metacarpals_base1"/>
+
+        <body name="rh_thumb_metacarpals" pos="0.0054997 0.013314 0.0032166" euler="-1.0762 0.013637 -0.40121">
+          <inertial pos="0.0076927091 -0.0859662185 0.0235283087" mass="0.065"
+                    fullinertia="8.407e-06 8.3899e-06 2.0091e-06 1.1338e-09 1.1136e-08 -3.1171e-07"/>
+          <joint name="rh_thumb_cmc_pitch" class="hand_linkerhand_l6_joint" type="hinge" axis="1 0 0"
+                 range="0 0.837758"/>
+          <geom class="hand_linkerhand_l6_visual" mesh="thumb_metacarpals"/>
+          <geom class="hand_linkerhand_l6_collision" mesh="thumb_metacarpals"/>
+
+          <body name="rh_thumb_distal" pos="0 -0.0061 0.0827">
+            <inertial pos="0.0076927091 -0.0798662185 -0.0591716913" mass="0.018"
+                      fullinertia="1.5546e-06 1.7108e-06 9.1709e-07 -2.4423e-09 2.8147e-09 7.2756e-08"/>
+            <joint name="rh_thumb_dip" class="hand_linkerhand_l6_joint" type="hinge" axis="1 0 0"
+                   range="0 0.963287"/>
+            <geom class="hand_linkerhand_l6_visual" mesh="thumb_distal"/>
+            <geom class="hand_linkerhand_l6_collision" mesh="thumb_distal"/>
+
+            <body name="rh_thumb_tip" pos="0 -0.0035 0.026" euler="0 0 -1.5708">
+              <inertial pos="0 0 0" mass="1e-06" fullinertia="1e-09 1e-09 1e-09 0 0 0"/>
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <body name="rh_index_proximal" pos="-0.00066821 0.033467 0.11622" euler="-0.087266 0 0">
+        <inertial pos="0.0017760000 0.0001100000 0.0125560000" mass="0.008553"
+                  fullinertia="7.97543e-07 8.00499e-07 3.57001e-07 1.275e-09 1.38601e-07 -9.39e-10"/>
+        <joint name="rh_index_mcp_pitch" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+               range="0 1.134464"/>
+        <geom class="hand_linkerhand_l6_visual" mesh="index_proximal"/>
+        <geom class="hand_linkerhand_l6_collision" mesh="index_proximal"/>
+
+        <body name="rh_index_distal" pos="0.0009359 0 0.028002">
+          <inertial pos="0.0134000000 -0.0022620000 0.0169920000" mass="0.018408"
+                    fullinertia="2.488712e-06 3.723754e-06 1.813582e-06 -8.249e-09 -1.523059e-06 -1.4019e-08"/>
+          <joint name="rh_index_dip" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+                 range="0 1.277039"/>
+          <geom class="hand_linkerhand_l6_visual" mesh="index_distal"/>
+          <geom class="hand_linkerhand_l6_collision" mesh="index_distal"/>
+
+          <body name="rh_index_tip" pos="0.0341 0 0.034">
+            <inertial pos="0 0 0" mass="1e-06" fullinertia="1e-09 1e-09 1e-09 0 0 0"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="rh_middle_proximal" pos="-0.00066821 0.0134013 0.12272" euler="-0.034907 0 0">
+        <inertial pos="0.0017760000 0.0001100000 0.0125560000" mass="0.008553"
+                  fullinertia="7.97543e-07 8.00499e-07 3.57001e-07 1.275e-09 1.38601e-07 -9.39e-10"/>
+        <joint name="rh_middle_mcp_pitch" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+               range="0 1.134464"/>
+        <geom class="hand_linkerhand_l6_visual" mesh="middle_proximal"/>
+        <geom class="hand_linkerhand_l6_collision" mesh="middle_proximal"/>
+
+        <body name="rh_middle_distal" pos="0.0009359 0 0.028002">
+          <inertial pos="0.0134000000 -0.0022620000 0.0169920000" mass="0.018408"
+                    fullinertia="2.488712e-06 3.723754e-06 1.813582e-06 -8.249e-09 -1.523059e-06 -1.4019e-08"/>
+          <joint name="rh_middle_dip" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+                 range="0 1.277039"/>
+          <geom class="hand_linkerhand_l6_visual" mesh="middle_distal"/>
+          <geom class="hand_linkerhand_l6_collision" mesh="middle_distal"/>
+
+          <body name="rh_middle_tip" pos="0.0341 0 0.034">
+            <inertial pos="0 0 0" mass="1e-06" fullinertia="1e-09 1e-09 1e-09 0 0 0"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="rh_ring_proximal" pos="-0.00067368 -0.006217 0.11872" euler="0.017453 0 0">
+        <inertial pos="0.0017760000 0.0001100000 0.0125560000" mass="0.008553"
+                  fullinertia="7.97543e-07 8.00499e-07 3.57001e-07 1.275e-09 1.38601e-07 -9.39e-10"/>
+        <joint name="rh_ring_mcp_pitch" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+               range="0 1.134464"/>
+        <geom class="hand_linkerhand_l6_visual" mesh="ring_proximal"/>
+        <geom class="hand_linkerhand_l6_collision" mesh="ring_proximal"/>
+
+        <body name="rh_ring_distal" pos="0.0009359 0 0.028002">
+          <inertial pos="0.0134000000 -0.0022620000 0.0169920000" mass="0.018408"
+                    fullinertia="2.488712e-06 3.723754e-06 1.813582e-06 -8.249e-09 -1.523059e-06 -1.4019e-08"/>
+          <joint name="rh_ring_dip" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+                 range="0 1.277039"/>
+          <geom class="hand_linkerhand_l6_visual" mesh="ring_distal"/>
+          <geom class="hand_linkerhand_l6_collision" mesh="ring_distal"/>
+
+          <body name="rh_ring_tip" pos="0.0341 0 0.034">
+            <inertial pos="0 0 0" mass="1e-06" fullinertia="1e-09 1e-09 1e-09 0 0 0"/>
+          </body>
+        </body>
+      </body>
+
+      <body name="rh_pinky_proximal" pos="-0.00067852 -0.025314 0.11474" euler="0.05236 0 0">
+        <inertial pos="0.0017760000 0.0001100000 0.0125560000" mass="0.008553"
+                  fullinertia="7.97543e-07 8.00499e-07 3.57001e-07 1.275e-09 1.38601e-07 -9.39e-10"/>
+        <joint name="rh_pinky_mcp_pitch" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+               range="0 1.134464"/>
+        <geom class="hand_linkerhand_l6_visual" mesh="pinky_proximal"/>
+        <geom class="hand_linkerhand_l6_collision" mesh="pinky_proximal"/>
+
+        <body name="rh_pinky_distal" pos="0.0009359 0 0.028002">
+          <inertial pos="0.0134000000 -0.0022620000 0.0169920000" mass="0.018408"
+                    fullinertia="2.488712e-06 3.723754e-06 1.813582e-06 -8.249e-09 -1.523059e-06 -1.4019e-08"/>
+          <joint name="rh_pinky_dip" class="hand_linkerhand_l6_joint" type="hinge" axis="0 1 0"
+                 range="0 1.277039"/>
+          <geom class="hand_linkerhand_l6_visual" mesh="pinky_distal"/>
+          <geom class="hand_linkerhand_l6_collision" mesh="pinky_distal"/>
+
+          <body name="rh_pinky_tip" pos="0.0341 0 0.034">
+            <inertial pos="0 0 0" mass="1e-06" fullinertia="1e-09 1e-09 1e-09 0 0 0"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="rh_thumb_cmc_roll_act"    joint="rh_thumb_cmc_roll"    kp="20" kv="2" ctrlrange="-0.087266 1.256637"/>
+    <position name="rh_thumb_cmc_pitch_act"   joint="rh_thumb_cmc_pitch"   kp="20" kv="2" ctrlrange="0 0.837758"/>
+    <position name="rh_index_mcp_pitch_act"   joint="rh_index_mcp_pitch"   kp="20" kv="2" ctrlrange="0 1.134464"/>
+    <position name="rh_middle_mcp_pitch_act"  joint="rh_middle_mcp_pitch"  kp="20" kv="2" ctrlrange="0 1.134464"/>
+    <position name="rh_ring_mcp_pitch_act"    joint="rh_ring_mcp_pitch"    kp="20" kv="2" ctrlrange="0 1.134464"/>
+    <position name="rh_pinky_mcp_pitch_act"   joint="rh_pinky_mcp_pitch"   kp="20" kv="2" ctrlrange="0 1.134464"/>
+  </actuator>
+
+  <equality>
+    <joint name="rh_couple_index"  joint1="rh_index_dip"  joint2="rh_index_mcp_pitch"  polycoef="0 1.125676 0 0 0"/>
+    <joint name="rh_couple_middle" joint1="rh_middle_dip" joint2="rh_middle_mcp_pitch" polycoef="0 1.125676 0 0 0"/>
+    <joint name="rh_couple_ring"   joint1="rh_ring_dip"   joint2="rh_ring_mcp_pitch"   polycoef="0 1.125676 0 0 0"/>
+    <joint name="rh_couple_pinky"  joint1="rh_pinky_dip"  joint2="rh_pinky_mcp_pitch"  polycoef="0 1.125676 0 0 0"/>
+    <joint name="rh_couple_thumb"  joint1="rh_thumb_dip"  joint2="rh_thumb_cmc_pitch"  polycoef="0 1.226495 0 0 0"/>
+  </equality>
+
+  <contact>
+    <exclude body1="rh_hand_base_link"          body2="rh_thumb_metacarpals_base1"/>
+    <exclude body1="rh_thumb_metacarpals_base1" body2="rh_thumb_metacarpals"/>
+    <exclude body1="rh_thumb_metacarpals"       body2="rh_thumb_distal"/>
+    <exclude body1="rh_hand_base_link"          body2="rh_index_proximal"/>
+    <exclude body1="rh_index_proximal"          body2="rh_index_distal"/>
+    <exclude body1="rh_hand_base_link"          body2="rh_middle_proximal"/>
+    <exclude body1="rh_middle_proximal"         body2="rh_middle_distal"/>
+    <exclude body1="rh_hand_base_link"          body2="rh_ring_proximal"/>
+    <exclude body1="rh_ring_proximal"           body2="rh_ring_distal"/>
+    <exclude body1="rh_hand_base_link"          body2="rh_pinky_proximal"/>
+    <exclude body1="rh_pinky_proximal"          body2="rh_pinky_distal"/>
+  </contact>
+</mujoco>

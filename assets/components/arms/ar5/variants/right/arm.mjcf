@@ -1,0 +1,120 @@
+<mujoco model="ar5_right">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="arm_ar5_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="arm_ar5_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="ar5_base"  file="AR5_5_07R_W4C4A2_base.stl"  scale="0.001 0.001 0.001"/>
+    <mesh name="ar5_link1" file="AR5_5_07R_W4C4A2_link1.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="ar5_link2" file="AR5_5_07R_W4C4A2_link2.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="ar5_link3" file="AR5_5_07R_W4C4A2_link3.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="ar5_link4" file="AR5_5_07R_W4C4A2_link4.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="ar5_link5" file="AR5_5_07R_W4C4A2_link5.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="ar5_link6" file="AR5_5_07R_W4C4A2_link6.stl" scale="0.001 0.001 0.001"/>
+    <mesh name="ar5_link7" file="AR5_5_07R_W4C4A2_link7.stl" scale="0.001 0.001 0.001"/>
+  </asset>
+
+  <worldbody>
+    <body name="AR5_5_07R_W4C4A2_base" pos="0 0 0">
+      <geom class="arm_ar5_visual" mesh="ar5_base"/>
+      <geom class="arm_ar5_collision" mesh="ar5_base"/>
+      <site name="base_mount" pos="0 0 0"/>
+
+      <body name="AR5_5_07R_W4C4A2_link1" pos="0 0 0">
+        <inertial pos="-1e-06 0.000621 0.167909" mass="2.683"
+                  fullinertia="0.00493673 0.00452344 0.00432910 0.00000160 -0.00000198 0.00000020"/>
+        <joint name="AR5_5_07R_W4C4A2_joint_1" type="hinge" axis="0 0 1"
+               range="-3.1067 3.1067" damping="14.22378" frictionloss="0.0" armature="0.01"/>
+        <geom class="arm_ar5_visual" mesh="ar5_link1"/>
+        <geom class="arm_ar5_collision" mesh="ar5_link1"/>
+
+        <body name="AR5_5_07R_W4C4A2_link2" pos="0 0 0.1745">
+          <inertial pos="2e-05 0.003081 0.10298600000000001" mass="2.3"
+                    fullinertia="0.01151906 0.00993335 0.00435237 0.00000246 0.00000055 -0.00082477"/>
+          <joint name="AR5_5_07R_W4C4A2_joint_2" type="hinge" axis="0 1 0"
+                 range="-2.0944 2.0944" damping="13.710972" frictionloss="0.0" armature="0.01"/>
+          <geom class="arm_ar5_visual" mesh="ar5_link2"/>
+          <geom class="arm_ar5_collision" mesh="ar5_link2"/>
+
+          <body name="AR5_5_07R_W4C4A2_link3" pos="0 0 0.314">
+            <inertial pos="0.007089000000000001 0.000655 -0.016514" mass="1.862"
+                      fullinertia="0.00519617 0.00470378 0.00266768 -0.00001270 0.00035675 -0.00003329"/>
+            <joint name="AR5_5_07R_W4C4A2_joint_3" type="hinge" axis="0 0 1"
+                   range="-3.1067 3.1067" damping="3.791042" frictionloss="0.0" armature="0.01"/>
+            <geom class="arm_ar5_visual" mesh="ar5_link3"/>
+            <geom class="arm_ar5_collision" mesh="ar5_link3"/>
+
+            <body name="AR5_5_07R_W4C4A2_link4" pos="0.01 0 0">
+              <inertial pos="-0.007832 0.004208999999999999 0.073402" mass="1.234"
+                        fullinertia="0.00389593 0.00308688 0.00188378 0.00004675 -0.00016955 -0.00046659"/>
+              <joint name="AR5_5_07R_W4C4A2_joint_4" type="hinge" axis="0 1 0"
+                     range="-1.0472 2.5307" damping="0.333154" frictionloss="0.0" armature="0.01"/>
+              <geom class="arm_ar5_visual" mesh="ar5_link4"/>
+              <geom class="arm_ar5_collision" mesh="ar5_link4"/>
+
+              <body name="AR5_5_07R_W4C4A2_link5" pos="-0.01 0 0.272">
+                <inertial pos="0.000268 -0.0014750000000000002 -0.084143" mass="1.328"
+                          fullinertia="0.00284294 0.00221035 0.00185120 -0.00001276 0.00001949 -0.00002134"/>
+                <joint name="AR5_5_07R_W4C4A2_joint_5" type="hinge" axis="0 0 1"
+                       range="-3.1067 3.1067" damping="4.136716" frictionloss="0.0" armature="0.01"/>
+                <geom class="arm_ar5_visual" mesh="ar5_link5"/>
+                <geom class="arm_ar5_collision" mesh="ar5_link5"/>
+
+                <body name="AR5_5_07R_W4C4A2_link6" pos="0 0 0">
+                  <inertial pos="0.0051719999999999995 -0.000614 5.5e-05" mass="0.93"
+                            fullinertia="0.00072274 0.00087867 0.00092938 0.00000186 -0.00000123 0.00000057"/>
+                  <joint name="AR5_5_07R_W4C4A2_joint_6" type="hinge" axis="0 1 0"
+                         range="-1.0472 1.0472" damping="4.748679" frictionloss="0.0" armature="0.01"/>
+                  <geom class="arm_ar5_visual" mesh="ar5_link6"/>
+                  <geom class="arm_ar5_collision" mesh="ar5_link6"/>
+
+                  <body name="AR5_5_07R_W4C4A2_link7" pos="0 0 0">
+                    <inertial pos="-0.002716 3.1e-05 0.054983" mass="0.332"
+                              fullinertia="0.00052121 0.00079394 0.00045990 0.00000020 0.00003808 0.00000098"/>
+                    <joint name="AR5_5_07R_W4C4A2_joint_7" type="hinge" axis="1 0 0"
+                           range="-1.0472 1.0472" damping="3.667978" frictionloss="0.0" armature="0.01"/>
+                    <geom class="arm_ar5_visual" mesh="ar5_link7"/>
+                    <geom class="arm_ar5_collision" mesh="ar5_link7"/>
+
+                    <body name="AR5_5_07R_W4C4A2_tcp" pos="0 0 0.097">
+                      <site name="tool0" pos="0 0 0"/>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="AR5_5_07R_W4C4A2_joint_1_act" joint="AR5_5_07R_W4C4A2_joint_1" kp="1000" kv="4" ctrlrange="-3.1067 3.1067"/>
+    <position name="AR5_5_07R_W4C4A2_joint_2_act" joint="AR5_5_07R_W4C4A2_joint_2" kp="1000" kv="4" ctrlrange="-2.0944 2.0944"/>
+    <position name="AR5_5_07R_W4C4A2_joint_3_act" joint="AR5_5_07R_W4C4A2_joint_3" kp="1000" kv="4" ctrlrange="-3.1067 3.1067"/>
+    <position name="AR5_5_07R_W4C4A2_joint_4_act" joint="AR5_5_07R_W4C4A2_joint_4" kp="1000" kv="4" ctrlrange="-1.0472 2.5307"/>
+    <position name="AR5_5_07R_W4C4A2_joint_5_act" joint="AR5_5_07R_W4C4A2_joint_5" kp="1000" kv="4" ctrlrange="-3.1067 3.1067"/>
+    <position name="AR5_5_07R_W4C4A2_joint_6_act" joint="AR5_5_07R_W4C4A2_joint_6" kp="1000" kv="4" ctrlrange="-1.0472 1.0472"/>
+    <position name="AR5_5_07R_W4C4A2_joint_7_act" joint="AR5_5_07R_W4C4A2_joint_7" kp="1000" kv="4" ctrlrange="-1.0472 1.0472"/>
+  </actuator>
+
+  <contact>
+    <exclude body1="AR5_5_07R_W4C4A2_base"  body2="AR5_5_07R_W4C4A2_link1"/>
+    <exclude body1="AR5_5_07R_W4C4A2_link1" body2="AR5_5_07R_W4C4A2_link2"/>
+    <exclude body1="AR5_5_07R_W4C4A2_link2" body2="AR5_5_07R_W4C4A2_link3"/>
+    <exclude body1="AR5_5_07R_W4C4A2_link3" body2="AR5_5_07R_W4C4A2_link4"/>
+    <exclude body1="AR5_5_07R_W4C4A2_link4" body2="AR5_5_07R_W4C4A2_link5"/>
+    <exclude body1="AR5_5_07R_W4C4A2_link5" body2="AR5_5_07R_W4C4A2_link6"/>
+    <exclude body1="AR5_5_07R_W4C4A2_link6" body2="AR5_5_07R_W4C4A2_link7"/>
+    <exclude body1="AR5_5_07R_W4C4A2_link5" body2="AR5_5_07R_W4C4A2_link7"/>
+  </contact>
+</mujoco>

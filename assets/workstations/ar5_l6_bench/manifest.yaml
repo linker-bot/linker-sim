@@ -6,20 +6,20 @@ components:
   base:
     name: bases/bench_table
     variant: default
-    sha256: 8c54549310f5027c637fe51445eafee7a7e0ac927beffb1d6f3f3fdf8870bb05
+    sha256: 7f86d9cb0ca2c334a24c91a4c8aa078d780155101947c985583c343c4cf1685b
   arm:
     name: arms/ar5
     variant: left
-    sha256: 56479bf07d8c782eba944d435f59e849b23fb11aaa4e7bc601de10e0f1857938
+    sha256: 5e9520eeda361892c1bfc8eded2bfcc11eb0aeb0c661ff03b89f698b399b7c08
   hand:
     name: hands/linkerhand_l6
     variant: left
-    sha256: 5d043d6eb7e3df1b456a7c062e15fa80cf8bc5c1219b3f6e7af33e3316530b04
+    sha256: 75c0e34e9c3eeb491e2bf5d2bda4d6f1e7704a3d1e9a8697f41d1c7c8517574e
 artifacts:
   urdf: workstation.urdf
-  mjcf: null
+  mjcf: workstation.mjcf
   urdf_sha256: 8751ff541c2b63e9f115fb6c1cfb6b8d5525648c14bc8eacbd85c501dd9e3ea9
-  mjcf_sha256: null
+  mjcf_sha256: c9beaa72f98667fc9d7a398b15b8e8eaf27927428632cc5fc1034826b8f733da
 joints:
   base: []
   arm:

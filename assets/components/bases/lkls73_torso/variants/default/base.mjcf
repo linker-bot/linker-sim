@@ -1,0 +1,37 @@
+<mujoco model="lkls73_torso_default">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="base_lkls73_torso_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="base_lkls73_torso_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="torso_base_link" file="base_link.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="torso_root" pos="0 0 0">
+      <body name="base_link" pos="0 0 1.2">
+        <inertial pos="5.75109188383945E-05 1.44120839455095E-05 -0.489174317245241"
+                  mass="10.8067081992573"
+                  fullinertia="0.192527915393298 0.191539752328327 0.103049415034787 -1.67956043663548E-08 -3.68569447484118E-08 6.60319145138974E-08"/>
+        <geom class="base_lkls73_torso_visual" mesh="torso_base_link"/>
+        <geom class="base_lkls73_torso_collision" mesh="torso_base_link"/>
+
+        <body name="arm_left_mount" pos="0 0.164 0">
+          <site name="arm_left_mount" pos="0 0 0"/>
+        </body>
+
+        <body name="arm_right_mount" pos="3.32E-05 -0.164 0">
+          <site name="arm_right_mount" pos="0 0 0"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

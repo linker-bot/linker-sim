@@ -1,0 +1,53 @@
+<mujoco model="bench_table_default">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="base_bench_table_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="base_bench_table_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="workstation" file="workstation.STL"/>
+    <mesh name="camera_base_link" file="camera_base_link.STL"/>
+    <mesh name="camera" file="camera.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="workstation_link" pos="0 0 0">
+      <inertial pos="0 0 0" mass="50.0" fullinertia="1.0 1.0 1.0 0 0 0"/>
+      <geom class="base_bench_table_visual" mesh="workstation"/>
+      <geom class="base_bench_table_collision" mesh="workstation"/>
+
+      <body name="camera_base_link" pos="0.0335 0.67 1.2974" euler="-1.5708 0 -1.5708">
+        <inertial pos="0.0538773695271655 0.0404431717089871 0.0338436903808578"
+                  mass="0.120253078965696"
+                  fullinertia="0.00024086634809874 0.000340317013404989 0.000187914824387855 1.11484097335586e-05 3.07915341770146e-05 -5.88336477049719e-05"/>
+        <geom class="base_bench_table_visual" mesh="camera_base_link"/>
+        <geom class="base_bench_table_collision" mesh="camera_base_link"/>
+        <site name="camera_mount" pos="0 0 0"/>
+
+        <body name="camera" pos="0.0801999999999972 0.193139853702623 -0.275851476149329"
+              euler="-1.26599037580869 -0.643554017997773 -1.5707963267949">
+          <inertial pos="0.435583906706681 -0.114517909806556 -0.00087379797028906"
+                    mass="0.170230158191785"
+                    fullinertia="0.000388607098441677 0.000353185511381015 6.42979907249093e-05 -3.21389374232659e-06 1.01075980515721e-06 -0.000100865226288639"/>
+          <geom class="base_bench_table_visual" mesh="camera"/>
+          <geom class="base_bench_table_collision" mesh="camera"/>
+        </body>
+      </body>
+
+      <body name="workstation_arm_left_mount" pos="0.0637 0.719 1.267" euler="0 1.57079633 1.57079633">
+        <site name="arm_left_mount" pos="0 0 0"/>
+      </body>
+
+      <body name="workstation_arm_right_mount" pos="0.0637 0.536 1.267" euler="0 1.57079633 -1.57079633">
+        <site name="arm_right_mount" pos="0 0 0"/>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

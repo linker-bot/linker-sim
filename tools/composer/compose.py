@@ -28,7 +28,7 @@ import yaml
 
 from . import COMPOSER_VERSION
 from .determinism import serialize
-from .mjcf_ops import check_mjcf_availability
+from .mjcf_ops import check_mjcf_availability, compose_mjcf
 from .schemas import (
     Artifacts,
     ComponentMeta,
@@ -166,20 +166,24 @@ def compose(paths: Paths) -> ComposeResult:
     )
     urdf_sha = sha256_bytes(urdf_text.encode("utf-8"))
 
-    # MJCF: skip when any component variant is missing its MJCF file. PR #1b
-    # lifts this gate when hand-authored MJCFs land.
+    # MJCF: compose only when every component ships an authored MJCF.
     mjcf_avail = check_mjcf_availability(components_with_variant)
     mjcf_text: str | None = None
     mjcf_sha: str | None = None
     if mjcf_avail.all_present:
-        # Full MJCF composition lands with PR #1b. For now, surface the
-        # happy-path check so reviewers know the code is wired but output
-        # is not yet emitted.
-        print(
-            "[compose] all component MJCFs present; MJCF composition "
-            "deferred to PR #1b, skipping workstation.mjcf",
-            file=sys.stderr,
+        mjcf_root = compose_mjcf(
+            workstation_name=recipe.name,
+            compiled=compiled,
+            mounts=recipe.mounts,
+            freeze_base_role=recipe.freeze_base,
+            workstation_dir=paths.workstation_dir,
         )
+        mjcf_text = _add_header_comment(
+            serialize(mjcf_root, indent="  ", xml_declaration=True),
+            recipe_name=recipe.name,
+            recipe_sha=recipe_sha,
+        )
+        mjcf_sha = sha256_bytes(mjcf_text.encode("utf-8"))
     else:
         print(
             "[compose] skipping workstation.mjcf (component MJCFs not "
