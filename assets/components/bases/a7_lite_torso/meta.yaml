@@ -1,0 +1,29 @@
+schema_version: 1
+kind: base
+name: a7_lite_torso
+
+# Single variant — the torso ships one mesh set with fixed mount pads for
+# both arms baked at the joint l2 / joint r2 origins from the source
+# URDF (A7_Lite_URDF / LZARMzongzhuang).
+variants:
+  default:
+    vars: {}
+    urdf: variants/default/base.urdf
+    mjcf: variants/default/base.mjcf
+    meshdir: variants/default/meshes
+
+root_link: torso_root
+
+# Mount pads placed at the shoulder-joint origins in the source URDF:
+#   arm_left_mount  -> joint l2 origin: (0.0062932,  0.1505,  -0.022706)
+#   arm_right_mount -> joint r2 origin: (0.0062926, -0.1505,  -0.022706)
+# Arms attach their zero-mass {V}_arm_root with identity xyz/rpy; the arm
+# URDF's first revolute (L1_Joint / R1_Joint) then sits at xyz=0 and
+# recovers the original kinematics exactly.
+mount_frames:
+  arm_left_mount:
+    parent: arm_left_mount
+  arm_right_mount:
+    parent: arm_right_mount
+
+# No actuated joints — the torso is static.

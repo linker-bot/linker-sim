@@ -1,0 +1,68 @@
+schema_version: 1
+kind: arm
+name: a7_lite
+drive: position
+
+# Two mirrored variants derived from the A7_Lite source URDF
+# (LZARMzongzhuang). The source ships base + both arms in one file; we
+# split each arm into its own variant rooted at a zero-mass virtual
+# link. Source link/joint names ('link l2', 'joint l2', etc.) are
+# renamed L1..L7 / R1..R7 (dropping the source's index offset; the
+# shared base_link lives in a7_lite_torso). The {V} placeholder
+# expands to L / R in meta.yaml fields only.
+variants:
+  left:
+    vars: {V: L}
+    urdf: variants/left/arm.urdf
+    mjcf: variants/left/arm.mjcf
+    meshdir: variants/left/meshes
+  right:
+    vars: {V: R}
+    urdf: variants/right/arm.urdf
+    mjcf: variants/right/arm.mjcf
+    meshdir: variants/right/meshes
+
+# Zero-mass virtual link authored in each variant URDF. Recipe mounts
+# are fixed, so the first revolute joint (L1/R1) must live inside the
+# arm component; the virtual root hosts that joint at xyz=0 and is
+# itself attached to the torso's mount-pad link via a fixed mount
+# joint emitted by the composer. The torso's arm_{side}_mount link
+# absorbs the source URDF's joint l2 / r2 origin offset.
+root_link: "{V}_arm_root"
+
+# Mount frames this component exposes.
+#   base_mount — the arm's virtual root; welded to torso.arm_{side}_mount.
+#   tool0      — the wrist-tip frame ({V}7_Link in this naming, a.k.a.
+#                source link l8/r8). Hands attach here. The link has
+#                only a small cosmetic mass (~0.1 kg) and no successor.
+mount_frames:
+  base_mount:
+    parent: "{V}_arm_root"
+  tool0:
+    parent: "{V}7_Link"
+
+ee_frame: tool0
+
+actuated_joints:
+  - "{V}1_Joint"
+  - "{V}2_Joint"
+  - "{V}3_Joint"
+  - "{V}4_Joint"
+  - "{V}5_Joint"
+  - "{V}6_Joint"
+  - "{V}7_Joint"
+
+# Mirror lkls73_arm's two-profile setup (source URDF effort/velocity
+# limits are zeros; this tier matches an arm of comparable size and
+# inertia).
+default_gains:
+  stiffness: 1000.0
+  damping: 4.0
+
+gain_profiles:
+  joint:
+    stiffness: 1000.0
+    damping: 4.0
+  osc:
+    stiffness: 150.0
+    damping: 8.0

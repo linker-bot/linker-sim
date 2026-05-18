@@ -1,0 +1,51 @@
+schema_version: 1
+name: a7_lite_dc
+description: >
+  Bimanual a7_lite torso + two 7-DOF a7_lite arms + two Linkerhand L6
+  hands, all welded into a single articulation via the composer. Source
+  URDF: /home/zhy/codes/A7_Lite_URDF/urdf/LZARMzongzhuang.urdf (split
+  into torso + per-side arm components and renamed L1..L7 / R1..R7).
+  Roles arm_left / arm_right / hand_left / hand_right are addressable
+  through Robot.joint_ids_of(role); the torso is a fixed base welded to
+  world at z=1.2m.
+
+components:
+  base:
+    component: bases/a7_lite_torso
+    variant: default
+  arm_left:
+    component: arms/a7_lite
+    variant: left
+  arm_right:
+    component: arms/a7_lite
+    variant: right
+  hand_left:
+    component: hands/linkerhand_l6
+    variant: left
+  hand_right:
+    component: hands/linkerhand_l6
+    variant: right
+
+freeze_base: base
+
+# Arm mount offsets are identity: the torso's mount-pad links already
+# sit at the source URDF's joint l2 / r2 origins (the offset was
+# absorbed into the torso). Hand mounts mirror lkls73_i1_bimanual's
+# quarter-turn so palms face inward.
+mounts:
+  - child: arm_left:base_mount
+    parent: base:arm_left_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+  - child: arm_right:base_mount
+    parent: base:arm_right_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+  - child: hand_left:wrist_mount
+    parent: arm_left:tool0
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [3.1416, 0.0, -1.5708]
+  - child: hand_right:wrist_mount
+    parent: arm_right:tool0
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [3.1416, 0.0, 1.5708]

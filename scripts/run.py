@@ -81,7 +81,22 @@ def _run_mujoco(cfg: DictConfig) -> None:
     )
     backend = MujocoSimBackend(backend_cfg)
     print(f"[run] backend ready: {cfg.robot.workstation_name} x{backend.num_envs}")
-    _run_rollout(cfg, backend)
+
+    if cfg.headless:
+        _run_rollout(cfg, backend)
+        return
+
+    import mujoco.viewer as mjv
+
+    reset_flag = [False]
+
+    def on_key(keycode: int) -> None:
+        if keycode in (ord("R"), ord("r")):
+            reset_flag[0] = True
+
+    with mjv.launch_passive(backend._model, backend._data, key_callback=on_key) as viewer:
+        print("[run] hotkey: press 'R' in the viewport to reset")
+        _run_rollout(cfg, backend, mj_viewer=viewer, mj_reset_flag=reset_flag)
 
 
 def _run_isaac(cfg: DictConfig) -> None:
@@ -108,7 +123,14 @@ def _run_isaac(cfg: DictConfig) -> None:
     _run_rollout(cfg, backend, use_isaac_loop=True)
 
 
-def _run_rollout(cfg: DictConfig, backend, *, use_isaac_loop: bool = False) -> None:
+def _run_rollout(
+    cfg: DictConfig,
+    backend,
+    *,
+    use_isaac_loop: bool = False,
+    mj_viewer=None,
+    mj_reset_flag: list | None = None,
+) -> None:
     from sim.envs.base import BaseEnv, BaseEnvCfg
     from sim.io.recorder import Recorder
 
@@ -133,17 +155,24 @@ def _run_rollout(cfg: DictConfig, backend, *, use_isaac_loop: bool = False) -> N
     policy = _make_policy(cfg.policy, env.action_dim, backend.num_envs, backend.device)
 
     max_steps = int(cfg.max_steps) if int(cfg.max_steps) > 0 else None
-    if not use_isaac_loop and max_steps is None:
+    if not use_isaac_loop and mj_viewer is None and max_steps is None:
         raise SystemExit(
-            "error: backend=mujoco requires max_steps>0 (no viewport loop)."
+            "error: backend=mujoco headless requires max_steps>0 (no viewport loop)."
         )
 
-    reset_flag = _register_hotkey_reset(cfg.headless) if use_isaac_loop else [False]
+    if use_isaac_loop:
+        reset_flag = _register_hotkey_reset(cfg.headless)
+    elif mj_viewer is not None:
+        reset_flag = mj_reset_flag if mj_reset_flag is not None else [False]
+    else:
+        reset_flag = [False]
     simulation_app = _get_simulation_app() if use_isaac_loop else None
 
     step = 0
     while True:
         if simulation_app is not None and not simulation_app.is_running():
+            break
+        if mj_viewer is not None and not mj_viewer.is_running():
             break
         if max_steps is not None and step >= max_steps:
             break
@@ -157,6 +186,8 @@ def _run_rollout(cfg: DictConfig, backend, *, use_isaac_loop: bool = False) -> N
         obs, reward, terminated, truncated, info = env.step(action)
         if recorder is not None:
             recorder.record_step(obs, action, reward, terminated, truncated, info)
+        if mj_viewer is not None:
+            mj_viewer.sync()
         step += 1
 
     if recorder is not None:

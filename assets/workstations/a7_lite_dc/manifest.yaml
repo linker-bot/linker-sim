@@ -1,0 +1,140 @@
+schema_version: 1
+name: a7_lite_dc
+composer_version: 0.1.0
+recipe_sha256: 1d0545c920f13ff11eb30906cf5e63a190738f9091b38806258c37c74a686c5d
+components:
+  base:
+    name: bases/a7_lite_torso
+    variant: default
+    sha256: 174a0282e8fb108ac8bffd9a92f306e195c6a6a2f20c99cfc9e204912deb0f21
+  arm_left:
+    name: arms/a7_lite
+    variant: left
+    sha256: fb07c7d75156bb999cf2d5af4ad022dc1be4b07bd73b2741715ce44d9e05f44a
+  arm_right:
+    name: arms/a7_lite
+    variant: right
+    sha256: e13772d04c0a716597710ff6d70861db496be7b7f1351248b032a03eeac19872
+  hand_left:
+    name: hands/linkerhand_l6
+    variant: left
+    sha256: 4200f775251b313e7c13b5b4ad05b058c618d4fed0e1916a69651b0c98e69647
+  hand_right:
+    name: hands/linkerhand_l6
+    variant: right
+    sha256: 99d1b9c3d55480d0f8e01ae78c8a2829f8f6007d0a51a5058ef7e00cb988ce91
+artifacts:
+  urdf: workstation.urdf
+  mjcf: workstation.mjcf
+  urdf_sha256: bd916a60e936eea0223f3a568c41746b95e8a7e39f8f43445b1c6466957ddd23
+  mjcf_sha256: 4bf0b4af1f0efeb0cac222fc07ef400e21d62479ecb7543ad20a1dc26ce7eca5
+joints:
+  base: []
+  arm_left:
+  - arm_left_L1_Joint
+  - arm_left_L2_Joint
+  - arm_left_L3_Joint
+  - arm_left_L4_Joint
+  - arm_left_L5_Joint
+  - arm_left_L6_Joint
+  - arm_left_L7_Joint
+  arm_right:
+  - arm_right_R1_Joint
+  - arm_right_R2_Joint
+  - arm_right_R3_Joint
+  - arm_right_R4_Joint
+  - arm_right_R5_Joint
+  - arm_right_R6_Joint
+  - arm_right_R7_Joint
+  hand_left:
+  - hand_left_lh_thumb_cmc_roll
+  - hand_left_lh_thumb_cmc_pitch
+  - hand_left_lh_index_mcp_pitch
+  - hand_left_lh_middle_mcp_pitch
+  - hand_left_lh_ring_mcp_pitch
+  - hand_left_lh_pinky_mcp_pitch
+  hand_right:
+  - hand_right_rh_thumb_cmc_roll
+  - hand_right_rh_thumb_cmc_pitch
+  - hand_right_rh_index_mcp_pitch
+  - hand_right_rh_middle_mcp_pitch
+  - hand_right_rh_ring_mcp_pitch
+  - hand_right_rh_pinky_mcp_pitch
+mimic_joints:
+  base: []
+  arm_left: []
+  arm_right: []
+  hand_left:
+  - hand_left_lh_thumb_dip
+  - hand_left_lh_index_dip
+  - hand_left_lh_middle_dip
+  - hand_left_lh_ring_dip
+  - hand_left_lh_pinky_dip
+  hand_right:
+  - hand_right_rh_thumb_dip
+  - hand_right_rh_index_dip
+  - hand_right_rh_middle_dip
+  - hand_right_rh_ring_dip
+  - hand_right_rh_pinky_dip
+frames:
+  base:arm_left_mount: base_arm_left_mount
+  base:arm_right_mount: base_arm_right_mount
+  arm_left:base_mount: arm_left_L_arm_root
+  arm_left:tool0: arm_left_L7_Link
+  arm_right:base_mount: arm_right_R_arm_root
+  arm_right:tool0: arm_right_R7_Link
+  hand_left:wrist_mount: hand_left_lh_hand_base_link
+  hand_right:wrist_mount: hand_right_rh_hand_base_link
+ee_link: arm_left_L7_Link
+ee_links:
+  arm_left: arm_left_L7_Link
+  arm_right: arm_right_R7_Link
+base_link: base_torso_root
+default_gains:
+  arm_left:
+    stiffness: 1000.0
+    damping: 4.0
+  arm_right:
+    stiffness: 1000.0
+    damping: 4.0
+  hand_left:
+    stiffness: 20.0
+    damping: 2.0
+  hand_right:
+    stiffness: 20.0
+    damping: 2.0
+gain_profiles:
+  arm_left:
+    default:
+      stiffness: 1000.0
+      damping: 4.0
+    joint:
+      stiffness: 1000.0
+      damping: 4.0
+    osc:
+      stiffness: 150.0
+      damping: 8.0
+  arm_right:
+    default:
+      stiffness: 1000.0
+      damping: 4.0
+    joint:
+      stiffness: 1000.0
+      damping: 4.0
+    osc:
+      stiffness: 150.0
+      damping: 8.0
+  hand_left:
+    default:
+      stiffness: 20.0
+      damping: 2.0
+    joint:
+      stiffness: 20.0
+      damping: 2.0
+  hand_right:
+    default:
+      stiffness: 20.0
+      damping: 2.0
+    joint:
+      stiffness: 20.0
+      damping: 2.0

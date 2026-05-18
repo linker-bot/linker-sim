@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot name="a7_lite_torso">
+
+  <!-- Stand: zero-mass link welded to world by the composer. base_link
+       hangs from it via a fixed joint that lifts the shoulder level up
+       to ~1.2 m so the arms (which extend ~0.6 m downward from the
+       shoulders in the default pose) don't penetrate the ground plane.
+       Tune this offset if the robot needs to sit higher/lower. -->
+  <link name="torso_root" />
+  <joint name="torso_stand" type="fixed">
+    <origin xyz="0 0 1.2" rpy="0 0 0" />
+    <parent link="torso_root" />
+    <child link="base_link" />
+  </joint>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0044493 9.5996E-07 -0.58827" rpy="0 0 0" />
+      <mass value="8.6616" />
+      <inertia
+        ixx="0.19297" ixy="1.6977E-06" ixz="0.00086704"
+        iyy="0.19297" iyz="4.1272E-08"
+        izz="0.072594" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/base_link.STL" />
+      </geometry>
+      <material name="a7_lite_torso_gray">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="arm_left_mount" />
+  <joint name="weld_arm_left_mount" type="fixed">
+    <origin xyz="0.0062932 0.1505 -0.022706" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="arm_left_mount" />
+  </joint>
+
+  <link name="arm_right_mount" />
+  <joint name="weld_arm_right_mount" type="fixed">
+    <origin xyz="0.0062926 -0.1505 -0.022706" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="arm_right_mount" />
+  </joint>
+</robot>
