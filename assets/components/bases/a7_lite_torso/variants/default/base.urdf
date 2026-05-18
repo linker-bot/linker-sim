@@ -39,6 +39,12 @@
     </collision>
   </link>
 
+  <!-- Mount-pad offsets carry the LZARMzongzhuang.urdf shoulder absorption.
+       The per-side a7_lite__{left,right}.urdf files use a different
+       base_link STL (with shoulder geometry baked in) and place the
+       arms at (0, ±0.1435, 0); we ship a different torso mesh, so the
+       (0.0062932, ±0.1505, -0.022706) values below are correct for our
+       base_link. -->
   <link name="arm_left_mount" />
   <joint name="weld_arm_left_mount" type="fixed">
     <origin xyz="0.0062932 0.1505 -0.022706" rpy="0 0 0" />

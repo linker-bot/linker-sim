@@ -29,8 +29,8 @@
         <inertial pos="0.004598 -0.067915 0.00072736"
                   mass="1.1899"
                   fullinertia="0.0016082 0.00086157 0.00092788 -3.3435E-06 3.9187E-07 -6.5828E-06"/>
-        <joint name="R1_Joint" type="hinge" axis="0 -1 0"
-               range="-2.181 3.752" damping="0" frictionloss="0.0" armature="0.01"/>
+        <joint name="R1_Joint" type="hinge" axis="0 1 0"
+               range="-3.75 2.18" damping="0" frictionloss="0.0" armature="0.01"/>
         <geom class="arm_a7_lite_visual" mesh="R1"/>
         <geom class="arm_a7_lite_collision" mesh="R1"/>
 
@@ -38,26 +38,26 @@
           <inertial pos="-0.031363 2.7784E-05 -0.099445"
                     mass="1.0663"
                     fullinertia="0.0014523 0.0012484 0.0010754 -8.9962E-07 -1.031E-06 1.1436E-05"/>
-          <joint name="R2_Joint" type="hinge" axis="1 0 0"
-                 range="-2.967 0.148" damping="0" frictionloss="0.0" armature="0.01"/>
+          <joint name="R2_Joint" type="hinge" axis="-1 0 0"
+                 range="-0.19 3.33" damping="0" frictionloss="0.0" armature="0.01"/>
           <geom class="arm_a7_lite_visual" mesh="R2"/>
           <geom class="arm_a7_lite_collision" mesh="R2"/>
 
-          <body name="R3_Link" pos="-0.03125 0 -0.15924">
+          <body name="R3_Link" pos="-0.03125 0 -0.147">
             <inertial pos="-2.2895E-05 -0.00123 -0.077166"
                       mass="1.3517"
                       fullinertia="0.00080502 0.0010686 0.00067469 2.8702E-07 7.1845E-06 -7.5659E-07"/>
             <joint name="R3_Joint" type="hinge" axis="0 0 1"
-                   range="-2.268 2.268" damping="0" frictionloss="0.0" armature="0.01"/>
+                   range="-2.26 2.26" damping="0" frictionloss="0.0" armature="0.01"/>
             <geom class="arm_a7_lite_visual" mesh="R3"/>
             <geom class="arm_a7_lite_collision" mesh="R3"/>
 
-            <body name="R4_Link" pos="0 -0.027 -0.11376">
+            <body name="R4_Link" pos="0 -0.027 -0.126">
               <inertial pos="1.2714E-05 0.024908 -0.082641"
                         mass="0.69691"
                         fullinertia="0.00041505 0.00041627 0.00043007 5.3251E-08 1.7254E-06 3.826E-07"/>
-              <joint name="R4_Joint" type="hinge" axis="0 -1 0"
-                     range="-0.785 1.701" damping="0" frictionloss="0.0" armature="0.01"/>
+              <joint name="R4_Joint" type="hinge" axis="0 1 0"
+                     range="-1.74 0.78" damping="0" frictionloss="0.0" armature="0.01"/>
               <geom class="arm_a7_lite_visual" mesh="R4"/>
               <geom class="arm_a7_lite_collision" mesh="R4"/>
 
@@ -66,7 +66,7 @@
                           mass="0.48527"
                           fullinertia="0.00016555 0.00022756 0.00015289 -5.747E-07 -2.6985E-06 -9.211E-07"/>
                 <joint name="R5_Joint" type="hinge" axis="0 0 1"
-                       range="-2.967 2.967" damping="0" frictionloss="0.0" armature="0.01"/>
+                       range="-2.96 2.96" damping="0" frictionloss="0.0" armature="0.01"/>
                 <geom class="arm_a7_lite_visual" mesh="R5"/>
                 <geom class="arm_a7_lite_collision" mesh="R5"/>
 
@@ -79,7 +79,7 @@
                   <geom class="arm_a7_lite_visual" mesh="R6"/>
                   <geom class="arm_a7_lite_collision" mesh="R6"/>
 
-                  <body name="R7_Link" pos="0.0282 0.028 -0.075">
+                  <body name="R7_Link" pos="0.028 0.028 -0.075">
                     <inertial pos="-0.026598 3.7248E-14 -0.025801"
                               mass="0.10175"
                               fullinertia="4.5036E-05 3.8663E-05 3.0632E-05 -4.7046E-12 2.2349E-07 -1.5968E-20"/>
@@ -99,11 +99,11 @@
   </worldbody>
 
   <actuator>
-    <position name="R1_Joint_act" joint="R1_Joint" kp="1000" kv="4" ctrlrange="-2.181 3.752"/>
-    <position name="R2_Joint_act" joint="R2_Joint" kp="1000" kv="4" ctrlrange="-2.967 0.148"/>
-    <position name="R3_Joint_act" joint="R3_Joint" kp="1000" kv="4" ctrlrange="-2.268 2.268"/>
-    <position name="R4_Joint_act" joint="R4_Joint" kp="1000" kv="4" ctrlrange="-0.785 1.701"/>
-    <position name="R5_Joint_act" joint="R5_Joint" kp="1000" kv="4" ctrlrange="-2.967 2.967"/>
+    <position name="R1_Joint_act" joint="R1_Joint" kp="1000" kv="4" ctrlrange="-3.75 2.18"/>
+    <position name="R2_Joint_act" joint="R2_Joint" kp="1000" kv="4" ctrlrange="-0.19 3.33"/>
+    <position name="R3_Joint_act" joint="R3_Joint" kp="1000" kv="4" ctrlrange="-2.26 2.26"/>
+    <position name="R4_Joint_act" joint="R4_Joint" kp="1000" kv="4" ctrlrange="-1.74 0.78"/>
+    <position name="R5_Joint_act" joint="R5_Joint" kp="1000" kv="4" ctrlrange="-2.96 2.96"/>
     <position name="R6_Joint_act" joint="R6_Joint" kp="1000" kv="4" ctrlrange="-1.57 1.57"/>
     <position name="R7_Joint_act" joint="R7_Joint" kp="1000" kv="4" ctrlrange="-1.57 1.57"/>
   </actuator>

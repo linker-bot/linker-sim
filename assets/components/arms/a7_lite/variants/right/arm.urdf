@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Source: /home/zhy/codes/A7_Lite_URDF/urdf/LZARMzongzhuang.urdf (right arm chain).
-     Rerooted at a zero-mass virtual link R_arm_root so the recipe's fixed
-     mount joint can live above the first revolute R1_Joint. The source's
-     joint r2 origin (0.0062926, -0.1505, -0.022706) was absorbed into the
-     a7_lite_torso arm_right_mount pad. Source link/joint names r2..r8 are
-     renamed R1..R7. Inertials and joint origins copied verbatim from the
-     right-arm chain (NOT mirrored from left — the source isn't perfectly
-     symmetric). Effort/velocity limits backfilled (source had zeros). -->
+<!-- Joint kinematics (axes, limits, joint origins, effort/velocity)
+     come from /home/zhy/codes/a7_lite__right.urdf — the per-side URDF
+     the real robot/recorder uses. The previously committed component
+     was derived from the combined LZARMzongzhuang.urdf, which had
+     different sign conventions on R1/R2/R4 (axes flipped, limits
+     negated/swapped) plus 12 mm errors on R3/R4 origin Z. Replay was
+     getting clamped because of those.
+
+     Inertials and mount-pad offsets (in a7_lite_torso) keep the
+     LZARMzongzhuang values: the per-side URDFs assume a different
+     base_link STL than the one our torso ships, so the truth's
+     (0, -0.1435, 0) shoulder offset doesn't apply here.
+
+     This component re-roots at a zero-mass virtual link R_arm_root so
+     the recipe's fixed mount joint can live above the first revolute
+     R1_Joint. -->
 <robot name="a7_lite_right">
 
   <link name="R_arm_root" />
@@ -40,8 +48,8 @@
     <origin xyz="0 0 0" rpy="0 0 0" />
     <parent link="R_arm_root" />
     <child link="R1_Link" />
-    <axis xyz="0 -1 0" />
-    <limit lower="-2.181" upper="3.752" effort="80" velocity="10.47" />
+    <axis xyz="0 1 0" />
+    <limit lower="-3.75" upper="2.18" effort="60" velocity="18.84" />
   </joint>
 
   <link name="R2_Link">
@@ -73,8 +81,8 @@
     <origin xyz="0.03125 -0.0715 0" rpy="0 0 0" />
     <parent link="R1_Link" />
     <child link="R2_Link" />
-    <axis xyz="1 0 0" />
-    <limit lower="-2.967" upper="0.148" effort="80" velocity="10.47" />
+    <axis xyz="-1 0 0" />
+    <limit lower="-0.19" upper="3.33" effort="60" velocity="18.84" />
   </joint>
 
   <link name="R3_Link">
@@ -103,11 +111,11 @@
     </collision>
   </link>
   <joint name="R3_Joint" type="revolute">
-    <origin xyz="-0.03125 0 -0.15924" rpy="0 0 0" />
+    <origin xyz="-0.03125 0 -0.147" rpy="0 0 0" />
     <parent link="R2_Link" />
     <child link="R3_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-2.268" upper="2.268" effort="80" velocity="10.47" />
+    <limit lower="-2.26" upper="2.26" effort="17" velocity="37.68" />
   </joint>
 
   <link name="R4_Link">
@@ -136,11 +144,11 @@
     </collision>
   </link>
   <joint name="R4_Joint" type="revolute">
-    <origin xyz="0 -0.027 -0.11376" rpy="0 0 0" />
+    <origin xyz="0 -0.027 -0.126" rpy="0 0 0" />
     <parent link="R3_Link" />
     <child link="R4_Link" />
-    <axis xyz="0 -1 0" />
-    <limit lower="-0.785" upper="1.701" effort="36" velocity="9.1" />
+    <axis xyz="0 1 0" />
+    <limit lower="-1.74" upper="0.78" effort="36" velocity="10.47" />
   </joint>
 
   <link name="R5_Link">
@@ -173,7 +181,7 @@
     <parent link="R4_Link" />
     <child link="R5_Link" />
     <axis xyz="0 0 1" />
-    <limit lower="-2.967" upper="2.967" effort="36" velocity="9.1" />
+    <limit lower="-2.96" upper="2.96" effort="14" velocity="27.21" />
   </joint>
 
   <link name="R6_Link">
@@ -206,7 +214,7 @@
     <parent link="R5_Link" />
     <child link="R6_Link" />
     <axis xyz="0 1 0" />
-    <limit lower="-1.57" upper="1.57" effort="18" velocity="7.33" />
+    <limit lower="-1.57" upper="1.57" effort="14" velocity="27.21" />
   </joint>
 
   <link name="R7_Link">
@@ -235,11 +243,11 @@
     </collision>
   </link>
   <joint name="R7_Joint" type="revolute">
-    <origin xyz="0.0282 0.028 -0.075" rpy="0 0 0" />
+    <origin xyz="0.028 0.028 -0.075" rpy="0 0 0" />
     <parent link="R6_Link" />
     <child link="R7_Link" />
     <axis xyz="-1 0 0" />
-    <limit lower="-1.57" upper="1.57" effort="18" velocity="7.33" />
+    <limit lower="-1.57" upper="1.57" effort="14" velocity="27.21" />
   </joint>
 
 </robot>
