@@ -7,7 +7,7 @@ hot-reloaded from a JSON file — edit the file, save, and the
 controller rebuilds without restarting Isaac.
 
 Usage:
-    python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --robot_side left
+    python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --arm_role arm_left
 """
 
 from __future__ import annotations
@@ -24,15 +24,21 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-_ROBOT_SIDE_TO_WORKSTATION = {
-    "left": "ar5_l6_bench",
-    "right": "ar5_l6_bench_right",
-}
-
 
 parser = argparse.ArgumentParser(description="OSC gain tuning with runtime hot-reload.")
 parser.add_argument("--num_envs", type=int, default=1, help="Use 1 for interactive tuning.")
-parser.add_argument("--robot_side", type=str, default="left", choices=["left", "right"])
+parser.add_argument(
+    "--workstation",
+    type=str,
+    default="ar5_l6_bench_bimanual",
+    help="Composed workstation name.",
+)
+parser.add_argument(
+    "--arm_role",
+    type=str,
+    default="arm_left",
+    help="Arm role to tune (e.g. 'arm_left', 'arm_right' for bimanual workstations).",
+)
 parser.add_argument("--ee_frame", type=str, default="tcp", choices=["tcp", "wrist"])
 parser.add_argument(
     "--gains_file",
@@ -106,10 +112,10 @@ def _load_gains(path: Path) -> dict:
     return payload
 
 
-def _build_osc_from_gains(ee_frame: str, gains: dict) -> OscController:
+def _build_osc_from_gains(arm_role: str, ee_frame: str, gains: dict) -> OscController:
     return OscController(
         OscControllerCfg(
-            role="arm",
+            role=arm_role,
             frame=ee_frame,
             action_scale_pos=float(gains["arm_action_scale_pos"]),
             action_scale_rot=float(gains["arm_action_scale_rot"]),
@@ -140,7 +146,9 @@ def _probe_command(gains: dict, t: float, num_envs: int, device: torch.device) -
 
 
 def main() -> None:
-    workstation_name = _ROBOT_SIDE_TO_WORKSTATION[args_cli.robot_side]
+    workstation_name = args_cli.workstation
+    arm_role = args_cli.arm_role
+    hand_role = arm_role.replace("arm", "hand", 1)
 
     gains_path = Path(args_cli.gains_file).expanduser().resolve()
     _ensure_gains_file(gains_path)
@@ -159,12 +167,12 @@ def main() -> None:
         backend.sim.get_physics_context().set_gravity(0.0)
 
     robot = backend.robots["robot"]
-    ee_frame = "arm:tool0" if args_cli.ee_frame == "tcp" else None
+    ee_frame = f"{arm_role}:tool0" if args_cli.ee_frame == "tcp" else None
 
-    osc = _build_osc_from_gains(ee_frame, gains)
+    osc = _build_osc_from_gains(arm_role, ee_frame, gains)
     osc.attach(robot)
 
-    hand = JointPDController(JointPDControllerCfg(role="hand", action_scale=0.0))
+    hand = JointPDController(JointPDControllerCfg(role=hand_role, action_scale=0.0))
     hand.attach(robot)
 
     # Reset robots once so the default pose is realized.
@@ -186,7 +194,7 @@ def main() -> None:
                 if new_mtime != gains_mtime:
                     gains = _load_gains(gains_path)
                     gains_mtime = new_mtime
-                    osc = _build_osc_from_gains(ee_frame, gains)
+                    osc = _build_osc_from_gains(arm_role, ee_frame, gains)
                     osc.attach(robot)
                     print("[INFO] Reloaded OSC gains from file.")
             except Exception as exc:

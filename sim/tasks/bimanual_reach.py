@@ -1,8 +1,8 @@
 """Bimanual reach task: drive two EEs to independent sampled targets.
 
-Mirrors `sim.tasks.reach.ReachTask` but parameterized over `arms`: a
-list of per-arm specs (role, ee_frame, workspace). Each arm samples
-its own target on reset; reward is the sum of per-arm shaped reach
+Parameterized over `arms`: a list of per-arm specs (role, ee_frame,
+workspace). Each arm samples its own target on reset; reward is the
+sum of per-arm shaped reach
 rewards; termination requires every arm's success streak to hit
 `success_hold_steps`.
 
@@ -28,7 +28,19 @@ import torch
 
 from sim.backends.base import SimBackend
 from sim.tasks.base import Task
-from sim.tasks.reach import _rpy_to_quat_wxyz
+
+
+def _rpy_to_quat_wxyz(rpy: torch.Tensor) -> torch.Tensor:
+    """`(N, 3)` roll/pitch/yaw -> `(N, 4)` wxyz quaternion (XYZ Tait-Bryan)."""
+    r, p, y = rpy.unbind(-1)
+    cr, sr = torch.cos(r * 0.5), torch.sin(r * 0.5)
+    cp, sp = torch.cos(p * 0.5), torch.sin(p * 0.5)
+    cy, sy = torch.cos(y * 0.5), torch.sin(y * 0.5)
+    w = cr * cp * cy + sr * sp * sy
+    x = sr * cp * cy - cr * sp * sy
+    y_ = cr * sp * cy + sr * cp * sy
+    z = cr * cp * sy - sr * sp * cy
+    return torch.stack([w, x, y_, z], dim=-1)
 
 
 @dataclass
@@ -63,8 +75,7 @@ class BimanualReachTaskCfg:
     action_penalty: float = 0.01
     joint_vel_penalty: float = 0.001
 
-    # Per-arm success thresholds (same threshold for both — keeps the
-    # task comparable to single-arm ReachTask).
+    # Per-arm success thresholds (same threshold for both arms).
     success_pos_threshold: float = 0.02
     success_ori_threshold_rad: float = 0.1745
     success_hold_steps: int = 5
@@ -83,7 +94,7 @@ class BimanualReachTask:
         if len(self.cfg.arms) < 2:
             raise ValueError(
                 f"BimanualReachTask expects >= 2 arms in cfg.arms, got "
-                f"{len(self.cfg.arms)}. For single-arm reach use ReachTask."
+                f"{len(self.cfg.arms)}."
             )
 
         self.action_dim = self.cfg.action_dim

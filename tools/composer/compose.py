@@ -2,7 +2,7 @@
 
 Usage:
     python -m tools.composer.compose <workstation_dir> [--check-drift]
-    python -m tools.composer.compose assets/workstations/ar5_l6_bench
+    python -m tools.composer.compose assets/workstations/ar5_l6_bench_bimanual
 
 Reads `recipe.yaml` from the workstation directory, resolves every referenced
 component under `assets/components/`, emits `workstation.urdf` and (when

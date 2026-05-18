@@ -22,28 +22,14 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-_ROBOT_SIDE_TO_WORKSTATION = {
-    "left": "ar5_l6_bench",
-    "right": "ar5_l6_bench_right",
-    "both": "ar5_l6_bench_bimanual",
-}
-
 
 parser = argparse.ArgumentParser(description="Spawn OSC test scene over a composed workstation.")
 parser.add_argument("--num_envs", type=int, default=1)
 parser.add_argument(
     "--workstation",
     type=str,
-    default=None,
-    help="Composed workstation name (e.g. 'ar5_l6_bench'). Overrides --robot_side.",
-)
-parser.add_argument(
-    "--robot_side",
-    type=str,
-    default="left",
-    choices=["left", "right", "both"],
-    help="Convenience flag: 'left' -> ar5_l6_bench, 'right' -> ar5_l6_bench_right, "
-    "'both' -> ar5_l6_bench_bimanual.",
+    default="ar5_l6_bench_bimanual",
+    help="Composed workstation name (e.g. 'ar5_l6_bench_bimanual').",
 )
 parser.add_argument(
     "--reset_interval",
@@ -66,12 +52,6 @@ simulation_app = app_launcher.app
 import torch  # noqa: E402
 
 from sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend  # noqa: E402
-
-
-def _resolve_workstation(args) -> str:
-    if args.workstation:
-        return args.workstation
-    return _ROBOT_SIDE_TO_WORKSTATION[args.robot_side]
 
 
 def run(backend: IsaacSimBackend, reset_interval: int, reset_envs_per_event: int) -> None:
@@ -98,7 +78,7 @@ def run(backend: IsaacSimBackend, reset_interval: int, reset_envs_per_event: int
 
 
 def main() -> None:
-    workstation_name = _resolve_workstation(args_cli)
+    workstation_name = args_cli.workstation
     backend_cfg = IsaacBackendCfg(
         workstations={"robot": workstation_name},
         num_envs=args_cli.num_envs,

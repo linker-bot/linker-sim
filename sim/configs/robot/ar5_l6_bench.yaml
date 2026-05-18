@@ -1,7 +1,0 @@
-# @package _global_
-robot:
-  workstation_name: ar5_l6_bench
-  role_name: robot      # key under backend.robots[...]
-  # Rigid bodies to pre-declare on the scene. Tasks (pick_place) read
-  # these from backend.rigid_bodies.
-  rigid_bodies: {}

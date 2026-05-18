@@ -63,7 +63,7 @@ class IsaacBackendCfg:
     construction and are reachable via `backend.rigid_bodies[name]`.
     """
 
-    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_l6_bench"})
+    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_l6_bench_bimanual"})
     rigid_bodies: dict[str, RigidBodySpec] = field(default_factory=dict)
     num_envs: int = 1
     env_spacing: float = 2.5
@@ -119,7 +119,7 @@ class _SingleRobotSceneCfg(InteractiveSceneCfg):
     them (only asset cfgs are valid there)."""
 
     robot_name: str | None = "robot"
-    workstation_name: str | None = "ar5_l6_bench"
+    workstation_name: str | None = "ar5_l6_bench_bimanual"
     ground: bool | None = True
     dome_light: bool | None = True
     rigid_bodies: dict | None = None  # name -> RigidBodySpec
@@ -133,7 +133,7 @@ class _SingleRobotSceneCfg(InteractiveSceneCfg):
 
     def __post_init__(self):
         super().__post_init__()
-        ws_name = self.workstation_name or "ar5_l6_bench"
+        ws_name = self.workstation_name or "ar5_l6_bench_bimanual"
         robot_name = self.robot_name or "robot"
         handle = load_workstation(ws_name)
         self.robot = to_articulation_cfg(

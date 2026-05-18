@@ -6,7 +6,7 @@ given workstation. Useful for verifying the composer's output before a
 backend consumes it.
 
     python tools/registry_show.py                    # list workstations
-    python tools/registry_show.py ar5_l6_bench       # dump handle fields
+    python tools/registry_show.py ar5_l6_bench_bimanual   # dump handle fields
 """
 
 from __future__ import annotations

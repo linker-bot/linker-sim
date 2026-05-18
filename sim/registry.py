@@ -7,8 +7,8 @@ is the composer's job; the registry is read-only and sim-agnostic.
 Typical use (from a sim backend):
 
     from sim.registry import discover, load
-    names = discover()                   # ["ar5_l6_bench", "ar5_l6_bench_right"]
-    handle = load("ar5_l6_bench")
+    names = discover()                   # ["ar5_l6_bench_bimanual", "lkls73_i1_bimanual"]
+    handle = load("ar5_l6_bench_bimanual")
     isaac_cfg = to_articulation_cfg(handle)   # backend-specific, see sim/backends/isaac
 
 A `WorkstationHandle` carries everything a backend needs to construct its

@@ -22,7 +22,7 @@ except ImportError:
 
 @dataclass
 class MujocoBackendCfg:
-    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_l6_bench"})
+    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_l6_bench_bimanual"})
     num_envs: int = 1
     dt: float = 1.0 / 500.0
     device: str = "cpu"

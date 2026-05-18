@@ -1,5 +1,0 @@
-# @package _global_
-robot:
-  workstation_name: ar5_l6_bench_right
-  role_name: robot
-  rigid_bodies: {}

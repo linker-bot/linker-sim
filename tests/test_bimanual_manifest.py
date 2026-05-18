@@ -63,10 +63,3 @@ def test_bimanual_frames_expose_both_tool0():
     assert "arm_left:tool0" in h.frames
     assert "arm_right:tool0" in h.frames
     assert h.frames["arm_left:tool0"] != h.frames["arm_right:tool0"]
-
-
-def test_singlearm_manifests_still_have_ee_links_singleton():
-    """Back-compat: the re-composed single-arm manifests expose
-    ee_links as a 1-entry dict keyed by the arm role."""
-    h = load("ar5_l6_bench")
-    assert h.ee_links == {"arm": h.ee_link}

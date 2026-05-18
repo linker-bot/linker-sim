@@ -44,11 +44,11 @@ assets/
     hands/
       linkerhand_l6/ ...
   workstations/
-    ar5_l6_bench/
+    ar5_l6_bench_bimanual/
       recipe.yaml          # authored
       workstation.urdf     # generated, committed
       manifest.yaml        # generated, committed
-    ar5_l6_bench_right/    ar5_l6_bench_bimanual/    lkls73_i1_bimanual/
+    lkls73_i1_bimanual/
 tools/
   composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
   validate_workstation.py
@@ -178,7 +178,7 @@ One file: [sim/registry.py](../sim/registry.py).
 ```python
 from sim.registry import discover, load
 
-names = discover()                  # ["ar5_l6_bench", ..., "lkls73_i1_bimanual"]
+names = discover()                  # ["ar5_l6_bench_bimanual", "lkls73_i1_bimanual"]
 handle = load("lkls73_i1_bimanual")
 
 handle.urdf_path                    # absolute Path, ready for Isaac

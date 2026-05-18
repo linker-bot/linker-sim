@@ -112,23 +112,17 @@ With `env_isaaclab` activated:
 
 ```bash
 cd /path/to/dex-tool-rl
-python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side left
-```
-
-Right-arm variant:
-
-```bash
-python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --robot_side right
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1
 ```
 
 Explicit workstation selection:
 
 ```bash
-python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --workstation ar5_l6_bench
+python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --workstation ar5_l6_bench_bimanual
 ```
 
-> Pass `--robot_side both` or `--workstation ar5_l6_bench_bimanual` to
-> spawn the bimanual workstation. See [PR3_PROGRESS.md](PR3_PROGRESS.md).
+> The default workstation is `ar5_l6_bench_bimanual`. Pass
+> `--workstation lkls73_i1_bimanual` to spawn the LKLS73 humanoid.
 
 Multi-env:
 
@@ -139,7 +133,7 @@ python sim/envs/test_osc/spawn_osc_scene.py --num_envs 16
 ## 5) Tune OSC gains (optional)
 
 ```bash
-python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --robot_side left
+python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --arm_role arm_left
 ```
 
 Creates `sim/envs/test_osc/osc_gains.json` on first run and hot-reloads while running.
@@ -150,19 +144,19 @@ The composer and validator don't need Isaac Sim — just `.[tools]`.
 
 ```bash
 # Recompose one workstation after editing its recipe / a referenced component
-python -m tools.composer.compose assets/workstations/ar5_l6_bench
+python -m tools.composer.compose assets/workstations/ar5_l6_bench_bimanual
 
 # Recompose everything
 for ws in assets/workstations/*/; do python -m tools.composer.compose "$ws"; done
 
 # Validate (8 checks: manifest hashes, kinematic structure, mesh resolution, composer drift)
-python tools/validate_workstation.py assets/workstations/ar5_l6_bench
+python tools/validate_workstation.py assets/workstations/ar5_l6_bench_bimanual
 
 # List composed workstations
 python tools/registry_show.py
 
 # Dump the registry handle for one workstation
-python tools/registry_show.py ar5_l6_bench
+python tools/registry_show.py ar5_l6_bench_bimanual
 
 # CI drift check (fails if committed artifacts are stale)
 bash tools/ci/check_drift.sh

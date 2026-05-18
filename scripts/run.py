@@ -2,14 +2,14 @@
 
 Usage:
 
-    # Smoke rollout with OSC on a reach task:
+    # Smoke rollout with OSC on a bimanual reach task:
     python scripts/run.py
 
     # MuJoCo + joint PD:
-    python scripts/run.py backend=mujoco controller=joint_pd task=reach policy=zeros max_steps=200
+    python scripts/run.py backend=mujoco controller=joint_pd_bimanual task=bimanual_reach policy=zeros max_steps=200
 
-    # Pick-and-place with JSONL recording:
-    python scripts/run.py task=pick_place recorder=jsonl
+    # IK-pose absolute control with JSONL recording:
+    python scripts/run.py controller=ik_pose_bimanual task=bimanual_reach_ikpose recorder=jsonl
 
 Hydra docs: https://hydra.cc/docs/intro/
 """
