@@ -1,0 +1,26 @@
+# @package _global_
+# Joint-space PD on all four bimanual roles. Action layout:
+#   [arm_left(7), hand_left(6), arm_right(7), hand_right(6)] = 26
+controller:
+  name: joint_pd_bimanual
+  entries:
+    - _target_: sim.controllers.joint_pd.JointPDController
+      cfg:
+        _target_: sim.controllers.joint_pd.JointPDControllerCfg
+        role: arm_left
+        action_scale: 0.25
+    - _target_: sim.controllers.joint_pd.JointPDController
+      cfg:
+        _target_: sim.controllers.joint_pd.JointPDControllerCfg
+        role: hand_left
+        action_scale: 0.2
+    - _target_: sim.controllers.joint_pd.JointPDController
+      cfg:
+        _target_: sim.controllers.joint_pd.JointPDControllerCfg
+        role: arm_right
+        action_scale: 0.25
+    - _target_: sim.controllers.joint_pd.JointPDController
+      cfg:
+        _target_: sim.controllers.joint_pd.JointPDControllerCfg
+        role: hand_right
+        action_scale: 0.2

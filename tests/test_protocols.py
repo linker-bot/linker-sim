@@ -12,9 +12,26 @@ from sim.backends.base import Robot, SimBackend
 from sim.backends.mujoco import MujocoBackendCfg, MujocoSimBackend
 
 
-def test_mujoco_backend_raises_on_construct():
-    with pytest.raises(NotImplementedError, match="PR #1b"):
-        MujocoSimBackend(MujocoBackendCfg())
+def test_mujoco_backend_constructs():
+    pytest.importorskip("mujoco")
+    backend = MujocoSimBackend(MujocoBackendCfg())
+    assert isinstance(backend, SimBackend)
+    assert backend.num_envs == 1
+    assert backend.dt > 0
+    assert "robot" in backend.robots
+    backend.close()
+
+
+def test_mujoco_backend_rejects_multi_env():
+    pytest.importorskip("mujoco")
+    with pytest.raises(NotImplementedError, match="num_envs"):
+        MujocoSimBackend(MujocoBackendCfg(num_envs=4))
+
+
+def test_mujoco_backend_rejects_non_cpu_device():
+    pytest.importorskip("mujoco")
+    with pytest.raises(ValueError, match="cpu"):
+        MujocoSimBackend(MujocoBackendCfg(device="cuda:0"))
 
 
 def test_protocol_runtime_checkable():

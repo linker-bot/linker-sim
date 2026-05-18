@@ -5,17 +5,11 @@ Usage:
     # Smoke rollout with OSC on a reach task:
     python scripts/run.py
 
+    # MuJoCo + joint PD:
+    python scripts/run.py backend=mujoco controller=joint_pd task=reach policy=zeros max_steps=200
+
     # Pick-and-place with JSONL recording:
     python scripts/run.py task=pick_place recorder=jsonl
-
-    # Different workstation:
-    python scripts/run.py robot=ar5_l6_bench_right
-
-    # Joint-PD on both roles (override controller group):
-    python scripts/run.py controller=joint_pd task=reach
-
-    # Override arbitrary fields:
-    python scripts/run.py num_envs=4 max_steps=500 policy=random_walk
 
 Hydra docs: https://hydra.cc/docs/intro/
 """
@@ -34,13 +28,13 @@ import hydra
 from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
-from isaaclab.app import AppLauncher
-
 # Register the div resolver used in configs (rationals for dt).
 OmegaConf.register_new_resolver("div", lambda a, b: a / b, replace=True)
 
 
 def _launch_isaac(cfg: DictConfig):
+    from isaaclab.app import AppLauncher
+
     parser = argparse.ArgumentParser(add_help=False)
     AppLauncher.add_app_launcher_args(parser)
     launch_args = parser.parse_args([])
@@ -55,33 +49,44 @@ def main(cfg: DictConfig) -> None:
     print("[run] resolved cfg:\n" + OmegaConf.to_yaml(cfg), flush=True)
 
     if cfg.backend.name == "mujoco":
-        raise SystemExit(
-            "error: backend=mujoco is a stub. Blocked on PR #1b "
-            "(component MJCF authoring). Use backend=isaac."
-        )
+        _run_mujoco(cfg)
+        return
 
     simulation_app = _launch_isaac(cfg)
     import traceback
+
     try:
         _run_isaac(cfg)
     except BaseException:
-        # Surface the traceback BEFORE Kit's shutdown prints clobber
-        # stderr — same pattern as sim/envs/test_osc/spawn_osc_scene.py
-        # (see docs/PR1_PROGRESS.md for the original diagnosis).
         traceback.print_exc()
         raise
     finally:
         simulation_app.close()
 
 
-def _run_isaac(cfg: DictConfig) -> None:
-    # Imports that require the SimulationApp to be live.
-    import torch
-    from sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
-    from sim.envs.base import BaseEnv, BaseEnvCfg
-    from sim.io.recorder import Recorder
+def _run_mujoco(cfg: DictConfig) -> None:
+    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
 
-    # --- Backend ----------------------------------------------------------- #
+    if getattr(cfg.robot, "rigid_bodies", None):
+        raise SystemExit(
+            "error: rigid_bodies are not supported on the MuJoCo backend yet "
+            "(use backend=isaac for pick_place)."
+        )
+
+    backend_cfg = MujocoBackendCfg(
+        workstations={cfg.robot.role_name: cfg.robot.workstation_name},
+        num_envs=int(cfg.num_envs),
+        dt=float(cfg.backend.dt),
+        device="cpu",
+    )
+    backend = MujocoSimBackend(backend_cfg)
+    print(f"[run] backend ready: {cfg.robot.workstation_name} x{backend.num_envs}")
+    _run_rollout(cfg, backend)
+
+
+def _run_isaac(cfg: DictConfig) -> None:
+    from sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
+
     rigid_bodies = {}
     if getattr(cfg.robot, "rigid_bodies", None):
         for name, spec in cfg.robot.rigid_bodies.items():
@@ -100,18 +105,16 @@ def _run_isaac(cfg: DictConfig) -> None:
     )
     backend = IsaacSimBackend(backend_cfg)
     print(f"[run] backend ready: {cfg.robot.workstation_name} x{backend.num_envs}")
+    _run_rollout(cfg, backend, use_isaac_loop=True)
 
-    # --- Controllers ------------------------------------------------------- #
+
+def _run_rollout(cfg: DictConfig, backend, *, use_isaac_loop: bool = False) -> None:
+    from sim.envs.base import BaseEnv, BaseEnvCfg
+    from sim.io.recorder import Recorder
+
     controllers = [instantiate(entry) for entry in cfg.controller.entries]
-
-    # --- Task -------------------------------------------------------------- #
-    # _recursive_=True (default) materializes the nested `cfg:` as a
-    # ReachTaskCfg / PickPlaceTaskCfg instance before calling the task's
-    # __init__. Without it, `cfg:` stays as a DictConfig and breaks the
-    # isinstance check.
     task = instantiate(cfg.task, backend=backend)
 
-    # --- Env --------------------------------------------------------------- #
     env_cfg = BaseEnvCfg(
         robot_name=cfg.robot.role_name,
         decimation=int(cfg.decimation),
@@ -121,38 +124,35 @@ def _run_isaac(cfg: DictConfig) -> None:
     env = BaseEnv(backend, controllers, task, env_cfg)
     print(f"[run] env ready: action_dim={env.action_dim} observation_dim={env.observation_dim}")
 
-    # --- Recorder ---------------------------------------------------------- #
-    # `cfg.recorder` may be absent (if the defaults list mapping is weird)
-    # or None (if someone set recorder=null on the CLI). Tolerate both.
     recorder_cfg = OmegaConf.select(cfg, "recorder", default=None)
     recorder: Recorder | None = None
     if recorder_cfg is not None:
         recorder = instantiate(recorder_cfg, num_envs=backend.num_envs)
 
-    # --- Rollout ----------------------------------------------------------- #
     obs, _ = env.reset(seed=int(cfg.seed))
     policy = _make_policy(cfg.policy, env.action_dim, backend.num_envs, backend.device)
 
-    # Hotkey: press 'R' in the Isaac viewport to reset all envs.
-    # No-op in headless mode (no keyboard subscription possible).
-    reset_flag = _register_hotkey_reset(cfg.headless)
+    max_steps = int(cfg.max_steps) if int(cfg.max_steps) > 0 else None
+    if not use_isaac_loop and max_steps is None:
+        raise SystemExit(
+            "error: backend=mujoco requires max_steps>0 (no viewport loop)."
+        )
+
+    reset_flag = _register_hotkey_reset(cfg.headless) if use_isaac_loop else [False]
+    simulation_app = _get_simulation_app() if use_isaac_loop else None
 
     step = 0
-    # max_steps <= 0 → run until the user closes the window.
-    # BaseEnv already resets done envs in-place, so the loop keeps going
-    # across episode boundaries without any extra bookkeeping here.
-    max_steps = int(cfg.max_steps) if int(cfg.max_steps) > 0 else None
-
-    # Import here to avoid binding at module load.
-    simulation_app = _get_simulation_app()
-
-    while simulation_app.is_running():
+    while True:
+        if simulation_app is not None and not simulation_app.is_running():
+            break
         if max_steps is not None and step >= max_steps:
             break
+
         if reset_flag[0]:
             reset_flag[0] = False
             obs, _ = env.reset()
             print(f"[run] manual reset at step {step}")
+
         action = policy(step, obs)
         obs, reward, terminated, truncated, info = env.step(action)
         if recorder is not None:
@@ -165,19 +165,12 @@ def _run_isaac(cfg: DictConfig) -> None:
 
 
 def _get_simulation_app():
-    # Avoid re-importing AppLauncher (which re-starts the app).
     import omni.kit.app  # type: ignore
+
     return omni.kit.app.get_app()
 
 
 def _register_hotkey_reset(headless: bool, key_name: str = "R") -> list:
-    """Subscribe to viewport key presses; flip the returned flag on `key_name`.
-
-    Returns a 1-element list used as a mutable bool (set to True on press,
-    consumed by the main loop). In headless mode the subscription is
-    skipped and a dead flag is returned so the main loop can check it
-    unconditionally.
-    """
     flag = [False]
     if headless:
         return flag

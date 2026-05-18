@@ -71,6 +71,14 @@
       </geometry>
     </collision>
   </link>
+  <joint name="lh_thumb_cmc_roll" type="revolute">
+    <origin xyz="0.0078133 -0.029898 0.026692" rpy="-0.034907 0 0" />
+    <parent link="lh_hand_base_link" />
+    <child link="lh_thumb_metacarpals_base1" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.087266" upper="1.256637" effort="0.588" velocity="5.95" />
+    <dynamics damping="0.02" friction="0.05416667" />
+  </joint>
   <link name="lh_thumb_metacarpals">
     <inertial>
       <origin xyz="0.00769270907060086 0.0859662184722988 0.0235283086675235" rpy="0 0 0" />
@@ -93,6 +101,14 @@
       </geometry>
     </collision>
   </link>
+  <joint name="lh_thumb_cmc_pitch" type="revolute">
+    <origin xyz="0.0057298 -0.01332 0.0027456" rpy="1.1083 0 0.40143" />
+    <parent link="lh_thumb_metacarpals_base1" />
+    <child link="lh_thumb_metacarpals" />
+    <axis xyz="-1 0 0" />
+    <limit lower="0" upper="0.837758" effort="1.008" velocity="3.47" />
+    <dynamics damping="0.02" friction="0.0375" />
+  </joint>
   <link name="lh_thumb_distal">
     <inertial>
       <origin xyz="0.00769270907081708 0.0798662184721594 -0.0591716913325555" rpy="0 0 0" />
@@ -135,6 +151,19 @@
       <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09" />
     </inertial>
   </link>
+  <joint name="lh_thumb_tip_fixed" type="fixed">
+    <origin xyz="0 0.0035 0.026" rpy="0 0 1.5708" />
+    <parent link="lh_thumb_distal" />
+    <child link="lh_thumb_tip" />
+  </joint>
+  <joint name="lh_thumb_dip" type="revolute">
+    <origin xyz="0 0.0061 0.0827" rpy="0 0 0" />
+    <parent link="lh_thumb_metacarpals" />
+    <child link="lh_thumb_distal" />
+    <axis xyz="-1 0 0" />
+    <limit lower="0" upper="0.963287" effort="0" velocity="1.7" />
+    <mimic joint="lh_thumb_cmc_pitch" multiplier="1.226495" offset="0" />
+  </joint>
   <link name="lh_index_proximal">
     <inertial>
       <origin xyz="0.001776 -0.00011 0.012556" rpy="0 0 0" />
@@ -157,6 +186,14 @@
       </geometry>
     </collision>
   </link>
+  <joint name="lh_index_mcp_pitch" type="revolute">
+    <origin xyz="-0.00066821 -0.028967 0.11722" rpy="0 0 0" />
+    <parent link="lh_hand_base_link" />
+    <child link="lh_index_proximal" />
+    <axis xyz="0 1 0" />
+    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
+    <dynamics damping="0.01" friction="0.04" />
+  </joint>
   <link name="lh_index_distal">
     <inertial>
       <origin xyz="0.0134 0.002262 0.016992" rpy="0 0 0" />
@@ -199,6 +236,19 @@
       <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09" />
     </inertial>
   </link>
+  <joint name="lh_index_tip_fixed" type="fixed">
+    <origin xyz="0.0341 0 0.034" rpy="0 0 0" />
+    <parent link="lh_index_distal" />
+    <child link="lh_index_tip" />
+  </joint>
+  <joint name="lh_index_dip" type="revolute">
+    <origin xyz="0.00093749 0 0.028002" rpy="0 0 0" />
+    <parent link="lh_index_proximal" />
+    <child link="lh_index_distal" />
+    <axis xyz="0 1 0" />
+    <limit lower="0" upper="1.277039" effort="0" velocity="3.1" />
+    <mimic joint="lh_index_mcp_pitch" multiplier="1.125676" offset="0" />
+  </joint>
   <link name="lh_middle_proximal">
     <inertial>
       <origin xyz="0.001776 -0.00011 0.012556" rpy="0 0 0" />
@@ -221,6 +271,14 @@
       </geometry>
     </collision>
   </link>
+  <joint name="lh_middle_mcp_pitch" type="revolute">
+    <origin xyz="-0.00066821 -0.0089013 0.12322" rpy="0 0 0" />
+    <parent link="lh_hand_base_link" />
+    <child link="lh_middle_proximal" />
+    <axis xyz="0 1 0" />
+    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
+    <dynamics damping="0.01" friction="0.02708333" />
+  </joint>
   <link name="lh_middle_distal">
     <inertial>
       <origin xyz="0.0134 0.002262 0.016992" rpy="0 0 0" />
@@ -263,6 +321,19 @@
       <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09" />
     </inertial>
   </link>
+  <joint name="lh_middle_tip_fixed" type="fixed">
+    <origin xyz="0.0341 0 0.034" rpy="0 0 0" />
+    <parent link="lh_middle_distal" />
+    <child link="lh_middle_tip" />
+  </joint>
+  <joint name="lh_middle_dip" type="revolute">
+    <origin xyz="0.00093749 0 0.028002" rpy="0 0 0" />
+    <parent link="lh_middle_proximal" />
+    <child link="lh_middle_distal" />
+    <axis xyz="0 1 0" />
+    <limit lower="0" upper="1.277039" effort="0" velocity="3.1" />
+    <mimic joint="lh_middle_mcp_pitch" multiplier="1.125676" offset="0" />
+  </joint>
   <link name="lh_ring_proximal">
     <inertial>
       <origin xyz="0.001776 -0.00011 0.012556" rpy="0 0 0" />
@@ -285,6 +356,14 @@
       </geometry>
     </collision>
   </link>
+  <joint name="lh_ring_mcp_pitch" type="revolute">
+    <origin xyz="-0.00067368 0.010717 0.11822" rpy="0 0 0" />
+    <parent link="lh_hand_base_link" />
+    <child link="lh_ring_proximal" />
+    <axis xyz="0 1 0" />
+    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
+    <dynamics damping="0.01" friction="0.02291667" />
+  </joint>
   <link name="lh_ring_distal">
     <inertial>
       <origin xyz="0.0134 0.002262 0.016992" rpy="0 0 0" />
@@ -327,6 +406,19 @@
       <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09" />
     </inertial>
   </link>
+  <joint name="lh_ring_tip_fixed" type="fixed">
+    <origin xyz="0.0341 0 0.034" rpy="0 0 0" />
+    <parent link="lh_ring_distal" />
+    <child link="lh_ring_tip" />
+  </joint>
+  <joint name="lh_ring_dip" type="revolute">
+    <origin xyz="0.00093749 0 0.028002" rpy="0 0 0" />
+    <parent link="lh_ring_proximal" />
+    <child link="lh_ring_distal" />
+    <axis xyz="0 1 0" />
+    <limit lower="0" upper="1.277039" effort="0" velocity="3.1" />
+    <mimic joint="lh_ring_mcp_pitch" multiplier="1.125676" offset="0" />
+  </joint>
   <link name="lh_pinky_proximal">
     <inertial>
       <origin xyz="0.001776 -0.00011 0.012556" rpy="0 0 0" />
@@ -349,6 +441,14 @@
       </geometry>
     </collision>
   </link>
+  <joint name="lh_pinky_mcp_pitch" type="revolute">
+    <origin xyz="-0.00067852 0.029814 0.11424" rpy="0 0 0" />
+    <parent link="lh_hand_base_link" />
+    <child link="lh_pinky_proximal" />
+    <axis xyz="0 1 0" />
+    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
+    <dynamics damping="0.01" friction="0.01" />
+  </joint>
   <link name="lh_pinky_distal">
     <inertial>
       <origin xyz="0.0134 0.002262 0.016992" rpy="0 0 0" />
@@ -391,106 +491,6 @@
       <inertia ixx="1e-09" ixy="0" ixz="0" iyy="1e-09" iyz="0" izz="1e-09" />
     </inertial>
   </link>
-  <joint name="lh_thumb_cmc_roll" type="revolute">
-    <origin xyz="0.0078133 -0.029898 0.026692" rpy="-0.034907 0 0" />
-    <parent link="lh_hand_base_link" />
-    <child link="lh_thumb_metacarpals_base1" />
-    <axis xyz="0 0 1" />
-    <limit lower="-0.087266" upper="1.256637" effort="0.588" velocity="5.95" />
-    <dynamics damping="0.02" friction="0.05416667" />
-  </joint>
-  <joint name="lh_thumb_cmc_pitch" type="revolute">
-    <origin xyz="0.0057298 -0.01332 0.0027456" rpy="1.1083 0 0.40143" />
-    <parent link="lh_thumb_metacarpals_base1" />
-    <child link="lh_thumb_metacarpals" />
-    <axis xyz="-1 0 0" />
-    <limit lower="0" upper="0.837758" effort="1.008" velocity="3.47" />
-    <dynamics damping="0.02" friction="0.0375" />
-  </joint>
-  <joint name="lh_thumb_tip_fixed" type="fixed">
-    <origin xyz="0 0.0035 0.026" rpy="0 0 1.5708" />
-    <parent link="lh_thumb_distal" />
-    <child link="lh_thumb_tip" />
-  </joint>
-  <joint name="lh_thumb_dip" type="revolute">
-    <origin xyz="0 0.0061 0.0827" rpy="0 0 0" />
-    <parent link="lh_thumb_metacarpals" />
-    <child link="lh_thumb_distal" />
-    <axis xyz="-1 0 0" />
-    <limit lower="0" upper="0.963287" effort="0" velocity="1.7" />
-    <mimic joint="lh_thumb_cmc_pitch" multiplier="1.226495" offset="0" />
-  </joint>
-  <joint name="lh_index_mcp_pitch" type="revolute">
-    <origin xyz="-0.00066821 -0.028967 0.11722" rpy="0 0 0" />
-    <parent link="lh_hand_base_link" />
-    <child link="lh_index_proximal" />
-    <axis xyz="0 1 0" />
-    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
-    <dynamics damping="0.01" friction="0.04" />
-  </joint>
-  <joint name="lh_index_tip_fixed" type="fixed">
-    <origin xyz="0.0341 0 0.034" rpy="0 0 0" />
-    <parent link="lh_index_distal" />
-    <child link="lh_index_tip" />
-  </joint>
-  <joint name="lh_index_dip" type="revolute">
-    <origin xyz="0.00093749 0 0.028002" rpy="0 0 0" />
-    <parent link="lh_index_proximal" />
-    <child link="lh_index_distal" />
-    <axis xyz="0 1 0" />
-    <limit lower="0" upper="1.277039" effort="0" velocity="3.1" />
-    <mimic joint="lh_index_mcp_pitch" multiplier="1.125676" offset="0" />
-  </joint>
-  <joint name="lh_middle_mcp_pitch" type="revolute">
-    <origin xyz="-0.00066821 -0.0089013 0.12322" rpy="0 0 0" />
-    <parent link="lh_hand_base_link" />
-    <child link="lh_middle_proximal" />
-    <axis xyz="0 1 0" />
-    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
-    <dynamics damping="0.01" friction="0.02708333" />
-  </joint>
-  <joint name="lh_middle_tip_fixed" type="fixed">
-    <origin xyz="0.0341 0 0.034" rpy="0 0 0" />
-    <parent link="lh_middle_distal" />
-    <child link="lh_middle_tip" />
-  </joint>
-  <joint name="lh_middle_dip" type="revolute">
-    <origin xyz="0.00093749 0 0.028002" rpy="0 0 0" />
-    <parent link="lh_middle_proximal" />
-    <child link="lh_middle_distal" />
-    <axis xyz="0 1 0" />
-    <limit lower="0" upper="1.277039" effort="0" velocity="3.1" />
-    <mimic joint="lh_middle_mcp_pitch" multiplier="1.125676" offset="0" />
-  </joint>
-  <joint name="lh_ring_mcp_pitch" type="revolute">
-    <origin xyz="-0.00067368 0.010717 0.11822" rpy="0 0 0" />
-    <parent link="lh_hand_base_link" />
-    <child link="lh_ring_proximal" />
-    <axis xyz="0 1 0" />
-    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
-    <dynamics damping="0.01" friction="0.02291667" />
-  </joint>
-  <joint name="lh_ring_tip_fixed" type="fixed">
-    <origin xyz="0.0341 0 0.034" rpy="0 0 0" />
-    <parent link="lh_ring_distal" />
-    <child link="lh_ring_tip" />
-  </joint>
-  <joint name="lh_ring_dip" type="revolute">
-    <origin xyz="0.00093749 0 0.028002" rpy="0 0 0" />
-    <parent link="lh_ring_proximal" />
-    <child link="lh_ring_distal" />
-    <axis xyz="0 1 0" />
-    <limit lower="0" upper="1.277039" effort="0" velocity="3.1" />
-    <mimic joint="lh_ring_mcp_pitch" multiplier="1.125676" offset="0" />
-  </joint>
-  <joint name="lh_pinky_mcp_pitch" type="revolute">
-    <origin xyz="-0.00067852 0.029814 0.11424" rpy="0 0 0" />
-    <parent link="lh_hand_base_link" />
-    <child link="lh_pinky_proximal" />
-    <axis xyz="0 1 0" />
-    <limit lower="0" upper="1.134464" effort="0.574" velocity="6.10" />
-    <dynamics damping="0.01" friction="0.01" />
-  </joint>
   <joint name="lh_pinky_tip_fixed" type="fixed">
     <origin xyz="0.0341 0 0.034" rpy="0 0 0" />
     <parent link="lh_pinky_distal" />
