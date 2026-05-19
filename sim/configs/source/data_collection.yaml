@@ -1,0 +1,22 @@
+# Linker-Hand-flavored real-robot recording. `path` points at a directory
+# containing `telemetry.npz` (default: `episode_000004/` at the repo root).
+# Telemetry layout (verified empirically): qpos cols 0-13 are the two
+# arms in radians; cols 14-25 are 0-255 byte commands per finger for the
+# two L6 hands. Decoder=linker_l6 maps bytes -> joint range.
+_target_: sim.io.replay.sources.TelemetryNpzSource
+path: episode_000004
+field: qpos        # qpos | actions | effort | qvel
+hz: 30.0
+layout:
+  arm_left:
+    cols: [0, 7]
+    sign: 1.0
+  arm_right:
+    cols: [7, 14]
+    sign: 1.0
+  hand_left:
+    cols: [14, 20]
+    decoder: linker_l6
+  hand_right:
+    cols: [20, 26]
+    decoder: linker_l6

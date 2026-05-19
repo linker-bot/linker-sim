@@ -24,20 +24,10 @@ device: cuda:0
 
 # Action policy for the rollout. "zeros" holds the robot at its default
 # pose through the implicit PD; "random_walk" uniformly samples a delta
-# action each step (good for smoke tests). "replay" feeds recorded
-# joint targets from `replay.path` (requires controller=joint_pd_bimanual).
-# Override per-task by passing +policy=... on the CLI.
+# action each step (good for smoke tests). Override per-task by passing
+# +policy=... on the CLI. For replaying real-robot data, use
+# `scripts/replay.py` instead.
 policy: zeros
-
-# Replay options (only consumed when policy=replay).
-replay:
-  path: null          # path to episode dir or telemetry.npz
-  source: qpos        # qpos | actions — which column to use as PD target
-  swap_arms: false    # set true if cols 0-6 are right-arm and 7-13 are left-arm
-
-# When true, pace the rollout loop to wall-clock at decimation*backend.dt
-# per step. Useful for visual replay; set false for fast headless runs.
-realtime: false
 
 hydra:
   run:

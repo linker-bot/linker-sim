@@ -221,6 +221,13 @@ class MujocoRobot:
             raise KeyError(role)
         return self._actuated_ids_by_role[role]
 
+    def actuated_joint_limits_of(self, role: str) -> tuple[torch.Tensor, torch.Tensor]:
+        ids = self.actuated_joint_ids_of(role).tolist()
+        ranges = np.stack([self._model.jnt_range[self._joint_mj_ids[c]] for c in ids])
+        lo = torch.from_numpy(ranges[:, 0].astype(np.float32))
+        hi = torch.from_numpy(ranges[:, 1].astype(np.float32))
+        return lo, hi
+
     def body_id_of(self, frame: str) -> int:
         return self._resolve_body(self._resolve_frame(frame))
 

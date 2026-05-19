@@ -1,0 +1,15 @@
+# Top-level config for `scripts/replay.py`. Drives the runtime backend
+# from a `ReplaySource` (e.g. real-robot telemetry npz) without going
+# through controllers, tasks, or BaseEnv.
+defaults:
+  - backend: mujoco
+  - robot: ???
+  - source: ???
+  - _self_
+
+num_envs: 1
+device: cpu        # mujoco-only for now; switch to cuda:0 with backend=isaac
+seed: 0
+headless: false
+realtime: true     # pace loop to source.hz wall-clock
+max_frames: null   # null = full source
