@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot name="arm">
+  <material name="white">
+    <color rgba="1.0 1.0 1.0 1.0" />
+  </material>
+  <link name="AR5_5_08L_W4C4A6_base">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_base.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="-1.5708 0 0" xyz="0.0 0.0 0.0" />
+      <material name="white" />
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_base.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="-1.5708 0 0" xyz="0.0 0.0 0.0" />
+    </collision>
+  </link>
+  <!-- Inertials below borrowed from AR5 07-class component (same family). -->
+  <link name="AR5_5_08L_W4C4A6_link1">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link1.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="-1.5708 -1.5708 0" xyz="0 0 0" />
+      <material name="white" />
+    </visual>
+    <inertial>
+      <mass value="2.683" />
+      <inertia ixx="0.00493673" ixy="0.00000160" ixz="0.00000198" iyy="0.00452344" iyz="-0.00000020" izz="0.00432910" />
+      <origin rpy="0 0 0" xyz="1e-06 -0.000621 0.167909" />
+    </inertial>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link1.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="-1.5708 -1.5708 0" xyz="0 0 0" />
+    </collision>
+  </link>
+  <link name="AR5_5_08L_W4C4A6_link2">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link2.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="-3.1416 0.0 -1.5708" xyz="0 0 0.0" />
+      <material name="white" />
+    </visual>
+    <inertial>
+      <mass value="2.3" />
+      <inertia ixx="0.01151906" ixy="0.00000246" ixz="-0.00000055" iyy="0.00993335" iyz="0.00082477" izz="0.00435237" />
+      <origin rpy="0 0 0" xyz="-2e-05 -0.003081 0.10298600000000001" />
+    </inertial>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link2.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="-3.1416 0.0 -1.5708" xyz="0 0 0.0" />
+    </collision>
+  </link>
+  <link name="AR5_5_08L_W4C4A6_link3">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link3.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 3.1416" xyz="0 0 0" />
+      <material name="white" />
+    </visual>
+    <inertial>
+      <mass value="1.862" />
+      <inertia ixx="0.00519681" ixy="0.00001208" ixz="0.00035761" iyy="0.00470446" iyz="0.00003430" izz="0.00266752" />
+      <origin rpy="0 0 0" xyz="0.007097 -0.0006590000000000001 -0.016530999999999997" />
+    </inertial>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link3.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 3.1416" xyz="0 0 0" />
+    </collision>
+  </link>
+  <link name="AR5_5_08L_W4C4A6_link4">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link4.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 3.1416" xyz="0.0 0.0 0.0" />
+      <material name="white" />
+    </visual>
+    <inertial>
+      <mass value="1.234" />
+      <inertia ixx="0.00389590" ixy="-0.00004577" ixz="-0.00017280" iyy="0.00308657" iyz="0.00046679" izz="0.00188364" />
+      <origin rpy="0 0 0" xyz="-0.007826 -0.004207 0.073404" />
+    </inertial>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link4.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 3.1416" xyz="0.0 0.0 0.0" />
+    </collision>
+  </link>
+  <link name="AR5_5_08L_W4C4A6_link5">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link5.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 0" xyz="0 0 0" />
+      <material name="white" />
+    </visual>
+    <inertial>
+      <mass value="1.329" />
+      <inertia ixx="0.00281562" ixy="0.00001782" ixz="0.00001650" iyy="0.00221084" iyz="0.00002100" izz="0.00182169" />
+      <origin rpy="0 0 0" xyz="0.00028399999999999996 0.0016510000000000001 -0.084133" />
+    </inertial>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link5.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 0" xyz="0 0 0" />
+    </collision>
+  </link>
+  <link name="AR5_5_08L_W4C4A6_link6">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link6.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 0" xyz="0 0 0" />
+      <material name="white" />
+    </visual>
+    <inertial>
+      <mass value="0.93" />
+      <inertia ixx="0.00072078" ixy="-0.00000217" ixz="0.00000108" iyy="0.00085153" iyz="0.00000048" izz="0.00090205" />
+      <origin rpy="0 0 0" xyz="0.005405999999999999 0.000612 -3.9e-05" />
+    </inertial>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link6.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 0" xyz="0 0 0" />
+    </collision>
+  </link>
+  <link name="AR5_5_08L_W4C4A6_link7">
+    <visual>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link7.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 0" xyz="0.0 0.0 0.0" />
+      <material name="white" />
+    </visual>
+    <inertial>
+      <mass value="0.33" />
+      <inertia ixx="0.00051942" ixy="-0.00000052" ixz="0.00003721" iyy="0.00079132" iyz="0.00000265" izz="0.00045886" />
+      <origin rpy="0 0 0" xyz="-0.00277 0.000316 0.054881" />
+    </inertial>
+    <collision>
+      <geometry>
+        <mesh filename="meshes/AR5_5_08L_W4C4A6_link7.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <origin rpy="0 -3.1416 0" xyz="0.0 0.0 0.0" />
+    </collision>
+  </link>
+  <link name="AR5_5_08L_W4C4A6_tcp">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0001 0.0001 0.0001" />
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.0001 0.0001 0.0001" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.0" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+  <joint name="AR5_5_08L_W4C4A6_joint_1" type="revolute">
+    <parent link="AR5_5_08L_W4C4A6_base" />
+    <child link="AR5_5_08L_W4C4A6_link1" />
+    <limit effort="108" lower="-3.1067" upper="3.1067" velocity="3.0543261909900763" />
+    <axis xyz="0 1 0" />
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0" />
+  </joint>
+  <joint name="AR5_5_08L_W4C4A6_joint_2" type="revolute">
+    <parent link="AR5_5_08L_W4C4A6_link1" />
+    <child link="AR5_5_08L_W4C4A6_link2" />
+    <limit effort="108" lower="-0.5236" upper="3.6652" velocity="3.0543261909900763" />
+    <axis xyz="1 0 0" />
+    <origin rpy="0 0 0" xyz="0.0 0.1745 0.0" />
+  </joint>
+  <joint name="AR5_5_08L_W4C4A6_joint_3" type="revolute">
+    <parent link="AR5_5_08L_W4C4A6_link2" />
+    <child link="AR5_5_08L_W4C4A6_link3" />
+    <limit effort="66" lower="-3.1067" upper="3.1067" velocity="4.71238898038469" />
+    <axis xyz="0 0 -1" />
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.332" />
+  </joint>
+  <joint name="AR5_5_08L_W4C4A6_joint_4" type="revolute">
+    <parent link="AR5_5_08L_W4C4A6_link3" />
+    <child link="AR5_5_08L_W4C4A6_link4" />
+    <limit effort="66" lower="-1.0472" upper="2.5307" velocity="4.71238898038469" />
+    <axis xyz="0 -1 0" />
+    <origin rpy="0 0 0" xyz="0.0105 0.0 0.0" />
+  </joint>
+  <joint name="AR5_5_08L_W4C4A6_joint_5" type="revolute">
+    <parent link="AR5_5_08L_W4C4A6_link4" />
+    <child link="AR5_5_08L_W4C4A6_link5" />
+    <limit effort="19" lower="-3.1067" upper="3.1067" velocity="4.1887902047863905" />
+    <axis xyz="0 0 -1" />
+    <origin rpy="0 0 0" xyz="-0.0105 0.0 -0.278" />
+  </joint>
+  <joint name="AR5_5_08L_W4C4A6_joint_6" type="revolute">
+    <parent link="AR5_5_08L_W4C4A6_link5" />
+    <child link="AR5_5_08L_W4C4A6_link6" />
+    <limit effort="19" lower="-0.9599" upper="0.9599" velocity="4.1887902047863905" />
+    <axis xyz="0 -1 0" />
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0" />
+  </joint>
+  <joint name="AR5_5_08L_W4C4A6_joint_7" type="revolute">
+    <parent link="AR5_5_08L_W4C4A6_link6" />
+    <child link="AR5_5_08L_W4C4A6_link7" />
+    <limit effort="19" lower="-0.9599" upper="0.9599" velocity="4.1887902047863905" />
+    <axis xyz="1 0 0" />
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0" />
+  </joint>
+  <joint name="AR5_5_08L_W4C4A6_tcp_joint" type="fixed">
+    <parent link="AR5_5_08L_W4C4A6_link7" />
+    <child link="AR5_5_08L_W4C4A6_tcp" />
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.09" />
+  </joint>
+</robot>

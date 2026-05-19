@@ -1,0 +1,57 @@
+schema_version: 1
+kind: arm
+name: ar5_08
+drive: position
+
+# Two mirrored variants with pre-baked mesh sets. The composer substitutes
+# {V} -> L or R in every link/joint name derived from templates below.
+variants:
+  left:
+    vars: {V: L}
+    urdf: variants/left/arm.urdf
+    mjcf: variants/left/arm.mjcf
+    meshdir: variants/left/meshes
+  right:
+    vars: {V: R}
+    urdf: variants/right/arm.urdf
+    mjcf: variants/right/arm.mjcf
+    meshdir: variants/right/meshes
+
+root_link: "AR5_5_08{V}_W4C4A6_base"
+
+# Mount frames this component exposes.
+#   base_mount — bolted to the parent surface; composer's freeze_base /
+#                recipe mounts attach this to the workstation's pad.
+#   tool0      — the tool-center-point used as the end-effector for OSC.
+mount_frames:
+  base_mount:
+    parent: "AR5_5_08{V}_W4C4A6_base"
+  tool0:
+    parent: "AR5_5_08{V}_W4C4A6_tcp"
+
+ee_frame: tool0
+
+actuated_joints:
+  - "AR5_5_08{V}_W4C4A6_joint_1"
+  - "AR5_5_08{V}_W4C4A6_joint_2"
+  - "AR5_5_08{V}_W4C4A6_joint_3"
+  - "AR5_5_08{V}_W4C4A6_joint_4"
+  - "AR5_5_08{V}_W4C4A6_joint_5"
+  - "AR5_5_08{V}_W4C4A6_joint_6"
+  - "AR5_5_08{V}_W4C4A6_joint_7"
+
+# Source URDF ships no inertials; per-link mass/COM/inertia tensors are
+# borrowed from the in-tree AR5 (07-class) component as a same-family
+# approximation. Documented in the URDF inertial blocks. Runtime gains
+# come from this manifest, not the URDF effort/velocity placeholders.
+default_gains:
+  stiffness: 1000.0
+  damping: 4.0
+
+gain_profiles:
+  joint:
+    stiffness: 1000.0
+    damping: 4.0
+  osc:
+    stiffness: 150.0
+    damping: 8.0
