@@ -63,7 +63,7 @@ class IsaacBackendCfg:
     construction and are reachable via `backend.rigid_bodies[name]`.
     """
 
-    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_l6_bench_bimanual"})
+    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_o6_bench_bimanual"})
     rigid_bodies: dict[str, RigidBodySpec] = field(default_factory=dict)
     num_envs: int = 1
     env_spacing: float = 2.5
@@ -85,7 +85,7 @@ def build_scene_cfg(cfg: IsaacBackendCfg) -> InteractiveSceneCfg:
     One composed workstation (one articulation) per scene. Bimanual is
     modeled as a single workstation with multiple role keys
     (`arm_left` / `arm_right` / `hand_left` / `hand_right`) — see
-    `assets/workstations/ar5_l6_bench_bimanual`. Multi-articulation
+    `assets/workstations/ar5_o6_bench_bimanual`. Multi-articulation
     scenes (several independent robots in one env) are not supported;
     that requires a separate InteractiveScene layout.
     `rigid_bodies` are attached dynamically in `__post_init__` — they
@@ -98,7 +98,7 @@ def build_scene_cfg(cfg: IsaacBackendCfg) -> InteractiveSceneCfg:
         raise NotImplementedError(
             "Multi-articulation scenes are not supported. Bimanual "
             "workstations compose both arms into one articulation — "
-            "use e.g. workstations={'robot': 'ar5_l6_bench_bimanual'}."
+            "use e.g. workstations={'robot': 'ar5_o6_bench_bimanual'}."
         )
     (robot_name, ws_name), = cfg.workstations.items()
     return _SingleRobotSceneCfg(
@@ -119,7 +119,7 @@ class _SingleRobotSceneCfg(InteractiveSceneCfg):
     them (only asset cfgs are valid there)."""
 
     robot_name: str | None = "robot"
-    workstation_name: str | None = "ar5_l6_bench_bimanual"
+    workstation_name: str | None = "ar5_o6_bench_bimanual"
     ground: bool | None = True
     dome_light: bool | None = True
     rigid_bodies: dict | None = None  # name -> RigidBodySpec
@@ -133,7 +133,7 @@ class _SingleRobotSceneCfg(InteractiveSceneCfg):
 
     def __post_init__(self):
         super().__post_init__()
-        ws_name = self.workstation_name or "ar5_l6_bench_bimanual"
+        ws_name = self.workstation_name or "ar5_o6_bench_bimanual"
         robot_name = self.robot_name or "robot"
         handle = load_workstation(ws_name)
         self.robot = to_articulation_cfg(

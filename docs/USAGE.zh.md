@@ -41,7 +41,7 @@ cd /path/to/dex-tool-rl
 
 ## 2. 在 Isaac Sim 中运行
 
-默认配置：`backend=isaac`、`robot=ar5_l6_bench_bimanual`、
+默认配置：`backend=isaac`、`robot=ar5_o6_bench_bimanual`、
 `controller=osc_bimanual`、`task=bimanual_reach`、`recorder=disabled`、
 `policy=zeros`。
 
@@ -50,7 +50,7 @@ cd /path/to/dex-tool-rl
 python scripts/run.py
 
 # 切换 workstation，并用随机游走激发双臂。
-python scripts/run.py robot=lkls73_i1_bimanual policy=random_walk
+python scripts/run.py robot=lkls73_i1_o6_bimanual policy=random_walk
 
 # 无界面 + 限步运行，常用于 CI / 烟雾测试。
 python scripts/run.py headless=true max_steps=500
@@ -60,6 +60,13 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 ```
 
 热键（窗口模式下）：在视口中按 `R` 重置所有环境；关闭窗口即退出。
+
+仓库内的 workstation（Hydra 配置组 `robot`）：
+
+- O6 手（当前默认）：`ar5_o6_bench_bimanual`（默认）、
+  `lkls73_i1_o6_bimanual`、`a7_lite_o6_dc`。
+- L6 手（沿用 / 并行）：`ar5_l6_bench_bimanual`、
+  `lkls73_i1_bimanual`、`a7_lite_dc`。
 
 常用参数（定义于 [sim/configs/config.yaml](../sim/configs/config.yaml)）：
 

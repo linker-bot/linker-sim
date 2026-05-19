@@ -2,7 +2,7 @@
 # groups under sim/configs/<group>/<name>.yaml.
 defaults:
   - backend: isaac
-  - robot: ar5_l6_bench_bimanual
+  - robot: ar5_o6_bench_bimanual
   - controller: osc_bimanual
   - task: bimanual_reach
   - recorder: disabled   # YAML 1.1 keywords (null/off/on/yes/no/true/false) break hydra defaults parsing.

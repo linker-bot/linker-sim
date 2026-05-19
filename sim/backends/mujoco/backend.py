@@ -22,7 +22,7 @@ except ImportError:
 
 @dataclass
 class MujocoBackendCfg:
-    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_l6_bench_bimanual"})
+    workstations: dict[str, str] = field(default_factory=lambda: {"robot": "ar5_o6_bench_bimanual"})
     num_envs: int = 1
     dt: float = 1.0 / 500.0
     device: str = "cpu"
@@ -49,7 +49,7 @@ class MujocoSimBackend:
         if len(cfg.workstations) != 1:
             raise NotImplementedError(
                 "Multi-articulation scenes are not supported. Use one composed "
-                "workstation per scene, e.g. workstations={'robot': 'ar5_l6_bench_bimanual'}."
+                "workstation per scene, e.g. workstations={'robot': 'ar5_o6_bench_bimanual'}."
             )
 
         self.cfg = cfg

@@ -1,0 +1,5 @@
+# @package _global_
+robot:
+  workstation_name: a7_lite_o6_dc
+  role_name: robot
+  rigid_bodies: {}

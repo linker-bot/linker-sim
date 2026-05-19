@@ -33,8 +33,19 @@ def linker_l6(raw: np.ndarray, lo: np.ndarray, hi: np.ndarray) -> np.ndarray:
     return lo + (raw / 255.0) * (hi - lo)
 
 
+def linker_o6(raw: np.ndarray, lo: np.ndarray, hi: np.ndarray) -> np.ndarray:
+    """Decode Linker Hand O6 0–255 byte commands to joint-position targets.
+
+    Same vendor encoding as L6 (0–255 byte → joint travel) and so reuses
+    the same linear mapping. The TODO on `linker_l6` about real vendor
+    curves applies here too.
+    """
+    return linker_l6(raw, lo, hi)
+
+
 _DECODERS: dict[str, Callable] = {
     "linker_l6": linker_l6,
+    "linker_o6": linker_o6,
 }
 
 

@@ -42,7 +42,7 @@ Config groups live under [sim/configs/](../sim/configs/):
 
 ## 2. Run a rollout in Isaac Sim
 
-Default: `backend=isaac`, `robot=ar5_l6_bench_bimanual`, `controller=osc_bimanual`,
+Default: `backend=isaac`, `robot=ar5_o6_bench_bimanual`, `controller=osc_bimanual`,
 `task=bimanual_reach`, `recorder=disabled`, `policy=zeros`.
 
 ```bash
@@ -50,7 +50,7 @@ Default: `backend=isaac`, `robot=ar5_l6_bench_bimanual`, `controller=osc_bimanua
 python scripts/run.py
 
 # Choose another workstation and exercise both arms with random walk.
-python scripts/run.py robot=lkls73_i1_bimanual policy=random_walk
+python scripts/run.py robot=lkls73_i1_o6_bimanual policy=random_walk
 
 # Headless, capped run — useful in CI / smoke tests.
 python scripts/run.py headless=true max_steps=500
@@ -61,6 +61,13 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 
 Hotkeys (windowed mode): press `R` in the viewport to reset all envs.
 Close the window to exit.
+
+Shipped workstations (Hydra group `robot`):
+
+- O6 hand (default class): `ar5_o6_bench_bimanual` (default),
+  `lkls73_i1_o6_bimanual`, `a7_lite_o6_dc`.
+- L6 hand (legacy / parallel): `ar5_l6_bench_bimanual`,
+  `lkls73_i1_bimanual`, `a7_lite_dc`.
 
 Common knobs (defined in [sim/configs/config.yaml](../sim/configs/config.yaml)):
 

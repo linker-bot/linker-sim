@@ -1,0 +1,45 @@
+schema_version: 1
+name: ar5_o6_bench_bimanual
+description: >
+  Bimanual AR5 + Linkerhand O6 workstation. Two AR5 arms mounted to the
+  bench's left/right pads, each carrying its own Linkerhand O6 (mirrored
+  meshes). Single composed URDF -> single articulation in Isaac; roles
+  arm_left / arm_right / hand_left / hand_right are addressable through
+  `Robot.joint_ids_of(role)` and the manifest's per-role ee_links.
+
+components:
+  base:
+    component: bases/bench_table
+    variant: default
+  arm_left:
+    component: arms/ar5
+    variant: left
+  arm_right:
+    component: arms/ar5
+    variant: right
+  hand_left:
+    component: hands/linkerhand_o6
+    variant: left
+  hand_right:
+    component: hands/linkerhand_o6
+    variant: right
+
+freeze_base: base
+
+mounts:
+  - child: arm_left:base_mount
+    parent: base:arm_left_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+  - child: arm_right:base_mount
+    parent: base:arm_right_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+  - child: hand_left:wrist_mount
+    parent: arm_left:tool0
+    xyz: [0.0, 0.0, 0.03]
+    rpy: [0.0, 0.0, 1.5708]
+  - child: hand_right:wrist_mount
+    parent: arm_right:tool0
+    xyz: [0.0, 0.0, 0.03]
+    rpy: [0.0, 0.0, -1.5708]
