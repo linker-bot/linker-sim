@@ -106,29 +106,32 @@ Optional extras:
 
 For daily work with IsaacLab already installed, `.[tools]` is usually enough.
 
-## 4) Verify — OSC smoke test
+## 4) Verify — Isaac smoke test
 
 With `env_isaaclab` activated:
 
 ```bash
 cd /path/to/dex-tool-rl
-python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1
+python scripts/run.py max_steps=200 headless=true
 ```
 
 Explicit workstation selection:
 
 ```bash
-python sim/envs/test_osc/spawn_osc_scene.py --num_envs 1 --workstation ar5_l6_bench_bimanual
+python scripts/run.py robot=lkls73_i1_bimanual max_steps=200 headless=true
 ```
 
 > The default workstation is `ar5_l6_bench_bimanual`. Pass
-> `--workstation lkls73_i1_bimanual` to spawn the LKLS73 humanoid.
+> `robot=lkls73_i1_bimanual` or `robot=a7_lite_dc` for the others.
 
 Multi-env:
 
 ```bash
-python sim/envs/test_osc/spawn_osc_scene.py --num_envs 16
+python scripts/run.py num_envs=16 max_steps=200 headless=true
 ```
+
+See [USAGE.md](USAGE.md) for the full set of `scripts/run.py` knobs and
+the MuJoCo backend.
 
 ## 5) Tune OSC gains (optional)
 
