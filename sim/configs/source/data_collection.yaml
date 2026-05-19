@@ -2,7 +2,9 @@
 # containing `telemetry.npz` (default: `episode_000004/` at the repo root).
 # Telemetry layout (verified empirically): qpos cols 0-13 are the two
 # arms in radians; cols 14-25 are 0-255 byte commands per finger for the
-# two L6 hands. Decoder=linker_l6 maps bytes -> joint range.
+# two hands. Decoder=linker_o6 maps bytes -> joint range (same linear
+# math as linker_l6; the source hardware was L6 but the math applies
+# identically to the O6 default workstation).
 _target_: sim.io.replay.sources.TelemetryNpzSource
 path: episode_000004
 field: qpos        # qpos | actions | effort | qvel
@@ -16,7 +18,7 @@ layout:
     sign: 1.0
   hand_left:
     cols: [14, 20]
-    decoder: linker_l6
+    decoder: linker_o6
   hand_right:
     cols: [20, 26]
-    decoder: linker_l6
+    decoder: linker_o6
