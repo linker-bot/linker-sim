@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/lkls73_arm
     variant: left
-    sha256: 97008782c10fb0c72cf4538b99920aac01bcf7bf706b9109fc79c06bd69eb606
+    sha256: ebef8b5fd36f1c63632690c36afb4014ef055671ef5e16cab24ea47d00911322
   arm_right:
     name: arms/lkls73_arm
     variant: right
-    sha256: e4cc8db2e6decbd4bc40a76935b6a70091862ff32428c68eb2bce065befc519a
+    sha256: fd8915f57086d81f74954650a10c06d56440c0d289c6c265500774ab09213b3e
   hand_left:
     name: hands/linkerhand_o6
     variant: left
@@ -26,8 +26,8 @@ components:
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
-  urdf_sha256: a59dcbfc8a24f8264ab3328c7357f776c736b09293e652b032454e8c44a58d10
-  mjcf_sha256: 8f7ef4db04019a48facdd3ffe22af94e085e65b2999cfb066fef87f1354822ba
+  urdf_sha256: 3b8eb56de8587891d8ba70410b2c73f003d1b03bc2c801afd76f5f38b9f671f9
+  mjcf_sha256: 671e1ef04f4cebfebb46f0bb7f9f91ba50bff1ed0c1554135129094f53fb99fe
 joints:
   base: []
   arm_left:

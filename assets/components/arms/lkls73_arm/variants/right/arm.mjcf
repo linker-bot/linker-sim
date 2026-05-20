@@ -30,8 +30,8 @@
         <inertial pos="-0.00238919607727967 -0.0538157456440336 0.00010452196048521"
                   mass="1.39972022686362"
                   fullinertia="0.00114445390268402 0.000654874566780468 0.000691494652521253 -2.33503672059843E-06 9.94413679130844E-09 -1.0590763545097E-06"/>
-        <joint name="R1_Joint" type="hinge" axis="0 -1 0"
-               range="-2.91 2.91" damping="0" frictionloss="0.0" armature="0.01"/>
+        <joint name="R1_Joint" type="hinge" axis="0 1 0"
+               range="-2.91 2.91" damping="4" frictionloss="0.0" armature="0.01"/>
         <geom class="arm_lkls73_arm_visual" mesh="R1"/>
         <geom class="arm_lkls73_arm_collision" mesh="R1"/>
 
@@ -39,8 +39,8 @@
           <inertial pos="-0.00161840435618426 -8.19852199768212E-06 -0.0795740266968583"
                     mass="1.14210467744301"
                     fullinertia="0.00099926032712546 0.000929597930299551 0.000490873969400915 4.38390428673455E-06 1.34112399215467E-06 -2.7915125849712E-07"/>
-          <joint name="R2_Joint" type="hinge" axis="1 0 0"
-                 range="-3.2 0.07" damping="0" frictionloss="0.0" armature="0.01"/>
+          <joint name="R2_Joint" type="hinge" axis="-1 0 0"
+                 range="-0.07 3.2" damping="4" frictionloss="0.0" armature="0.01"/>
           <geom class="arm_lkls73_arm_visual" mesh="R2"/>
           <geom class="arm_lkls73_arm_collision" mesh="R2"/>
 
@@ -48,8 +48,8 @@
             <inertial pos="-0.000181281046893987 -0.00124930020984915 -0.128548942421424"
                       mass="1.27984352653686"
                       fullinertia="0.00158095142360156 0.00163152744277086 0.000344148863355523 7.74064683830126E-07 8.68119825601561E-07 2.41539423740222E-06"/>
-            <joint name="R3_Joint" type="hinge" axis="0 0 -1"
-                   range="-2.69 2.69" damping="0" frictionloss="0.0" armature="0.01"/>
+            <joint name="R3_Joint" type="hinge" axis="0 0 1"
+                   range="-2.69 2.69" damping="4" frictionloss="0.0" armature="0.01"/>
             <geom class="arm_lkls73_arm_visual" mesh="R3"/>
             <geom class="arm_lkls73_arm_collision" mesh="R3"/>
 
@@ -58,7 +58,7 @@
                         mass="0.935504488206621"
                         fullinertia="0.00050824600575807 0.000524130564978714 0.000333983373234424 -4.12349458829714E-06 1.60122816329668E-07 3.4575721962879E-07"/>
               <joint name="R4_Joint" type="hinge" axis="0 1 0"
-                     range="-2.05 2.05" damping="0" frictionloss="0.0" armature="0.01"/>
+                     range="-2.05 2.05" damping="4" frictionloss="0.0" armature="0.01"/>
               <geom class="arm_lkls73_arm_visual" mesh="R4"/>
               <geom class="arm_lkls73_arm_collision" mesh="R4"/>
 
@@ -66,8 +66,8 @@
                 <inertial pos="7.89161129038714E-05 -0.00127720103461224 -0.0361226257678754"
                           mass="0.298013716041534"
                           fullinertia="0.000356325710016729 0.000385006832605378 0.000101746689163179 8.49345579615723E-07 1.06208408022809E-06 -2.16308499009301E-06"/>
-                <joint name="R5_Joint" type="hinge" axis="0 0 -1"
-                       range="-2.69 2.69" damping="0" frictionloss="0.0" armature="0.01"/>
+                <joint name="R5_Joint" type="hinge" axis="0 0 1"
+                       range="-2.69 2.69" damping="4" frictionloss="0.0" armature="0.01"/>
                 <geom class="arm_lkls73_arm_visual" mesh="R5"/>
                 <geom class="arm_lkls73_arm_collision" mesh="R5"/>
 
@@ -76,7 +76,7 @@
                             mass="0.344326135276304"
                             fullinertia="0.000194396918256628 0.000233882313857475 0.00010145861997438 1.34060453386023E-06 -9.47065531650411E-06 -2.86903332334497E-07"/>
                   <joint name="R6_Joint" type="hinge" axis="0 1 0"
-                         range="-1.59 1.59" damping="0" frictionloss="0.0" armature="0.01"/>
+                         range="-1.59 1.59" damping="4" frictionloss="0.0" armature="0.01"/>
                   <geom class="arm_lkls73_arm_visual" mesh="R6"/>
                   <geom class="arm_lkls73_arm_collision" mesh="R6"/>
 
@@ -84,8 +84,8 @@
                     <inertial pos="0.00330667550394679 -1.18809317478652E-06 -0.0202430179967651"
                               mass="0.143310943627727"
                               fullinertia="6.98168229201036E-05 5.48675476764227E-05 4.4020607930099E-05 2.70503363330993E-07 3.17975733407385E-08 -1.01361997649667E-12"/>
-                    <joint name="R7_Joint" type="hinge" axis="1 0 0"
-                           range="-1.59 1.59" damping="0" frictionloss="0.0" armature="0.01"/>
+                    <joint name="R7_Joint" type="hinge" axis="-1 0 0"
+                           range="-1.59 1.59" damping="4" frictionloss="0.0" armature="0.01"/>
                     <geom class="arm_lkls73_arm_visual" mesh="R7"/>
                     <geom class="arm_lkls73_arm_collision" mesh="R7"/>
 
@@ -108,13 +108,13 @@
   </worldbody>
 
   <actuator>
-    <position name="R1_Joint_act" joint="R1_Joint" kp="1000" kv="4" ctrlrange="-2.91 2.91"/>
-    <position name="R2_Joint_act" joint="R2_Joint" kp="1000" kv="4" ctrlrange="-3.2 0.07"/>
-    <position name="R3_Joint_act" joint="R3_Joint" kp="1000" kv="4" ctrlrange="-2.69 2.69"/>
-    <position name="R4_Joint_act" joint="R4_Joint" kp="1000" kv="4" ctrlrange="-2.05 2.05"/>
-    <position name="R5_Joint_act" joint="R5_Joint" kp="1000" kv="4" ctrlrange="-2.69 2.69"/>
-    <position name="R6_Joint_act" joint="R6_Joint" kp="1000" kv="4" ctrlrange="-1.59 1.59"/>
-    <position name="R7_Joint_act" joint="R7_Joint" kp="1000" kv="4" ctrlrange="-1.59 1.59"/>
+    <position name="R1_Joint_act" joint="R1_Joint" kp="1000" kv="0" ctrlrange="-2.91 2.91"/>
+    <position name="R2_Joint_act" joint="R2_Joint" kp="1000" kv="0" ctrlrange="-0.07 3.2"/>
+    <position name="R3_Joint_act" joint="R3_Joint" kp="1000" kv="0" ctrlrange="-2.69 2.69"/>
+    <position name="R4_Joint_act" joint="R4_Joint" kp="1000" kv="0" ctrlrange="-2.05 2.05"/>
+    <position name="R5_Joint_act" joint="R5_Joint" kp="1000" kv="0" ctrlrange="-2.69 2.69"/>
+    <position name="R6_Joint_act" joint="R6_Joint" kp="1000" kv="0" ctrlrange="-1.59 1.59"/>
+    <position name="R7_Joint_act" joint="R7_Joint" kp="1000" kv="0" ctrlrange="-1.59 1.59"/>
   </actuator>
 
   <contact>
