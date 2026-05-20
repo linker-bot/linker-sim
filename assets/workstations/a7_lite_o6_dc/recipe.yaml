@@ -41,9 +41,9 @@ mounts:
     rpy: [0.0, 0.0, 0.0]
   - child: hand_left:wrist_mount
     parent: arm_left:tool0
-    xyz: [0.0, 0.0, 0.0]
+    xyz: [-0.028, 0.0, -0.052]
     rpy: [3.1416, 0.0, -1.5708]
   - child: hand_right:wrist_mount
     parent: arm_right:tool0
-    xyz: [0.0, 0.0, 0.0]
+    xyz: [-0.028, 0.0, -0.052]
     rpy: [3.1416, 0.0, 1.5708]

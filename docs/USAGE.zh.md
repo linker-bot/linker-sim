@@ -32,7 +32,7 @@ cd /path/to/dex-tool-rl
 
 - `backend/` — `isaac.yaml`、`mujoco.yaml`
 - `robot/` — 包装某个 workstation 的 Hydra 配置
-- `controller/` — `joint_pd_bimanual`、`osc_bimanual`、`ik_pose_bimanual`
+- `controller/` — `joint_pd_bimanual`、`osc_bimanual`（桩）、`ik_pose_bimanual`
 - `task/` — `bimanual_reach`、`bimanual_reach_ikpose`
 - `recorder/` — `disabled`、`jsonl`、`lerobot`
 - `source/` — 回放数据源（如 `data_collection`）
@@ -42,11 +42,11 @@ cd /path/to/dex-tool-rl
 ## 2. 在 Isaac Sim 中运行
 
 默认配置：`backend=isaac`、`robot=ar5_o6_bench_bimanual`、
-`controller=osc_bimanual`、`task=bimanual_reach`、`recorder=disabled`、
+`controller=joint_pd_bimanual`、`task=bimanual_reach`、`recorder=disabled`、
 `policy=zeros`。
 
 ```bash
-# 烟雾测试：双臂 OSC 抵达任务，保持默认姿态。
+# 烟雾测试：双臂关节 PD 抵达任务，保持默认姿态。
 python scripts/run.py
 
 # 切换 workstation，并用随机游走激发双臂。
@@ -338,19 +338,12 @@ python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
 
 实现：[sim/io/gain_watcher.py](../sim/io/gain_watcher.py)。
 
-### e) OSC 热重载调参器（仅 Isaac，遗留路径）
+### e) OSC 控制器（未实现）
 
-无需重启仿真即可交互式调任务空间增益：
-
-```bash
-python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --workstation ar5_l6_bench_bimanual
-```
-
-脚本运行期间编辑
-[sim/envs/test_osc/osc_gains.json](../sim/envs/test_osc/osc_gains.json)，
-默认每 0.5 s 热重载一次。调好的值再固化到
-`sim/configs/controller/osc_bimanual.yaml`。**不要**加 `--headless`：
-该工具需要视口。
+OSC 控制器（`sim/controllers/osc.py`）及其调参器
+（`sim/envs/test_osc/gain_tuner_osc.py`）已标记为桩代码——之前的实现
+从未经过验证。Hydra 配置 `controller=osc_bimanual` 仍存在，但运行时
+会抛出 `NotImplementedError`。
 
 ---
 
@@ -389,7 +382,7 @@ env -u PYTHONPATH -u AMENT_PREFIX_PATH pytest tests/ -v
 # Isaac，全默认
 python scripts/run.py
 
-# Isaac，双臂抵达 + OSC + JSONL 录制
+# Isaac，双臂抵达 + JSONL 录制
 python scripts/run.py robot=lkls73_i1_bimanual recorder=jsonl max_steps=600
 
 # MuJoCo，关节 PD 烟雾测试

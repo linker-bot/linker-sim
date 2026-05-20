@@ -3,7 +3,7 @@
 defaults:
   - backend: isaac
   - robot: ar5_o6_bench_bimanual
-  - controller: osc_bimanual
+  - controller: joint_pd_bimanual
   - task: bimanual_reach
   - recorder: disabled   # YAML 1.1 keywords (null/off/on/yes/no/true/false) break hydra defaults parsing.
   - _self_

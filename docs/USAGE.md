@@ -33,7 +33,7 @@ Config groups live under [sim/configs/](../sim/configs/):
 
 - `backend/` — `isaac.yaml`, `mujoco.yaml`
 - `robot/` — Hydra wrapper around a workstation name
-- `controller/` — `joint_pd_bimanual`, `osc_bimanual`, `ik_pose_bimanual`
+- `controller/` — `joint_pd_bimanual`, `osc_bimanual` (stub), `ik_pose_bimanual`
 - `task/` — `bimanual_reach`, `bimanual_reach_ikpose`
 - `recorder/` — `disabled`, `jsonl`, `lerobot`
 - `source/` — replay sources (e.g. `data_collection`)
@@ -42,11 +42,11 @@ Config groups live under [sim/configs/](../sim/configs/):
 
 ## 2. Run a rollout in Isaac Sim
 
-Default: `backend=isaac`, `robot=ar5_o6_bench_bimanual`, `controller=osc_bimanual`,
+Default: `backend=isaac`, `robot=ar5_o6_bench_bimanual`, `controller=joint_pd_bimanual`,
 `task=bimanual_reach`, `recorder=disabled`, `policy=zeros`.
 
 ```bash
-# Smoke: bimanual reach with OSC, holding the default pose.
+# Smoke: bimanual reach with joint PD, holding the default pose.
 python scripts/run.py
 
 # Choose another workstation and exercise both arms with random walk.
@@ -344,19 +344,13 @@ Once tuned, promote the values to the component MJCF and meta.yaml
 
 Implementation: [sim/io/gain_watcher.py](../sim/io/gain_watcher.py).
 
-### e) OSC hot-reload tuner (Isaac only, legacy path)
+### e) OSC controller (not implemented)
 
-For interactive task-space gain tuning without restarting the sim:
-
-```bash
-python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --workstation ar5_l6_bench_bimanual
-```
-
-While the script runs, edit
-[sim/envs/test_osc/osc_gains.json](../sim/envs/test_osc/osc_gains.json) — changes
-hot-reload (default 0.5 s). Tuned values can then be promoted to
-`sim/configs/controller/osc_bimanual.yaml`. Do not run with
-`--headless`; the tuner needs a viewport.
+The OSC controller (`sim/controllers/osc.py`) and its tuner
+(`sim/envs/test_osc/gain_tuner_osc.py`) are stubbed out — the previous
+implementation was never validated. The Hydra config
+`controller=osc_bimanual` still exists but will raise
+`NotImplementedError` at runtime.
 
 ---
 
@@ -395,7 +389,7 @@ Full tiered pipeline (composer → registry → headless → reach → bimanual
 # Isaac, default everything
 python scripts/run.py
 
-# Isaac, bimanual reach + OSC + recorded episodes
+# Isaac, bimanual reach + recorded episodes
 python scripts/run.py robot=lkls73_i1_bimanual recorder=jsonl max_steps=600
 
 # MuJoCo, joint PD smoke
