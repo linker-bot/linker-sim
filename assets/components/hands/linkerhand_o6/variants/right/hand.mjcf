@@ -10,7 +10,7 @@
       <geom type="mesh" contype="1" conaffinity="1" group="3"/>
     </default>
     <default class="hand_linkerhand_o6_joint">
-      <joint armature="3.4707e-08" damping="5.0" frictionloss="0.5"/>
+      <joint armature="3.4707e-08" damping="4.0" frictionloss="0.5"/>
     </default>
   </default>
 
@@ -128,12 +128,12 @@
   </worldbody>
 
   <actuator>
-    <position name="rh_thumb_cmc_yaw_act"    joint="rh_thumb_cmc_yaw"    kp="20" kv="2" ctrlrange="0 1.36"/>
-    <position name="rh_thumb_cmc_pitch_act"  joint="rh_thumb_cmc_pitch"  kp="20" kv="2" ctrlrange="0 0.58"/>
-    <position name="rh_index_mcp_pitch_act"  joint="rh_index_mcp_pitch"  kp="20" kv="2" ctrlrange="0 1.60"/>
-    <position name="rh_middle_mcp_pitch_act" joint="rh_middle_mcp_pitch" kp="20" kv="2" ctrlrange="0 1.60"/>
-    <position name="rh_ring_mcp_pitch_act"   joint="rh_ring_mcp_pitch"   kp="20" kv="2" ctrlrange="0 1.60"/>
-    <position name="rh_pinky_mcp_pitch_act"  joint="rh_pinky_mcp_pitch"  kp="20" kv="2" ctrlrange="0 1.60"/>
+    <position name="rh_thumb_cmc_yaw_act"    joint="rh_thumb_cmc_yaw"    kp="200" kv="0" ctrlrange="0 1.36"/>
+    <position name="rh_thumb_cmc_pitch_act"  joint="rh_thumb_cmc_pitch"  kp="200" kv="0" ctrlrange="0 0.58"/>
+    <position name="rh_index_mcp_pitch_act"  joint="rh_index_mcp_pitch"  kp="200" kv="0" ctrlrange="0 1.60"/>
+    <position name="rh_middle_mcp_pitch_act" joint="rh_middle_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.60"/>
+    <position name="rh_ring_mcp_pitch_act"   joint="rh_ring_mcp_pitch"   kp="200" kv="0" ctrlrange="0 1.60"/>
+    <position name="rh_pinky_mcp_pitch_act"  joint="rh_pinky_mcp_pitch"  kp="200" kv="0" ctrlrange="0 1.60"/>
   </actuator>
 
   <equality>

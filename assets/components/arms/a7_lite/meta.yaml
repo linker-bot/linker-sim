@@ -56,13 +56,13 @@ actuated_joints:
 # limits are zeros; this tier matches an arm of comparable size and
 # inertia).
 default_gains:
-  stiffness: 1000.0
-  damping: 4.0
+  stiffness: 2000.0
+  damping: 20.0
 
 gain_profiles:
   joint:
-    stiffness: 1000.0
-    damping: 4.0
+    stiffness: 2000.0
+    damping: 20.0
   osc:
     stiffness: 150.0
     damping: 8.0

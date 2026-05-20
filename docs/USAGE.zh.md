@@ -80,7 +80,7 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 | `max_steps`                | 0        | `0` 表示运行到关闭窗口为止。                      |
 | `headless`                 | false    | 不开视口。                                        |
 | `device`                   | cuda:0   | Torch / Isaac 计算设备。                          |
-| `policy`                   | zeros    | `zeros`（保持默认姿态）或 `random_walk`（烟雾测试）。 |
+| `policy`                   | zeros    | `zeros`（保持默认姿态）、`random_walk`（烟雾测试）或 `hold`（不写控制指令 — 用于实时增益调参）。 |
 
 ---
 
@@ -288,17 +288,57 @@ OSC 控制器有自己的字段：`actuator_stiffness`、`actuator_damping`、
 
 ### c) MuJoCo `<position>` 执行器增益（按组件 MJCF）
 
-MuJoCo 把增益固化在模型加载时。需要修改各组件的 MJCF（例如
-[arm.mjcf](../assets/components/arms/lkls73_arm/variants/left/arm.mjcf)）：
+MuJoCo 把增益固化在模型加载时。刚度放在执行器的 `kp` 上；阻尼放在
+**关节**的 `damping` 属性上，因为 MuJoCo 对关节阻尼做隐式积分（无条件
+稳定），而执行器的 `kv` 是显式积分，在高数值时会发散。修改各组件 MJCF
+（例如 [arm.mjcf](../assets/components/arms/a7_lite/variants/left/arm.mjcf)）：
 
 ```xml
-<position name="L1_Joint_act" joint="L1_Joint" kp="1000" kv="4" ctrlrange="-3.752 2.181"/>
+<!-- 关节：阻尼在此（隐式积分，稳定） -->
+<joint name="L1_Joint" ... damping="20" armature="0.01"/>
+
+<!-- 执行器：kp 在此，kv=0（阻尼在关节上） -->
+<position name="L1_Joint_act" joint="L1_Joint" kp="2000" kv="0" ctrlrange="-2.18 3.75"/>
 ```
 
 改完后：单组件校验 → 重新合成 → 校验 → 提交。这里的增益建议与
 manifest 的 `default_gains` 保持一致，以确保 URDF↔MJCF 行为一致。
 
-### d) OSC 热重载调参器（仅 Isaac，遗留路径）
+### d) 实时 PD 增益调参器（通用后端）
+
+使用 `policy=hold` + `+gain_tuner=true` 可在仿真运行时从 JSON 文件热重载
+关节 PD 增益。`hold` 策略不输出动作，控制器不会写入目标 — 机器人通过位置
+执行器保持当前姿态，你只需调整增益。
+
+```bash
+# MuJoCo — 实时调参，默认文件 /tmp/dex_pd_gains.json
+python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+    task=bimanual_reach policy=hold +gain_tuner=true
+
+# 自定义路径
+python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+    task=bimanual_reach policy=hold +gain_tuner=true \
+    +gain_tuner_path=/tmp/my_gains.json
+```
+
+首次运行时 JSON 文件以 workstation manifest 的 `default_gains` 为种子自动
+生成。在另一终端中编辑该文件，改动每 0.5 秒被拾取：
+
+```json
+{
+  "arm_left":  { "stiffness": 2000, "damping": 20 },
+  "arm_right": { "stiffness": 2000, "damping": 20 },
+  "hand_left": { "stiffness": 200,  "damping": 4 },
+  "hand_right":{ "stiffness": 200,  "damping": 4 }
+}
+```
+
+调好后将数值固化到组件 MJCF 和 meta.yaml（见上方 a/c 小节）。JSON 文件为
+会话级临时文件，不纳入版本管理。
+
+实现：[sim/io/gain_watcher.py](../sim/io/gain_watcher.py)。
+
+### e) OSC 热重载调参器（仅 Isaac，遗留路径）
 
 无需重启仿真即可交互式调任务空间增益：
 
@@ -377,4 +417,8 @@ python tools/registry_show.py a7_lite_dc
 
 # 从录制中导出臂部轨迹
 python scripts/dump_arm_telemetry.py episode_000004
+
+# 实时 PD 增益调参（MuJoCo，运行时编辑 /tmp/dex_pd_gains.json）
+python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+    task=bimanual_reach policy=hold +gain_tuner=true
 ```

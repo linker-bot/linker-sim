@@ -10,24 +10,24 @@ components:
   arm_left:
     name: arms/a7_lite
     variant: left
-    sha256: 7f4ea1af77223e44c676a9334df339a065ae570fccb492e5a31998693928e0c5
+    sha256: 5ca5c404f4aea4b99f966dd7b1d258c25891c2b27eb3b1545661413362ce9fad
   arm_right:
     name: arms/a7_lite
     variant: right
-    sha256: 2319c2f7ceb0a20b4fa6a40135827f3da74fe0883c7521b2a45c99c0e6ead270
+    sha256: 324fefc7672ed8298929ab3fe9c440906791ce690cef079312ed82e77d7d5e24
   hand_left:
     name: hands/linkerhand_o6
     variant: left
-    sha256: 6cbe11387752af89f212397a4d966b04e0a321259e0854d5755486df9deddc4e
+    sha256: e2d3b4cc2fe846434fd0d6b6ed1225b9e8ff8df0931e32d16608642c5fd0407f
   hand_right:
     name: hands/linkerhand_o6
     variant: right
-    sha256: 2222e6a48b59d5eae842ebce27884548c9ef688ddf49d2f254a5cedad1f0da8e
+    sha256: aad4caba32c57d9b350040792eb367d94feeeac09f64dac5c7be34f57df2312e
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
   urdf_sha256: b42a516f27dc9410d9c4ffd2deda4b78336eacca4e45cbdde8853a4e0efa74e7
-  mjcf_sha256: e510c0406632d2938023adb9593aa9f42269cd9e184f841f8abb9ee2ef571a39
+  mjcf_sha256: 5796834cde32b65dd7855e70fd46a9f1e4bffdf9721e8b9ff047a4f01f7dc679
 joints:
   base: []
   arm_left:
@@ -92,49 +92,49 @@ ee_links:
 base_link: base_torso_root
 default_gains:
   arm_left:
-    stiffness: 1000.0
-    damping: 4.0
+    stiffness: 2000.0
+    damping: 20.0
   arm_right:
-    stiffness: 1000.0
-    damping: 4.0
+    stiffness: 2000.0
+    damping: 20.0
   hand_left:
-    stiffness: 20.0
-    damping: 2.0
+    stiffness: 200.0
+    damping: 4.0
   hand_right:
-    stiffness: 20.0
-    damping: 2.0
+    stiffness: 200.0
+    damping: 4.0
 gain_profiles:
   arm_left:
     default:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     joint:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     osc:
       stiffness: 150.0
       damping: 8.0
   arm_right:
     default:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     joint:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     osc:
       stiffness: 150.0
       damping: 8.0
   hand_left:
     default:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0
     joint:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0
   hand_right:
     default:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0
     joint:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0

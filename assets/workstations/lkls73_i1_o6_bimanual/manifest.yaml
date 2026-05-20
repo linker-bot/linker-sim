@@ -18,16 +18,16 @@ components:
   hand_left:
     name: hands/linkerhand_o6
     variant: left
-    sha256: 6cbe11387752af89f212397a4d966b04e0a321259e0854d5755486df9deddc4e
+    sha256: e2d3b4cc2fe846434fd0d6b6ed1225b9e8ff8df0931e32d16608642c5fd0407f
   hand_right:
     name: hands/linkerhand_o6
     variant: right
-    sha256: 2222e6a48b59d5eae842ebce27884548c9ef688ddf49d2f254a5cedad1f0da8e
+    sha256: aad4caba32c57d9b350040792eb367d94feeeac09f64dac5c7be34f57df2312e
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
   urdf_sha256: a59dcbfc8a24f8264ab3328c7357f776c736b09293e652b032454e8c44a58d10
-  mjcf_sha256: 199a2464eb4fed19f0ca619cfd68aa0398bd3d4ae8a64ffbf2046950eb638b31
+  mjcf_sha256: 8f7ef4db04019a48facdd3ffe22af94e085e65b2999cfb066fef87f1354822ba
 joints:
   base: []
   arm_left:
@@ -98,11 +98,11 @@ default_gains:
     stiffness: 1000.0
     damping: 4.0
   hand_left:
-    stiffness: 20.0
-    damping: 2.0
+    stiffness: 200.0
+    damping: 4.0
   hand_right:
-    stiffness: 20.0
-    damping: 2.0
+    stiffness: 200.0
+    damping: 4.0
 gain_profiles:
   arm_left:
     default:
@@ -126,15 +126,15 @@ gain_profiles:
       damping: 8.0
   hand_left:
     default:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0
     joint:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0
   hand_right:
     default:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0
     joint:
-      stiffness: 20.0
-      damping: 2.0
+      stiffness: 200.0
+      damping: 4.0

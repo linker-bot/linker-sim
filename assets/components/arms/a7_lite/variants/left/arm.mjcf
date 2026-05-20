@@ -30,7 +30,7 @@
                   mass="1.1899"
                   fullinertia="0.0016082 0.00086283 0.00092662 3.5266E-06 2.0532E-07 6.5642E-06"/>
         <joint name="L1_Joint" type="hinge" axis="0 -1 0"
-               range="-2.18 3.75" damping="0" frictionloss="0.0" armature="0.01"/>
+               range="-2.18 3.75" damping="20" frictionloss="0.0" armature="0.01"/>
         <geom class="arm_a7_lite_visual" mesh="L1"/>
         <geom class="arm_a7_lite_collision" mesh="L1"/>
 
@@ -39,7 +39,7 @@
                     mass="1.0659"
                     fullinertia="0.001451 0.0012495 0.0010752 3.1371E-06 -1.519E-06 -1.1542E-05"/>
           <joint name="L2_Joint" type="hinge" axis="-1 0 0"
-                 range="-3.33 0.19" damping="0" frictionloss="0.0" armature="0.01"/>
+                 range="-3.33 0.19" damping="20" frictionloss="0.0" armature="0.01"/>
           <geom class="arm_a7_lite_visual" mesh="L2"/>
           <geom class="arm_a7_lite_collision" mesh="L2"/>
 
@@ -48,7 +48,7 @@
                       mass="1.2763"
                       fullinertia="0.00078242 0.0010444 0.00063166 -2.9327E-07 7.1339E-06 -2.978E-07"/>
             <joint name="L3_Joint" type="hinge" axis="0 0 1"
-                   range="-2.26 2.26" damping="0" frictionloss="0.0" armature="0.01"/>
+                   range="-2.26 2.26" damping="20" frictionloss="0.0" armature="0.01"/>
             <geom class="arm_a7_lite_visual" mesh="L3"/>
             <geom class="arm_a7_lite_collision" mesh="L3"/>
 
@@ -57,7 +57,7 @@
                         mass="0.66812"
                         fullinertia="0.00039892 0.00038456 0.00041366 5.379E-08 1.7668E-06 1.0506E-06"/>
               <joint name="L4_Joint" type="hinge" axis="0 -1 0"
-                     range="-0.78 1.74" damping="0" frictionloss="0.0" armature="0.01"/>
+                     range="-0.78 1.74" damping="20" frictionloss="0.0" armature="0.01"/>
               <geom class="arm_a7_lite_visual" mesh="L4"/>
               <geom class="arm_a7_lite_collision" mesh="L4"/>
 
@@ -66,7 +66,7 @@
                           mass="0.4439"
                           fullinertia="0.00015511 0.00022136 0.00013737 -4.6133E-07 -2.6472E-06 -1.0454E-07"/>
                 <joint name="L5_Joint" type="hinge" axis="0 0 1"
-                       range="-2.96 2.96" damping="0" frictionloss="0.0" armature="0.01"/>
+                       range="-2.96 2.96" damping="20" frictionloss="0.0" armature="0.01"/>
                 <geom class="arm_a7_lite_visual" mesh="L5"/>
                 <geom class="arm_a7_lite_collision" mesh="L5"/>
 
@@ -75,7 +75,7 @@
                             mass="0.5193"
                             fullinertia="0.00031746 0.00024364 0.00015858 -6.3455E-07 4.1005E-07 2.8635E-06"/>
                   <joint name="L6_Joint" type="hinge" axis="0 -1 0"
-                         range="-1.57 1.57" damping="0" frictionloss="0.0" armature="0.01"/>
+                         range="-1.57 1.57" damping="20" frictionloss="0.0" armature="0.01"/>
                   <geom class="arm_a7_lite_visual" mesh="L6"/>
                   <geom class="arm_a7_lite_collision" mesh="L6"/>
 
@@ -84,7 +84,7 @@
                               mass="0.10175"
                               fullinertia="4.5036E-05 3.8663E-05 3.0632E-05 -4.7046E-12 2.2349E-07 -1.9234E-20"/>
                     <joint name="L7_Joint" type="hinge" axis="-1 0 0"
-                           range="-1.57 1.57" damping="0" frictionloss="0.0" armature="0.01"/>
+                           range="-1.57 1.57" damping="20" frictionloss="0.0" armature="0.01"/>
                     <geom class="arm_a7_lite_visual" mesh="L7"/>
                     <geom class="arm_a7_lite_collision" mesh="L7"/>
                     <site name="tool0" pos="0 0 0"/>
@@ -99,13 +99,13 @@
   </worldbody>
 
   <actuator>
-    <position name="L1_Joint_act" joint="L1_Joint" kp="1000" kv="4" ctrlrange="-2.18 3.75"/>
-    <position name="L2_Joint_act" joint="L2_Joint" kp="1000" kv="4" ctrlrange="-3.33 0.19"/>
-    <position name="L3_Joint_act" joint="L3_Joint" kp="1000" kv="4" ctrlrange="-2.26 2.26"/>
-    <position name="L4_Joint_act" joint="L4_Joint" kp="1000" kv="4" ctrlrange="-0.78 1.74"/>
-    <position name="L5_Joint_act" joint="L5_Joint" kp="1000" kv="4" ctrlrange="-2.96 2.96"/>
-    <position name="L6_Joint_act" joint="L6_Joint" kp="1000" kv="4" ctrlrange="-1.57 1.57"/>
-    <position name="L7_Joint_act" joint="L7_Joint" kp="1000" kv="4" ctrlrange="-1.57 1.57"/>
+    <position name="L1_Joint_act" joint="L1_Joint" kp="2000" kv="0" ctrlrange="-2.18 3.75"/>
+    <position name="L2_Joint_act" joint="L2_Joint" kp="2000" kv="0" ctrlrange="-3.33 0.19"/>
+    <position name="L3_Joint_act" joint="L3_Joint" kp="2000" kv="0" ctrlrange="-2.26 2.26"/>
+    <position name="L4_Joint_act" joint="L4_Joint" kp="2000" kv="0" ctrlrange="-0.78 1.74"/>
+    <position name="L5_Joint_act" joint="L5_Joint" kp="2000" kv="0" ctrlrange="-2.96 2.96"/>
+    <position name="L6_Joint_act" joint="L6_Joint" kp="2000" kv="0" ctrlrange="-1.57 1.57"/>
+    <position name="L7_Joint_act" joint="L7_Joint" kp="2000" kv="0" ctrlrange="-1.57 1.57"/>
   </actuator>
 
   <contact>

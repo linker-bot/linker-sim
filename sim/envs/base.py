@@ -121,17 +121,19 @@ class BaseEnv:
         return obs, {}
 
     def step(
-        self, action: torch.Tensor
+        self, action: torch.Tensor | None
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, dict]:
-        action = torch.clamp(action, -1.0, 1.0)
-        self._last_action = action
+        if action is not None:
+            action = torch.clamp(action, -1.0, 1.0)
+            self._last_action = action
 
-        for c, sl in zip(self.controllers, self._action_slices, strict=True):
-            c.set_command(action[:, sl], self._robot)
+            for c, sl in zip(self.controllers, self._action_slices, strict=True):
+                c.set_command(action[:, sl], self._robot)
 
         for _ in range(self.cfg.decimation):
-            for c in self.controllers:
-                c.apply(self._robot)
+            if action is not None:
+                for c in self.controllers:
+                    c.apply(self._robot)
             self.backend.write_data()
             self.backend.step()
 

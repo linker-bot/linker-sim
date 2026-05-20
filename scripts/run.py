@@ -156,6 +156,15 @@ def _run_rollout(
     obs, _ = env.reset(seed=int(cfg.seed))
     policy = _make_policy(cfg.policy, env.action_dim, backend.num_envs, backend.device)
 
+    gain_watcher = None
+    if bool(OmegaConf.select(cfg, "gain_tuner", default=False)):
+        from pathlib import Path as _Path
+
+        from sim.io.gain_watcher import GainWatcher
+
+        _gp = str(OmegaConf.select(cfg, "gain_tuner_path", default="/tmp/dex_pd_gains.json"))
+        gain_watcher = GainWatcher(backend.robots[cfg.robot.role_name], _Path(_gp))
+
     max_steps = int(cfg.max_steps) if int(cfg.max_steps) > 0 else None
     if not use_isaac_loop and mj_viewer is None and max_steps is None:
         raise SystemExit(
@@ -184,9 +193,12 @@ def _run_rollout(
             obs, _ = env.reset()
             print(f"[run] manual reset at step {step}")
 
+        if gain_watcher is not None:
+            gain_watcher.tick()
+
         action = policy(step, obs)
         obs, reward, terminated, truncated, info = env.step(action)
-        if recorder is not None:
+        if recorder is not None and action is not None:
             recorder.record_step(obs, action, reward, terminated, truncated, info)
         if mj_viewer is not None:
             mj_viewer.sync()
@@ -238,8 +250,14 @@ def _make_policy(name: str, action_dim: int, num_envs: int, device):
     elif name == "random_walk":
         def policy(_step, _obs):
             return 0.1 * (2.0 * torch.rand((num_envs, action_dim), device=device) - 1.0)
+    elif name == "hold":
+        # Returns None — env.step skips controller writes so the GUI
+        # (e.g. Isaac's Articulation Inspector / Gains Tuner) owns the
+        # drive targets. Use for live gain tuning.
+        def policy(_step, _obs):
+            return None
     else:
-        raise ValueError(f"unknown policy: {name!r} (expected 'zeros' or 'random_walk')")
+        raise ValueError(f"unknown policy: {name!r} (expected 'zeros', 'random_walk', or 'hold')")
     return policy
 
 

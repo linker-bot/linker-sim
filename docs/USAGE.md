@@ -81,7 +81,7 @@ Common knobs (defined in [sim/configs/config.yaml](../sim/configs/config.yaml)):
 | `max_steps`               | 0       | `0` = run until the window closes.                     |
 | `headless`                | false   | No viewport.                                           |
 | `device`                  | cuda:0  | Torch device for tensors and Isaac sim.                |
-| `policy`                  | zeros   | `zeros` (hold default) or `random_walk` (smoke).       |
+| `policy`                  | zeros   | `zeros` (hold default), `random_walk` (smoke), or `hold` (no controller writes — for live gain tuning). |
 
 ---
 
@@ -289,18 +289,62 @@ OSC has its own block — `actuator_stiffness`, `actuator_damping`,
 
 ### c) MuJoCo `<position>` actuator gains (per-component MJCF)
 
-MuJoCo bakes gains into actuators at model-load. Edit the per-component
-MJCF (e.g. [arm.mjcf](../assets/components/arms/lkls73_arm/variants/left/arm.mjcf)):
+MuJoCo bakes gains into actuators at model-load. Stiffness lives on
+the actuator (`kp`); damping lives on the **joint** (`damping`
+attribute) because MuJoCo integrates joint damping implicitly
+(unconditionally stable), whereas actuator `kv` is explicit and can
+diverge at high values. Edit the per-component MJCF (e.g.
+[arm.mjcf](../assets/components/arms/a7_lite/variants/left/arm.mjcf)):
 
 ```xml
-<position name="L1_Joint_act" joint="L1_Joint" kp="1000" kv="4" ctrlrange="-3.752 2.181"/>
+<!-- Joint: damping here (implicit, stable) -->
+<joint name="L1_Joint" ... damping="20" armature="0.01"/>
+
+<!-- Actuator: kp here, kv=0 (damping is on the joint) -->
+<position name="L1_Joint_act" joint="L1_Joint" kp="2000" kv="0" ctrlrange="-2.18 3.75"/>
 ```
 
 Then per-component validate, recompose, validate, commit. Component
 gains here should match the manifest's `default_gains` to keep
 URDF↔MJCF behaviour consistent.
 
-### d) OSC hot-reload tuner (Isaac only, legacy path)
+### d) Live PD gain tuner (any backend)
+
+Use `policy=hold` + `+gain_tuner=true` to hot-reload joint PD gains
+from a JSON file while the sim runs. The `hold` policy returns no
+actions so the controller never writes targets — the robot holds its
+current pose via the position actuators while you tweak gains.
+
+```bash
+# MuJoCo — live tune, file at /tmp/dex_pd_gains.json (default)
+python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+    task=bimanual_reach policy=hold +gain_tuner=true
+
+# Custom path
+python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+    task=bimanual_reach policy=hold +gain_tuner=true \
+    +gain_tuner_path=/tmp/my_gains.json
+```
+
+On first run the JSON is seeded from the workstation manifest's
+`default_gains`. Edit it in another terminal — changes are picked up
+every 0.5 s:
+
+```json
+{
+  "arm_left":  { "stiffness": 2000, "damping": 20 },
+  "arm_right": { "stiffness": 2000, "damping": 20 },
+  "hand_left": { "stiffness": 200,  "damping": 4 },
+  "hand_right":{ "stiffness": 200,  "damping": 4 }
+}
+```
+
+Once tuned, promote the values to the component MJCF and meta.yaml
+(sections a/c above). The JSON file is session-only and not tracked.
+
+Implementation: [sim/io/gain_watcher.py](../sim/io/gain_watcher.py).
+
+### e) OSC hot-reload tuner (Isaac only, legacy path)
 
 For interactive task-space gain tuning without restarting the sim:
 
@@ -379,4 +423,8 @@ python tools/registry_show.py a7_lite_dc
 
 # Dump arm trajectories from a recording
 python scripts/dump_arm_telemetry.py episode_000004
+
+# Live PD gain tuning (MuJoCo, edit /tmp/dex_pd_gains.json while running)
+python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+    task=bimanual_reach policy=hold +gain_tuner=true
 ```

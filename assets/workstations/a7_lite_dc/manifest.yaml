@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/a7_lite
     variant: left
-    sha256: 7f4ea1af77223e44c676a9334df339a065ae570fccb492e5a31998693928e0c5
+    sha256: 5ca5c404f4aea4b99f966dd7b1d258c25891c2b27eb3b1545661413362ce9fad
   arm_right:
     name: arms/a7_lite
     variant: right
-    sha256: 2319c2f7ceb0a20b4fa6a40135827f3da74fe0883c7521b2a45c99c0e6ead270
+    sha256: 324fefc7672ed8298929ab3fe9c440906791ce690cef079312ed82e77d7d5e24
   hand_left:
     name: hands/linkerhand_l6
     variant: left
@@ -27,7 +27,7 @@ artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
   urdf_sha256: 1152a10c37cbea42b9e89a6de63667b3aa89ab28d5fa4bb6f8db17a6934733a9
-  mjcf_sha256: 5789818bee69e790783c6815888d60f7b70da6ee48838c99f5eb3133c26b70c3
+  mjcf_sha256: d8413bc2046328d542e3161f4e63f2c8e664e6aa98c9a470b84710592e78862c
 joints:
   base: []
   arm_left:
@@ -92,11 +92,11 @@ ee_links:
 base_link: base_torso_root
 default_gains:
   arm_left:
-    stiffness: 1000.0
-    damping: 4.0
+    stiffness: 2000.0
+    damping: 20.0
   arm_right:
-    stiffness: 1000.0
-    damping: 4.0
+    stiffness: 2000.0
+    damping: 20.0
   hand_left:
     stiffness: 20.0
     damping: 2.0
@@ -106,21 +106,21 @@ default_gains:
 gain_profiles:
   arm_left:
     default:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     joint:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     osc:
       stiffness: 150.0
       damping: 8.0
   arm_right:
     default:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     joint:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     osc:
       stiffness: 150.0
       damping: 8.0

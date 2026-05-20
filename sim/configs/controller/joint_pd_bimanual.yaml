@@ -9,18 +9,26 @@ controller:
         _target_: sim.controllers.joint_pd.JointPDControllerCfg
         role: arm_left
         action_scale: 0.25
+        stiffness: 2000.0
+        damping: 20.0
     - _target_: sim.controllers.joint_pd.JointPDController
       cfg:
         _target_: sim.controllers.joint_pd.JointPDControllerCfg
         role: hand_left
         action_scale: 0.2
+        stiffness: 200.0
+        damping: 4.0
     - _target_: sim.controllers.joint_pd.JointPDController
       cfg:
         _target_: sim.controllers.joint_pd.JointPDControllerCfg
         role: arm_right
         action_scale: 0.25
+        stiffness: 2000.0
+        damping: 20.0
     - _target_: sim.controllers.joint_pd.JointPDController
       cfg:
         _target_: sim.controllers.joint_pd.JointPDControllerCfg
         role: hand_right
         action_scale: 0.2
+        stiffness: 200.0
+        damping: 4.0
