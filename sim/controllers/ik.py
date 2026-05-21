@@ -17,9 +17,8 @@ position target — PhysX's implicit PD does the tracking, so the arm's
 ``joint`` gain profile (or an optional per-controller override) sets
 the effective stiffness.
 
-Isaac-specific only because it needs ``robot.jacobian`` /
-``robot.ee_pose_b``; a MuJoCo-side version with the same math lands
-when that backend exists.
+Backend-agnostic: requires ``robot.jacobian`` / ``robot.ee_pose_b`` /
+``robot.joint_pos`` which both Isaac and MuJoCo backends implement.
 """
 
 from __future__ import annotations
@@ -29,9 +28,36 @@ from typing import Literal
 
 import torch
 
-import isaaclab.utils.math as math_utils
-
 from sim.backends.base import Robot
+
+
+# ---------------------------------------------------------------------------
+# Quaternion helpers (replaces isaaclab.utils.math dependency)
+# Convention: (w, x, y, z)
+# ---------------------------------------------------------------------------
+
+
+def _quat_mul(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
+    aw, ax, ay, az = a.unbind(-1)
+    bw, bx, by, bz = b.unbind(-1)
+    return torch.stack([
+        aw * bw - ax * bx - ay * by - az * bz,
+        aw * bx + ax * bw + ay * bz - az * by,
+        aw * by - ax * bz + ay * bw + az * bx,
+        aw * bz + ax * by - ay * bx + az * bw,
+    ], dim=-1)
+
+
+def _quat_conjugate(q: torch.Tensor) -> torch.Tensor:
+    return torch.cat([q[..., :1], -q[..., 1:]], dim=-1)
+
+
+def _axis_angle_from_quat(q: torch.Tensor) -> torch.Tensor:
+    half_angle = torch.acos(q[..., 0:1].clamp(-1.0, 1.0))
+    angle = 2.0 * half_angle
+    sin_half = torch.sin(half_angle)
+    axis = q[..., 1:4] / (sin_half + 1e-8)
+    return axis * angle
 
 
 @dataclass
@@ -107,13 +133,17 @@ class IkController:
             target_pos = self._last_command[:, 0:3]
             target_quat = self._last_command[:, 3:7]
             pos_err = target_pos - ee[:, 0:3]
-            q_err = math_utils.quat_mul(target_quat, math_utils.quat_conjugate(ee[:, 3:7]))
-            orn_err = math_utils.axis_angle_from_quat(q_err)
+            q_err = _quat_mul(target_quat, _quat_conjugate(ee[:, 3:7]))
+            orn_err = _axis_angle_from_quat(q_err)
             dx = torch.cat([pos_err, orn_err], dim=-1)        # (B, 6)
         else:
             dx = self._last_command                            # (B, 6)
 
         # DLS: dq = J^T (J J^T + λ² I)^{-1} dx
+        # TODO: add null-space joint-limit avoidance:
+        #   dq += (I - J_pinv @ J) @ grad_h(q)
+        # where grad_h pushes joints away from limits (see linkerbot kinetix).
+        # TODO: add solver fallbacks if DLS diverges (e.g. scipy dogbox/SLSQP).
         lam = self.cfg.damping
         JJt = J @ J.transpose(1, 2)                            # (B, 6, 6)
         eye = torch.eye(6, device=J.device).unsqueeze(0).expand_as(JJt)

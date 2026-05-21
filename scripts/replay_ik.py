@@ -1,0 +1,346 @@
+"""IK replay: drive robot arms to follow EE pose trajectories via IK.
+
+Two input modes:
+  - ee_poses: load pre-computed EE pose trajectories from an npz file.
+    Expected format: npz with keys per arm role (e.g. "arm_left", "arm_right"),
+    each a (T, 7) array of [x, y, z, qw, qx, qy, qz] in workstation-base frame.
+  - from_qpos (default): compute FK from recorded joint telemetry (validation mode).
+    Uses the existing replay source to extract qpos, teleports per frame, reads
+    ee_pose_b to get ground-truth targets.
+
+Convention: all EE poses are in the workstation-base frame with (w, x, y, z)
+quaternion order (scalar-first). The workstation base is at world origin for
+fixed-base robots.
+
+TODO: add null-space joint-limit avoidance to the DLS solver to prevent
+elbow/wrist wandering in the redundant DOF during long trajectories.
+
+Usage:
+    # Validation mode: FK from recorded qpos -> IK -> measure tracking error
+    python scripts/replay_ik.py robot=a7_lite_o6_dc source=data_collection
+
+    # EE pose input mode: replay from external pose file
+    python scripts/replay_ik.py robot=a7_lite_o6_dc source=data_collection \
+        ee_poses=/path/to/poses.npz
+
+    # Limit frames
+    python scripts/replay_ik.py robot=a7_lite_o6_dc source=data_collection max_frames=200
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import numpy as np
+import torch
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+import hydra
+from hydra.utils import instantiate
+from omegaconf import DictConfig, OmegaConf
+
+OmegaConf.register_new_resolver("div", lambda a, b: a / b, replace=True)
+
+
+def _load_ee_poses(path: str | Path) -> dict[str, np.ndarray]:
+    """Load EE pose trajectories from npz.
+
+    Expected keys: arm role names (e.g. "arm_left", "arm_right").
+    Each value: (T, 7) float32 array [x, y, z, qw, qx, qy, qz]
+    in workstation-base frame.
+    """
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"ee_poses file not found: {path}")
+    data = np.load(path, allow_pickle=False)
+    poses = {}
+    for key in data.files:
+        arr = data[key]
+        if arr.ndim != 2 or arr.shape[1] != 7:
+            raise ValueError(
+                f"ee_poses[{key!r}]: expected shape (T, 7), got {arr.shape}"
+            )
+        poses[key] = arr.astype(np.float32)
+    return poses
+
+
+def _compute_fk_targets(
+    robot, source, arm_roles: list[str], n_frames: int
+) -> dict[str, np.ndarray]:
+    """Compute FK from recorded qpos for each frame. Returns (T, 7) per role."""
+    fk_targets: dict[str, np.ndarray] = {
+        role: np.zeros((n_frames, 7), dtype=np.float32) for role in arm_roles
+    }
+    for t in range(n_frames):
+        targets = source.joint_targets(t)
+        jp = robot.joint_pos_default.clone()
+        jv = robot.joint_vel_default.clone()
+        for role, tgt in targets.items():
+            ids = robot.actuated_joint_ids_of(role)
+            jp[:, ids] = torch.from_numpy(tgt).unsqueeze(0)
+        robot.write_joint_state(jp, jv)
+
+        for role in arm_roles:
+            ee = robot.ee_pose_b(f"{role}:tool0")
+            fk_targets[role][t] = ee[0].numpy()
+    return fk_targets
+
+
+def _run_ik_replay(
+    backend,
+    robot,
+    ik_controllers: dict,
+    ee_targets: dict[str, np.ndarray],
+    arm_roles: list[str],
+    sub_steps: int,
+    n_frames: int,
+    *,
+    source=None,
+    gt_joint_targets=None,
+):
+    """Run IK replay loop and collect tracking errors.
+
+    In ee_poses mode (source=None), runs a warm-up phase to converge to the
+    first target pose before starting measurement.
+    """
+    errors_pos: dict[str, list] = {r: [] for r in arm_roles}
+    errors_ori: dict[str, list] = {r: [] for r in arm_roles}
+    errors_joint: dict[str, list] | None = (
+        {r: [] for r in arm_roles} if gt_joint_targets else None
+    )
+
+    # Teleport to a configuration near the first target.
+    # In from_qpos mode, use the recorded joints; in ee_poses mode, warm up
+    # by iterating IK on the first pose until the arms converge.
+    jp = robot.joint_pos_default.clone()
+    jv = robot.joint_vel_default.clone()
+    if source is not None:
+        first_targets = source.joint_targets(0)
+        for role, tgt in first_targets.items():
+            ids = robot.actuated_joint_ids_of(role)
+            jp[:, ids] = torch.from_numpy(tgt).unsqueeze(0)
+    robot.write_joint_state(jp, jv)
+
+    if source is None:
+        # Warm up: iterate IK on the first target until converged
+        warmup_steps = 200
+        for _ in range(warmup_steps):
+            for role, ik in ik_controllers.items():
+                target_pose = torch.from_numpy(ee_targets[role][0]).unsqueeze(0)
+                ik.set_command(target_pose, robot)
+            for role, ik in ik_controllers.items():
+                ik.apply(robot)
+            for _ in range(sub_steps):
+                backend.step()
+        print(f"[replay_ik] warm-up done ({warmup_steps} IK iterations on first frame)")
+
+    for t in range(n_frames):
+        # Set IK targets
+        for role, ik in ik_controllers.items():
+            target_pose = torch.from_numpy(ee_targets[role][t]).unsqueeze(0)
+            ik.set_command(target_pose, robot)
+
+        # Apply IK
+        for role, ik in ik_controllers.items():
+            ik.apply(robot)
+
+        # Drive hands directly if source available
+        if source is not None:
+            hand_targets = source.joint_targets(t)
+            for role, tgt in hand_targets.items():
+                if role.startswith("hand_"):
+                    ids = robot.actuated_joint_ids_of(role)
+                    robot.set_joint_position_target(
+                        torch.from_numpy(tgt).unsqueeze(0), ids
+                    )
+
+        # Step physics
+        for _ in range(sub_steps):
+            backend.step()
+
+        # Measure Cartesian errors
+        for role in arm_roles:
+            achieved_ee = robot.ee_pose_b(f"{role}:tool0")
+            target_ee = ee_targets[role][t]
+            pos_err = float(np.linalg.norm(
+                target_ee[:3] - achieved_ee[0, :3].numpy()
+            ))
+            q_target = target_ee[3:7]
+            q_achieved = achieved_ee[0, 3:7].numpy()
+            dot = abs(np.dot(q_target, q_achieved))
+            ori_err = 2.0 * np.arccos(np.clip(dot, -1.0, 1.0))
+            errors_pos[role].append(pos_err)
+            errors_ori[role].append(ori_err)
+
+        # Joint-space error (only in validation mode)
+        if errors_joint is not None and gt_joint_targets is not None:
+            achieved_jp = robot.joint_pos
+            for role in arm_roles:
+                ids = robot.actuated_joint_ids_of(role)
+                gt = torch.from_numpy(gt_joint_targets[role][t]).unsqueeze(0)
+                achieved = achieved_jp[:, ids]
+                errors_joint[role].append((gt - achieved).squeeze(0).numpy())
+
+    return errors_pos, errors_ori, errors_joint
+
+
+def _print_report(arm_roles, errors_pos, errors_ori, errors_joint):
+    """Print tracking results to console."""
+    print("\n" + "=" * 70)
+    print("IK REPLAY TRACKING RESULTS")
+    print("=" * 70)
+    for role in arm_roles:
+        pos_errs = np.array(errors_pos[role])
+        ori_errs = np.array(errors_ori[role])
+
+        print(f"\n--- {role} ---")
+        print(
+            f"  Cartesian position:  "
+            f"RMS={np.sqrt(np.mean(pos_errs**2))*1000:.2f} mm  "
+            f"Max={np.max(pos_errs)*1000:.2f} mm  "
+            f"Mean={np.mean(pos_errs)*1000:.2f} mm"
+        )
+        print(
+            f"  Orientation:         "
+            f"RMS={np.degrees(np.sqrt(np.mean(ori_errs**2))):.3f} deg  "
+            f"Max={np.degrees(np.max(ori_errs)):.3f} deg  "
+            f"Mean={np.degrees(np.mean(ori_errs)):.3f} deg"
+        )
+
+        if errors_joint is not None and role in errors_joint:
+            joint_errs = np.array(errors_joint[role])
+            n_joints = joint_errs.shape[1]
+            rms_per_joint = np.sqrt(np.mean(joint_errs ** 2, axis=0))
+            max_per_joint = np.max(np.abs(joint_errs), axis=0)
+            print(f"\n  Joint-space (validation):")
+            print(f"  {'Joint':<8} {'RMS (deg)':<12} {'Max (deg)':<12}")
+            for j in range(n_joints):
+                print(
+                    f"  J{j+1:<7} "
+                    f"{np.degrees(rms_per_joint[j]):<12.3f} "
+                    f"{np.degrees(max_per_joint[j]):<12.3f}"
+                )
+
+
+def _save_plot(arm_roles, errors_pos, errors_ori):
+    """Save tracking error timeseries as PNG."""
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("\n[replay_ik] matplotlib not available; skipping plot.")
+        return
+
+    fig, axes = plt.subplots(len(arm_roles), 2, figsize=(14, 5 * len(arm_roles)))
+    if len(arm_roles) == 1:
+        axes = axes[np.newaxis, :]
+
+    for i, role in enumerate(arm_roles):
+        pos_errs = np.array(errors_pos[role]) * 1000
+        ori_errs = np.degrees(np.array(errors_ori[role]))
+
+        axes[i, 0].plot(pos_errs, linewidth=0.8)
+        axes[i, 0].set_ylabel("Position error (mm)")
+        axes[i, 0].set_xlabel("Frame")
+        axes[i, 0].set_title(f"{role} — Cartesian position tracking error")
+        axes[i, 0].grid(True, alpha=0.3)
+
+        axes[i, 1].plot(ori_errs, linewidth=0.8, color="tab:orange")
+        axes[i, 1].set_ylabel("Orientation error (deg)")
+        axes[i, 1].set_xlabel("Frame")
+        axes[i, 1].set_title(f"{role} — Orientation tracking error")
+        axes[i, 1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    out_path = Path("ik_replay_tracking.png")
+    plt.savefig(out_path, dpi=150)
+    print(f"\n[replay_ik] plot saved: {out_path.resolve()}")
+
+
+@hydra.main(
+    config_path=str(REPO_ROOT / "sim" / "configs"),
+    config_name="replay",
+    version_base="1.3",
+)
+def main(cfg: DictConfig) -> None:
+    print("[replay_ik] resolved cfg:\n" + OmegaConf.to_yaml(cfg), flush=True)
+
+    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+    from sim.controllers.ik import IkController, IkControllerCfg
+    from sim.io.replay.sources import TelemetryNpzSource
+
+    # --- Backend + robot ---
+    backend = MujocoSimBackend(MujocoBackendCfg(
+        workstations={cfg.robot.role_name: cfg.robot.workstation_name},
+        num_envs=1,
+        dt=float(cfg.backend.dt),
+        device="cpu",
+    ))
+    robot = backend.robots[cfg.robot.role_name]
+
+    # --- Determine input mode ---
+    ee_poses_path = cfg.get("ee_poses", None)
+
+    if ee_poses_path:
+        # EE pose input mode: load directly from file
+        print(f"[replay_ik] mode: ee_poses from {ee_poses_path}")
+        ee_targets = _load_ee_poses(ee_poses_path)
+        arm_roles = [k for k in ee_targets if k.startswith("arm_")]
+        n_frames = min(v.shape[0] for v in ee_targets.values())
+        if cfg.max_frames:
+            n_frames = min(n_frames, int(cfg.max_frames))
+        source = None
+        gt_joint_targets = None
+        hz = float(cfg.get("hz", cfg.source.hz if "source" in cfg else 30.0))
+    else:
+        # Validation mode: FK from recorded qpos
+        print("[replay_ik] mode: from_qpos (validation)")
+        source: TelemetryNpzSource = instantiate(cfg.source)
+        source.bind_robot(robot)
+        arm_roles = [r for r in source.roles if r.startswith("arm_")]
+        n_frames = source.num_frames
+        if cfg.max_frames:
+            n_frames = min(n_frames, int(cfg.max_frames))
+        hz = float(source.hz)
+
+        print("[replay_ik] computing FK from recorded qpos...")
+        ee_targets = _compute_fk_targets(robot, source, arm_roles, n_frames)
+
+        # Save ground-truth joint targets for joint-space error reporting
+        gt_joint_targets = {
+            role: np.array([source.joint_targets(t)[role] for t in range(n_frames)])
+            for role in arm_roles
+        }
+
+    # --- Setup IK controllers ---
+    sub_steps = max(1, int(round(1.0 / (hz * float(backend.dt)))))
+    ik_controllers: dict[str, IkController] = {}
+    for role in arm_roles:
+        ik = IkController(IkControllerCfg(role=role, frame=f"{role}:tool0", damping=0.05))
+        ik.attach(robot)
+        ik_controllers[role] = ik
+
+    print(
+        f"[replay_ik] arms={arm_roles}, {n_frames} frames, "
+        f"{sub_steps} sub-steps/frame (dt={backend.dt*1000:.1f}ms, hz={hz})"
+    )
+
+    # --- Run IK replay ---
+    print("[replay_ik] running IK replay...")
+    errors_pos, errors_ori, errors_joint = _run_ik_replay(
+        backend, robot, ik_controllers, ee_targets, arm_roles,
+        sub_steps, n_frames,
+        source=source,
+        gt_joint_targets=gt_joint_targets,
+    )
+
+    # --- Report + plot ---
+    _print_report(arm_roles, errors_pos, errors_ori, errors_joint)
+    _save_plot(arm_roles, errors_pos, errors_ori)
+
+
+if __name__ == "__main__":
+    main()
