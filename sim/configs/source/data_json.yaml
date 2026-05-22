@@ -1,0 +1,13 @@
+# Arms-only replay from converted data.json recording.
+# Convert first: python3 scripts/convert_data_json.py data.json --out episode_json/
+_target_: sim.io.replay.sources.TelemetryNpzSource
+path: episode_json
+field: qpos
+hz: 30.0
+layout:
+  arm_left:
+    cols: [0, 7]
+    sign: 1.0
+  arm_right:
+    cols: [7, 14]
+    sign: 1.0

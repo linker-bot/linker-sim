@@ -355,20 +355,20 @@
     </body>
   </worldbody>
   <actuator>
-    <position name="arm_left_AR5_5_07L_W4C4A2_joint_1_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_1" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" />
-    <position name="arm_left_AR5_5_07L_W4C4A2_joint_2_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_2" kp="1000" kv="4" ctrlrange="-2.0944 2.0944" />
-    <position name="arm_left_AR5_5_07L_W4C4A2_joint_3_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_3" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" />
-    <position name="arm_left_AR5_5_07L_W4C4A2_joint_4_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_4" kp="1000" kv="4" ctrlrange="-1.0472 2.5307" />
-    <position name="arm_left_AR5_5_07L_W4C4A2_joint_5_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_5" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" />
-    <position name="arm_left_AR5_5_07L_W4C4A2_joint_6_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_6" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" />
-    <position name="arm_left_AR5_5_07L_W4C4A2_joint_7_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_7" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" />
-    <position name="arm_right_AR5_5_07R_W4C4A2_joint_1_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_1" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" />
-    <position name="arm_right_AR5_5_07R_W4C4A2_joint_2_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_2" kp="1000" kv="4" ctrlrange="-2.0944 2.0944" />
-    <position name="arm_right_AR5_5_07R_W4C4A2_joint_3_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_3" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" />
-    <position name="arm_right_AR5_5_07R_W4C4A2_joint_4_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_4" kp="1000" kv="4" ctrlrange="-1.0472 2.5307" />
-    <position name="arm_right_AR5_5_07R_W4C4A2_joint_5_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_5" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" />
-    <position name="arm_right_AR5_5_07R_W4C4A2_joint_6_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_6" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" />
-    <position name="arm_right_AR5_5_07R_W4C4A2_joint_7_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_7" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" />
+    <position name="arm_left_AR5_5_07L_W4C4A2_joint_1_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_1" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" forcerange="-108 108" />
+    <position name="arm_left_AR5_5_07L_W4C4A2_joint_2_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_2" kp="1000" kv="4" ctrlrange="-2.0944 2.0944" forcerange="-108 108" />
+    <position name="arm_left_AR5_5_07L_W4C4A2_joint_3_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_3" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" forcerange="-66 66" />
+    <position name="arm_left_AR5_5_07L_W4C4A2_joint_4_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_4" kp="1000" kv="4" ctrlrange="-1.0472 2.5307" forcerange="-66 66" />
+    <position name="arm_left_AR5_5_07L_W4C4A2_joint_5_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_5" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" forcerange="-19 19" />
+    <position name="arm_left_AR5_5_07L_W4C4A2_joint_6_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_6" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" forcerange="-19 19" />
+    <position name="arm_left_AR5_5_07L_W4C4A2_joint_7_act" joint="arm_left_AR5_5_07L_W4C4A2_joint_7" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" forcerange="-19 19" />
+    <position name="arm_right_AR5_5_07R_W4C4A2_joint_1_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_1" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" forcerange="-108 108" />
+    <position name="arm_right_AR5_5_07R_W4C4A2_joint_2_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_2" kp="1000" kv="4" ctrlrange="-2.0944 2.0944" forcerange="-108 108" />
+    <position name="arm_right_AR5_5_07R_W4C4A2_joint_3_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_3" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" forcerange="-66 66" />
+    <position name="arm_right_AR5_5_07R_W4C4A2_joint_4_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_4" kp="1000" kv="4" ctrlrange="-1.0472 2.5307" forcerange="-66 66" />
+    <position name="arm_right_AR5_5_07R_W4C4A2_joint_5_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_5" kp="1000" kv="4" ctrlrange="-3.1067 3.1067" forcerange="-19 19" />
+    <position name="arm_right_AR5_5_07R_W4C4A2_joint_6_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_6" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" forcerange="-19 19" />
+    <position name="arm_right_AR5_5_07R_W4C4A2_joint_7_act" joint="arm_right_AR5_5_07R_W4C4A2_joint_7" kp="1000" kv="4" ctrlrange="-1.0472 1.0472" forcerange="-19 19" />
     <position name="hand_left_lh_thumb_cmc_yaw_act" joint="hand_left_lh_thumb_cmc_yaw" kp="200" kv="0" ctrlrange="0 1.3" />
     <position name="hand_left_lh_thumb_cmc_pitch_act" joint="hand_left_lh_thumb_cmc_pitch" kp="200" kv="0" ctrlrange="0 0.58" />
     <position name="hand_left_lh_index_mcp_pitch_act" joint="hand_left_lh_index_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.60" />

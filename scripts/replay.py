@@ -68,18 +68,23 @@ def _replay_mujoco(cfg: DictConfig) -> None:
     import mujoco.viewer as mjv
 
     stop_flag = [False]
+    restart_flag = [False]
 
     def on_key(keycode: int) -> None:
         if keycode in (ord("Q"), ord("q")):
             stop_flag[0] = True
+        elif keycode in (ord("R"), ord("r")):
+            restart_flag[0] = True
 
     with mjv.launch_passive(backend._model, backend._data, key_callback=on_key) as viewer:
-        print("[replay] hotkey: press 'Q' in the viewport to stop")
+        print("[replay] hotkeys: 'R' restart, 'Q' quit")
         run_replay(backend, robot, source,
                    viewer=viewer,
                    realtime=bool(cfg.realtime),
                    max_frames=cfg.max_frames,
-                   stop_flag=stop_flag)
+                   stop_flag=stop_flag,
+                   loop=True,
+                   restart_flag=restart_flag)
 
 
 def _replay_isaac(cfg: DictConfig) -> None:
@@ -95,6 +100,9 @@ def _replay_isaac(cfg: DictConfig) -> None:
 
     import traceback
     try:
+        import carb.input
+        import omni.appwindow
+
         from sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
         from sim.runtime.replay import run_replay
 
@@ -117,9 +125,32 @@ def _replay_isaac(cfg: DictConfig) -> None:
         ))
         robot = backend.robots[cfg.robot.role_name]
 
+        stop_flag = [False]
+        restart_flag = [False]
+
+        app_window = omni.appwindow.get_default_app_window()
+        input_iface = carb.input.acquire_input_interface()
+        keyboard = app_window.get_keyboard()
+
+        def _on_key(event, *args):
+            if event.type == carb.input.KeyboardEventType.KEY_PRESS:
+                if event.input == carb.input.KeyboardInput.R:
+                    restart_flag[0] = True
+                elif event.input == carb.input.KeyboardInput.Q:
+                    stop_flag[0] = True
+            return True
+
+        kb_sub = input_iface.subscribe_to_keyboard_events(keyboard, _on_key)
+        print("[replay] hotkeys: 'R' restart, 'Q' quit")
+
         run_replay(backend, robot, source,
                    realtime=bool(cfg.realtime),
-                   max_frames=cfg.max_frames)
+                   max_frames=cfg.max_frames,
+                   stop_flag=stop_flag,
+                   loop=True,
+                   restart_flag=restart_flag)
+
+        input_iface.unsubscribe_to_keyboard_events(keyboard, kb_sub)
     except BaseException:
         traceback.print_exc()
         raise
