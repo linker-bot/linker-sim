@@ -30,8 +30,17 @@ robots, with both Isaac Sim and MuJoCo backends.
 
 ## Installation
 
-See [docs/installation.md](docs/installation.md). One Python env
-(`env_isaaclab`) shared across IsaacLab, the composer, and the runtime.
+See [docs/installation.md](docs/installation.md). Two profiles are available:
+
+- **MuJoCo-only** (Python 3.11 or 3.12, no GPU needed) — for replay and data collection workflows.
+- **Full** (Python 3.11 + NVIDIA GPU) — for Isaac Sim RL training.
+
+Quick MuJoCo-only setup:
+
+```bash
+python3 -m venv .venv-mujoco && source .venv-mujoco/bin/activate
+pip install -e ".[mujoco]"
+```
 
 ## Quick start
 

@@ -7,7 +7,7 @@ name = "dex-tool-rl"
 version = "0.1.0"
 description = "Multi-robot, multi-sim RL simulation backbone (Isaac Sim + MuJoCo)."
 readme = "README.md"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.11,<3.13"
 # No root-level runtime dependencies. Workflows (tools / mujoco / isaac)
 # install their own subsets — see [project.optional-dependencies]. A
 # CI runner that only validates asset composition needs `[tools]`, nothing
@@ -83,7 +83,7 @@ packages = ["sim", "tools"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py311"  # minimum supported
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]

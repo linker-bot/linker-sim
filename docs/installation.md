@@ -1,17 +1,68 @@
 # Installation Guide
 
+This project supports two installation profiles:
+
+| Profile | Python | GPU required | Use case |
+|---------|--------|--------------|----------|
+| **MuJoCo-only** | 3.11 or 3.12 | No (CPU-rendered viewer) | Replay, MJCF validation, data collection |
+| **Full (Isaac + MuJoCo)** | 3.11 only | Yes (NVIDIA RTX) | RL training, Isaac Sim workflows |
+
+Pick the section that matches your needs.
+
+---
+
+## A) MuJoCo-only install (Python 3.11 or 3.12)
+
+Use this if you only need the MuJoCo backend — e.g. replaying telemetry on a data-collection workstation (a7_lite). No GPU or Isaac Sim required.
+
+### Prerequisites
+
+- Ubuntu 22.04 or 24.04
+- Python 3.11 or 3.12
+- `git`
+- `uv` (or `pip`)
+
+### Setup
+
+```bash
+cd /path/to/dex-tool-rl
+
+# Create a venv with your system Python (3.11 or 3.12)
+python3 -m venv .venv-mujoco
+source .venv-mujoco/bin/activate
+
+# Install MuJoCo subset (pulls mujoco, pyyaml, hydra-core)
+pip install -e ".[mujoco]"
+```
+
+### Verify
+
+```bash
+python scripts/replay.py robot=a7_lite_dc source=data_collection headless=true max_frames=50
+```
+
+### Daily activation
+
+```bash
+source /path/to/dex-tool-rl/.venv-mujoco/bin/activate
+```
+
+---
+
+## B) Full install (Isaac Sim + MuJoCo, Python 3.11 only)
+
 This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installed **outside this repo** at a shared location; this repo's Python packages (`sim/`, `tools/`) install on top via `pip`.
 
 One Python environment is used end-to-end: the IsaacLab-managed `env_isaaclab`. Composer, validator, registry tools, and runtime all share it.
 
-## Prerequisites
+### Prerequisites
 
 - Ubuntu 22.04 or 24.04 (both officially supported by Isaac Sim 5.x)
 - NVIDIA GPU with RT Cores (RTX 20-series or newer)
 - NVIDIA driver >= 580.65.06 (tested baseline for Isaac Sim 5.x)
 - `git`
 - `uv` package manager
-- **Python 3.11 exactly** (required by Isaac Sim 5.x; 3.10 and 3.12 will not work)
+- **Python 3.11 exactly** (required by Isaac Sim 5.x; 3.12 will not work for this profile)
 
 ### Python 3.11 on Ubuntu 24.04
 
@@ -34,7 +85,7 @@ The system default is Python 3.12, and 3.11 is not available from the default ap
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-## 1) Clone IsaacLab (outside this repo)
+### 1) Clone IsaacLab (outside this repo)
 
 IsaacLab is a shared system dependency, not a vendored part of this repo. Put it at a canonical location such as `~/opt/IsaacLab/` so multiple projects can share one install.
 
@@ -48,7 +99,7 @@ git checkout v2.3.2     # pin to a tag matching Isaac Sim 5.1 (see §2c below)
 
 > **Do not clone IsaacLab into this repo.** Earlier versions of this guide put it under `docs/IsaacLab/`; that convention is retired. `docs/` is for documentation only.
 
-## 2) Create the IsaacLab venv + install Isaac Sim + Lab extensions
+### 2) Create the IsaacLab venv + install Isaac Sim + Lab extensions
 
 Run these from `~/opt/IsaacLab/` (wherever you cloned it):
 
@@ -84,7 +135,7 @@ IsaacLab scripts of note:
 - `./isaaclab.sh -i`: install IsaacLab extensions (requires `isaacsim` already present in the active env)
 - `./isaaclab.sh -p <script.py …>`: run Python with IsaacLab runtime context
 
-## 3) Install this repo's packages into the same env
+### 3) Install this repo's packages into the same env
 
 From this repo's root, with `env_isaaclab` still activated:
 
@@ -106,7 +157,7 @@ Optional extras:
 
 For daily work with IsaacLab already installed, `.[tools]` is usually enough.
 
-## 4) Verify — Isaac smoke test
+### 4) Verify — Isaac smoke test
 
 With `env_isaaclab` activated:
 
@@ -135,7 +186,7 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 See [USAGE.md](USAGE.md) for the full set of `scripts/run.py` knobs and
 the MuJoCo backend.
 
-## 5) Tune OSC gains (optional)
+### 5) Tune OSC gains (optional)
 
 ```bash
 python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --arm_role arm_left
@@ -143,7 +194,7 @@ python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --arm_role arm_left
 
 Creates `sim/envs/test_osc/osc_gains.json` on first run and hot-reloads while running.
 
-## 6) Compose and validate workstations
+### 6) Compose and validate workstations
 
 The composer and validator don't need Isaac Sim — just `.[tools]`.
 
@@ -167,7 +218,7 @@ python tools/registry_show.py ar5_l6_bench_bimanual
 bash tools/ci/check_drift.sh
 ```
 
-## Daily activation
+### Daily activation (full install)
 
 After setup, a typical day looks like:
 
@@ -189,7 +240,7 @@ alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/dex-
 - **`FileNotFoundError: Could not find the isaac-sim directory … _isaac_sim`** during `./isaaclab.sh -i` — `isaacsim` wasn't installed before `-i`. Install it first: `uv pip install 'isaacsim[all,extscache]==5.1.0' --extra-index-url https://pypi.nvidia.com`, then re-run `-i`.
 - **`[isaaclab.python-…] dependency: 'isaacsim.asset.importer.urdf' = { version='=2.4.31' } can't be satisfied`** at runtime — Isaac Sim version mismatch. IsaacLab v2.3.2 needs Isaac Sim 5.1; if you installed 5.0, upgrade: `uv pip uninstall isaacsim && uv pip install 'isaacsim[all,extscache]==5.1.0' --extra-index-url https://pypi.nvidia.com && ./isaaclab.sh -i`.
 - **`Failed to build flatdict==4.0.1` / `ModuleNotFoundError: No module named 'pkg_resources'`** — Install flatdict with build isolation disabled: `uv pip install setuptools && uv pip install flatdict==4.0.1 --no-build-isolation`, then re-run `-i`.
-- **Isaac Sim import errors about Python version / ABI mismatch** — Confirm your venv Python is 3.11 (`python --version`). Isaac Sim 5.x does not load under 3.10 or 3.12.
+- **Isaac Sim import errors about Python version / ABI mismatch** — Confirm your venv Python is 3.11 (`python --version`). Isaac Sim 5.x does not load under 3.10 or 3.12. The MuJoCo-only profile works fine on 3.12.
 - **`ModuleNotFoundError: sim` or `tools`** — You haven't run `uv pip install -e '.[tools]'` in the active env, or the wrong env is active.
 - **Isaac Sim window doesn't launch / crashes early** — Verify NVIDIA driver/GPU compatibility and system graphics stack.
 - **Wrong Python interpreter in shell** — `which python` and re-activate the intended venv.
