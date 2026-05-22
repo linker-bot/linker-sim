@@ -1,0 +1,114 @@
+format: xrdf
+format_version: 1.0
+
+default_joint_positions:
+  AR5_5_08L_W4C4A6_joint_1: 0.0
+  AR5_5_08L_W4C4A6_joint_2: 0.0
+  AR5_5_08L_W4C4A6_joint_3: 0.0
+  AR5_5_08L_W4C4A6_joint_4: 0.0
+  AR5_5_08L_W4C4A6_joint_5: 0.0
+  AR5_5_08L_W4C4A6_joint_6: 0.0
+  AR5_5_08L_W4C4A6_joint_7: 0.0
+
+cspace:
+  joint_names:
+    - AR5_5_08L_W4C4A6_joint_1
+    - AR5_5_08L_W4C4A6_joint_2
+    - AR5_5_08L_W4C4A6_joint_3
+    - AR5_5_08L_W4C4A6_joint_4
+    - AR5_5_08L_W4C4A6_joint_5
+    - AR5_5_08L_W4C4A6_joint_6
+    - AR5_5_08L_W4C4A6_joint_7
+  acceleration_limits: [15.0, 15.0, 20.0, 20.0, 25.0, 25.0, 25.0]
+  jerk_limits: [7500.0, 7500.0, 10000.0, 10000.0, 12500.0, 12500.0, 12500.0]
+
+collision:
+  geometry: "collision_spheres"
+  buffer_distance:
+    AR5_5_08L_W4C4A6_base: 0.01
+    AR5_5_08L_W4C4A6_link1: 0.01
+    AR5_5_08L_W4C4A6_link2: 0.01
+    AR5_5_08L_W4C4A6_link3: 0.01
+    AR5_5_08L_W4C4A6_link4: 0.01
+    AR5_5_08L_W4C4A6_link5: 0.01
+    AR5_5_08L_W4C4A6_link6: 0.005
+    AR5_5_08L_W4C4A6_link7: 0.005
+
+self_collision:
+  geometry: "collision_spheres"
+  ignore:
+    AR5_5_08L_W4C4A6_base: ["AR5_5_08L_W4C4A6_link1"]
+    AR5_5_08L_W4C4A6_link1: ["AR5_5_08L_W4C4A6_link2"]
+    AR5_5_08L_W4C4A6_link2: ["AR5_5_08L_W4C4A6_link3"]
+    AR5_5_08L_W4C4A6_link3: ["AR5_5_08L_W4C4A6_link4"]
+    AR5_5_08L_W4C4A6_link4: ["AR5_5_08L_W4C4A6_link5"]
+    AR5_5_08L_W4C4A6_link5: ["AR5_5_08L_W4C4A6_link6"]
+    AR5_5_08L_W4C4A6_link6: ["AR5_5_08L_W4C4A6_link7"]
+
+geometry:
+  collision_spheres:
+    spheres:
+      AR5_5_08L_W4C4A6_base:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.06
+        - center: [0.0, 0.06, 0.0]
+          radius: 0.055
+        - center: [0.0, 0.12, 0.0]
+          radius: 0.05
+      AR5_5_08L_W4C4A6_link1:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.055
+        - center: [0.0, 0.0, 0.06]
+          radius: 0.05
+        - center: [0.0, 0.0, 0.12]
+          radius: 0.05
+        - center: [0.0, 0.0, 0.17]
+          radius: 0.045
+      AR5_5_08L_W4C4A6_link2:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.055
+        - center: [0.0, 0.0, -0.08]
+          radius: 0.05
+        - center: [0.0, 0.0, -0.16]
+          radius: 0.045
+        - center: [0.0, 0.0, -0.24]
+          radius: 0.045
+        - center: [0.0, 0.0, -0.32]
+          radius: 0.045
+      AR5_5_08L_W4C4A6_link3:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.05
+        - center: [0.007, 0.0, -0.02]
+          radius: 0.05
+        - center: [0.0, 0.0, 0.04]
+          radius: 0.045
+      AR5_5_08L_W4C4A6_link4:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.05
+        - center: [0.0, 0.0, -0.07]
+          radius: 0.045
+        - center: [0.0, 0.0, -0.14]
+          radius: 0.045
+        - center: [0.0, 0.0, -0.21]
+          radius: 0.04
+        - center: [0.0, 0.0, -0.27]
+          radius: 0.04
+      AR5_5_08L_W4C4A6_link5:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.045
+        - center: [0.0, 0.0, -0.04]
+          radius: 0.04
+        - center: [0.0, 0.0, -0.08]
+          radius: 0.04
+      AR5_5_08L_W4C4A6_link6:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.04
+        - center: [0.005, 0.0, 0.0]
+          radius: 0.035
+      AR5_5_08L_W4C4A6_link7:
+        - center: [0.0, 0.0, 0.0]
+          radius: 0.035
+        - center: [0.0, 0.0, -0.03]
+          radius: 0.035
+        - center: [0.0, 0.0, -0.06]
+          radius: 0.03

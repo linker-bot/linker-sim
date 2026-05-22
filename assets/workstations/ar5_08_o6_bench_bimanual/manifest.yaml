@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/ar5_08
     variant: left
-    sha256: 04c4778a56a16d535f033d747a54e7e71da9aa11aa3ea4c3b04ba23121f5f532
+    sha256: 70965fa7c35cf29952dafebb7ec45c85ec71d3120ca4a356c0535e9afa100239
   arm_right:
     name: arms/ar5_08
     variant: right
-    sha256: 3b89d5ab39a7c7213accee83ffebde2c9b446a89aeb35366a71c67571179dc55
+    sha256: a3863ceb80bfac95aa531daf771dc8c148bf935278cd3c5098e4e61292b0ffbc
   hand_left:
     name: hands/linkerhand_o6
     variant: left
@@ -139,3 +139,6 @@ gain_profiles:
     joint:
       stiffness: 200.0
       damping: 4.0
+xrdf_paths:
+  arm_left: ../../components/arms/ar5_08/variants/left/arm.xrdf
+  arm_right: ../../components/arms/ar5_08/variants/right/arm.xrdf

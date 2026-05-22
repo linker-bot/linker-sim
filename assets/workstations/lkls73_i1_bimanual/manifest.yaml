@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/lkls73_arm
     variant: left
-    sha256: ebef8b5fd36f1c63632690c36afb4014ef055671ef5e16cab24ea47d00911322
+    sha256: 182bbf23616ebcd8fdc6a65635f481d82145c3b7fa8021629fb05227f0f9ca0e
   arm_right:
     name: arms/lkls73_arm
     variant: right
-    sha256: fd8915f57086d81f74954650a10c06d56440c0d289c6c265500774ab09213b3e
+    sha256: e09c7d5a30970c474bfffa06417542bf59c12bea93be0604b7ffb4bb0f705d0b
   hand_left:
     name: hands/linkerhand_l6
     variant: left
@@ -27,7 +27,7 @@ artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
   urdf_sha256: d681a7492e8ce8a378356221db720e767af2b92e33e72798a83d01aaedb2698b
-  mjcf_sha256: 0d9078f0f06427ecff673a07b068f1cfea4cb42f399819b70274e3b12fc07214
+  mjcf_sha256: 14cbc8fda78b33408ab9a30b2ed608c8fce6d8389538c7c0cfc363ef49580b89
 joints:
   base: []
   arm_left:
@@ -92,11 +92,11 @@ ee_links:
 base_link: base_torso_root
 default_gains:
   arm_left:
-    stiffness: 1000.0
-    damping: 4.0
+    stiffness: 2000.0
+    damping: 20.0
   arm_right:
-    stiffness: 1000.0
-    damping: 4.0
+    stiffness: 2000.0
+    damping: 20.0
   hand_left:
     stiffness: 20.0
     damping: 2.0
@@ -106,21 +106,21 @@ default_gains:
 gain_profiles:
   arm_left:
     default:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     joint:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     osc:
       stiffness: 150.0
       damping: 8.0
   arm_right:
     default:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     joint:
-      stiffness: 1000.0
-      damping: 4.0
+      stiffness: 2000.0
+      damping: 20.0
     osc:
       stiffness: 150.0
       damping: 8.0

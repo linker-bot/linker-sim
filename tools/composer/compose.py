@@ -98,8 +98,8 @@ def sha256_file(path: Path) -> str:
 def sha256_component_sources(meta: ComponentMeta, variant: Variant) -> str:
     """Hash of the files that define this component variant.
 
-    Covers meta.yaml + the variant's URDF + MJCF (if any). Does NOT hash
-    meshes because they're binary LFS-tracked and the URDF's mesh
+    Covers meta.yaml + the variant's URDF + MJCF + XRDF (if any). Does NOT
+    hash meshes because they're binary LFS-tracked and the URDF's mesh
     references already fingerprint mesh identity.
     """
     h = hashlib.sha256()
@@ -111,6 +111,11 @@ def sha256_component_sources(meta: ComponentMeta, variant: Variant) -> str:
         if mjcf_path.is_file():
             h.update(b"\n\x00")
             h.update(mjcf_path.read_bytes())
+    if variant.xrdf:
+        xrdf_path = meta.source_dir / variant.xrdf
+        if xrdf_path.is_file():
+            h.update(b"\n\x00")
+            h.update(xrdf_path.read_bytes())
     return h.hexdigest()
 
 
@@ -258,6 +263,18 @@ def compose(paths: Paths) -> ComposeResult:
         for fname, linkname in c.mount_frames.items():
             frames[f"{c.role}:{fname}"] = linkname
 
+    # XRDF paths: record relative path from workstation dir back to
+    # component source for each role that ships an XRDF.
+    xrdf_paths: dict[str, str] = {}
+    for role, meta, variant in components_with_variant:
+        if variant.xrdf:
+            xrdf_abs = (meta.source_dir / variant.xrdf).resolve()
+            if xrdf_abs.is_file():
+                import os.path
+                xrdf_paths[role] = os.path.relpath(
+                    str(xrdf_abs), start=str(paths.workstation_dir)
+                ).replace("\\", "/")
+
     manifest = Manifest(
         schema_version=1,
         name=recipe.name,
@@ -278,6 +295,7 @@ def compose(paths: Paths) -> ComposeResult:
         base_link=base_link,
         default_gains=merged_gains,
         gain_profiles=gain_profiles,
+        xrdf_paths=xrdf_paths,
     )
     manifest_yaml = yaml.safe_dump(
         manifest.to_dict(),

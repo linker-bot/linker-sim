@@ -66,6 +66,10 @@ class WorkstationHandle:
     default_gains: dict[str, Gains]    # role -> gains
     gain_profiles: dict[str, dict[str, Gains]]  # role -> profile_name -> gains
 
+    # Per-role XRDF paths for cuMotion collision spheres. Empty dict when
+    # no component ships an XRDF.
+    xrdf_paths: dict[str, Path]        # role -> absolute path to .xrdf
+
     # Provenance — useful for debugging which component/variant produced
     # which prefix.
     components: dict[str, "ComponentRef"]
@@ -194,6 +198,11 @@ def load(name: str, root: Path | None = None) -> WorkstationHandle:
                 for pname, g in profiles.items()
             }
             for role, profiles in (m.get("gain_profiles") or {}).items()
+        },
+        xrdf_paths={
+            str(role): (ws_dir / rel).resolve()
+            for role, rel in (m.get("xrdf_paths") or {}).items()
+            if (ws_dir / rel).resolve().is_file()
         },
         components={
             role: ComponentRef(

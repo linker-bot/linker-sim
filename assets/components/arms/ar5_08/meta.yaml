@@ -10,11 +10,13 @@ variants:
     vars: {V: L}
     urdf: variants/left/arm.urdf
     mjcf: variants/left/arm.mjcf
+    xrdf: variants/left/arm.xrdf
     meshdir: variants/left/meshes
   right:
     vars: {V: R}
     urdf: variants/right/arm.urdf
     mjcf: variants/right/arm.mjcf
+    xrdf: variants/right/arm.xrdf
     meshdir: variants/right/meshes
 
 root_link: "AR5_5_08{V}_W4C4A6_base"
