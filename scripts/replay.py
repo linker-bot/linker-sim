@@ -22,6 +22,7 @@ Config docs: `sim/configs/replay.yaml`. New recordings just need a
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -76,7 +77,14 @@ def _replay_mujoco(cfg: DictConfig) -> None:
         elif keycode in (ord("R"), ord("r")):
             restart_flag[0] = True
 
-    with mjv.launch_passive(backend._model, backend._data, key_callback=on_key) as viewer:
+    with mjv.launch_passive(
+        backend._model,
+        backend._data,
+        key_callback=on_key,
+        show_left_ui=False,
+        show_right_ui=False,
+    ) as viewer:
+        _configure_mujoco_replay_camera(viewer, backend._model)
         print("[replay] hotkeys: 'R' restart, 'Q' quit")
         run_replay(backend, robot, source,
                    viewer=viewer,
@@ -85,6 +93,30 @@ def _replay_mujoco(cfg: DictConfig) -> None:
                    stop_flag=stop_flag,
                    loop=True,
                    restart_flag=restart_flag)
+
+
+def _configure_mujoco_replay_camera(viewer, model) -> None:
+    """Use a wide fixed default view so the replay robot is fully visible."""
+
+    stat = getattr(model, "stat", None)
+    center = getattr(stat, "center", [0.0, 0.0, 0.0])
+    extent = float(getattr(stat, "extent", 1.0) or 1.0)
+    lookat_z_offset = float(os.environ.get("MUJOCO_REPLAY_CAMERA_LOOKAT_Z_OFFSET", "0.10"))
+
+    distance_env = os.environ.get("MUJOCO_REPLAY_CAMERA_DISTANCE", "").strip()
+    if distance_env:
+        distance = float(distance_env)
+    else:
+        distance_scale = float(os.environ.get("MUJOCO_REPLAY_CAMERA_DISTANCE_SCALE", "1.0667"))
+        distance = max(1.8333, extent * distance_scale)
+
+    with viewer.lock():
+        viewer.cam.lookat[0] = float(center[0])
+        viewer.cam.lookat[1] = float(center[1])
+        viewer.cam.lookat[2] = float(center[2]) + extent * lookat_z_offset
+        viewer.cam.distance = distance
+        viewer.cam.azimuth = float(os.environ.get("MUJOCO_REPLAY_CAMERA_AZIMUTH", "180"))
+        viewer.cam.elevation = float(os.environ.get("MUJOCO_REPLAY_CAMERA_ELEVATION", "-15"))
 
 
 def _replay_isaac(cfg: DictConfig) -> None:
