@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Source: /home/zhy/codes/lkls73_i1_dual_arm_description (A7V2_50_4.27).
+<!-- Source: vendor lkls73_i1_dual_arm_description package (A7V2_50_4.27).
      Rerooted at a zero-mass virtual link L_arm_root so the recipe's fixed
      mount joint can live above the first revolute L1_Joint. Kinematics
      otherwise match the source URDF exactly; L1_Joint's original [0 0.164 0]

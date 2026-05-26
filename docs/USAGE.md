@@ -126,8 +126,9 @@ tasks, and `BaseEnv`. Hand columns are decoded via per-joint mappers
 > [sim/io/replay/hands.py](../sim/io/replay/hands.py).
 
 ```bash
-# Real-robot recording at episode_000004/telemetry.npz, MuJoCo viewport,
-# paced to 30 Hz wall-clock.
+# Real-robot recording at episode_000025/telemetry.npz, MuJoCo viewport,
+# paced to 30 Hz wall-clock. The recording is not tracked in this repo —
+# either drop it at the default path or override with `source.path=...`.
 python scripts/replay.py robot=a7_lite_dc source=data_collection
 
 # Headless smoke: cap to 200 frames, no realtime pacing.

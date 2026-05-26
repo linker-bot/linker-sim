@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/lkls73_arm
     variant: left
-    sha256: 182bbf23616ebcd8fdc6a65635f481d82145c3b7fa8021629fb05227f0f9ca0e
+    sha256: a54c8dc24b5c03d1e478b0902b4a924c357aa2c4cfa4918615fd85ab5629266b
   arm_right:
     name: arms/lkls73_arm
     variant: right
-    sha256: e09c7d5a30970c474bfffa06417542bf59c12bea93be0604b7ffb4bb0f705d0b
+    sha256: 902a6c1bd326ef737a318a10e07f989d7c6be44cfe29ba7840f1a89bc5ed4d17
   hand_left:
     name: hands/linkerhand_l6
     variant: left

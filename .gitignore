@@ -38,3 +38,4 @@ assets/usd_generated/
 # Data
 outputs/
 episode*/
+data.json

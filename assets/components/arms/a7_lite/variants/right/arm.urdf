@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Joint kinematics (axes, limits, joint origins, effort/velocity)
-     come from /home/zhy/codes/a7_lite__right.urdf — the per-side URDF
-     the real robot/recorder uses. The previously committed component
+     come from the vendor's per-side a7_lite_right URDF — the URDF the
+     real robot/recorder uses. The previously committed component
      was derived from the combined LZARMzongzhuang.urdf, which had
      different sign conventions on R1/R2/R4 (axes flipped, limits
      negated/swapped) plus 12 mm errors on R3/R4 origin Z. Replay was

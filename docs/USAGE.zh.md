@@ -121,7 +121,9 @@ python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
 > 查找表替换这两个解码器。文件中以 TODO 标注待办。
 
 ```bash
-# 真机数据 episode_000004/telemetry.npz，MuJoCo 视口，30 Hz 实时回放。
+# 真机数据 episode_000025/telemetry.npz，MuJoCo 视口，30 Hz 实时回放。
+# 数据本身不纳入版本管理 —— 把它放到默认路径下，或用
+# `source.path=...` 覆盖。
 python scripts/replay.py robot=a7_lite_dc source=data_collection
 
 # 无界面烟雾：限制 200 帧，关闭实时节流。

@@ -3,7 +3,7 @@ name: a7_lite_dc
 description: >
   Bimanual a7_lite torso + two 7-DOF a7_lite arms + two Linkerhand L6
   hands, all welded into a single articulation via the composer. Source
-  URDF: /home/zhy/codes/A7_Lite_URDF/urdf/LZARMzongzhuang.urdf (split
+  URDF: vendor a7_lite arm package (combined LZARMzongzhuang.urdf, split
   into torso + per-side arm components and renamed L1..L7 / R1..R7).
   Roles arm_left / arm_right / hand_left / hand_right are addressable
   through Robot.joint_ids_of(role); the torso is a fixed base welded to

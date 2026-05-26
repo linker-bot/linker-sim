@@ -1,5 +1,8 @@
 # Linker-Hand-flavored real-robot recording. `path` points at a directory
-# containing `telemetry.npz` (default: `episode_000004/` at the repo root).
+# containing `telemetry.npz` (default: `episode_000025/` at the repo
+# root). The recording is not tracked in this repo; supply your own and
+# either drop it at the default path or override on the CLI with
+# `source.path=/abs/or/relative/path`.
 # Telemetry layout (verified empirically): qpos cols 0-13 are the two
 # arms in radians; cols 14-25 are 0-255 byte commands per finger for the
 # two hands. Decoder=linker_o6 maps bytes -> joint range (same linear

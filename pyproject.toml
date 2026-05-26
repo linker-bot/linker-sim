@@ -58,6 +58,10 @@ lerobot = [
 dev = [
     "ruff>=0.6",
     "pytest>=8.0",
+    # The pytest gate documented in docs/USAGE.md imports torch
+    # unconditionally from several test files. Keep this in sync with
+    # the runtime extras above.
+    "torch>=2.0",
 ]
 
 # Convenience: everything except dev tools.
