@@ -112,8 +112,13 @@ python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
 入口 [scripts/replay.py](../scripts/replay.py) 读取一个 `ReplaySource`
 （目前仅 `TelemetryNpzSource`），直接调用 `set_joint_position_target`
 驱动 workstation，**不**经过控制器、任务或 `BaseEnv`。手部列通过专用
-解码器映射（见 [sim/io/replay/hands.py](../sim/io/replay/hands.py)；
-Linker L6 当前是占位的线性映射，文件里有 TODO 待替换为厂商标定曲线）。
+解码器映射（见 [sim/io/replay/hands.py](../sim/io/replay/hands.py)）。
+
+> **手部解码精度提示。** `linker_l6` / `linker_o6` 把厂商 0–255 字节
+> 命令在每个关节 `[lower, upper]` 上做线性插值。真实 Linker Hand 的
+> 标定是非线性的，部分关节方向甚至相反，因此**手指姿态只是近似值**
+> （手臂跟踪不受影响）。在声称物理保真之前，应用厂商曲线或逐关节
+> 查找表替换这两个解码器。文件中以 TODO 标注待办。
 
 ```bash
 # 真机数据 episode_000004/telemetry.npz，MuJoCo 视口，30 Hz 实时回放。

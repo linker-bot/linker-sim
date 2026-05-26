@@ -114,8 +114,16 @@ Use [scripts/replay.py](../scripts/replay.py). It reads a
 `ReplaySource` (currently `TelemetryNpzSource`), drives the workstation
 with `set_joint_position_target` directly, and bypasses controllers,
 tasks, and `BaseEnv`. Hand columns are decoded via per-joint mappers
-(see [sim/io/replay/hands.py](../sim/io/replay/hands.py); the Linker L6
-decoder is a placeholder linear map — see TODO inline).
+(see [sim/io/replay/hands.py](../sim/io/replay/hands.py)).
+
+> **Hand-decoder accuracy caveat.** The `linker_l6` and `linker_o6`
+> decoders linearly interpolate the vendor's 0–255 byte command across
+> each joint's `[lower, upper]` limit. The real Linker Hand calibration
+> is non-linear and may invert travel direction on some joints, so
+> arm tracking is faithful but **finger pose is approximate**. Replace
+> these decoders with vendor curves (or a per-joint LUT) before
+> claiming physical replay fidelity. Tracked inline as a TODO in
+> [sim/io/replay/hands.py](../sim/io/replay/hands.py).
 
 ```bash
 # Real-robot recording at episode_000004/telemetry.npz, MuJoCo viewport,
