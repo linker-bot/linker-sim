@@ -151,15 +151,6 @@ Replay knobs (in [sim/configs/replay.yaml](../sim/configs/replay.yaml)):
 `realtime` (pace to `source.hz`), `max_frames` (clip), `headless`,
 `device`.
 
-### Inspecting a recording
-
-```bash
-# Dump arm joint trajectories to CSV + line-plot PNG (no replay).
-python scripts/dump_arm_telemetry.py episode_000004
-```
-
-This is a standalone diagnostic; it does not touch the simulator.
-
 ---
 
 ## 5. Compose a workstation URDF / MJCF
@@ -414,9 +405,6 @@ bash tools/ci/check_drift.sh
 
 # Inspect a registry handle
 python tools/registry_show.py a7_lite_dc
-
-# Dump arm trajectories from a recording
-python scripts/dump_arm_telemetry.py episode_000004
 
 # Live PD gain tuning (MuJoCo, edit /tmp/dex_pd_gains.json while running)
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

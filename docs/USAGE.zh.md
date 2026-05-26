@@ -146,15 +146,6 @@ python scripts/replay.py backend=isaac device=cuda:0 \
 `realtime`（按 `source.hz` 节流）、`max_frames`（截断）、`headless`、
 `device`。
 
-### 离线数据检查
-
-```bash
-# 把臂部关节轨迹导出为 CSV + 折线图 PNG，不启动仿真。
-python scripts/dump_arm_telemetry.py episode_000004
-```
-
-这是独立的诊断工具，不会触碰仿真器。
-
 ---
 
 ## 5. 合成 workstation 的 URDF / MJCF
@@ -407,9 +398,6 @@ bash tools/ci/check_drift.sh
 
 # 查看 registry handle
 python tools/registry_show.py a7_lite_dc
-
-# 从录制中导出臂部轨迹
-python scripts/dump_arm_telemetry.py episode_000004
 
 # 实时 PD 增益调参（MuJoCo，运行时编辑 /tmp/dex_pd_gains.json）
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

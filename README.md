@@ -42,6 +42,11 @@ python3 -m venv .venv-mujoco && source .venv-mujoco/bin/activate
 pip install -e ".[mujoco]"
 ```
 
+> **Source-checkout only.** Use editable installs (`pip install -e`).
+> The composer assets, Hydra configs, and `scripts/` entrypoints are
+> resolved from the source tree, not from package data. Building and
+> distributing a wheel is **not** a supported workflow.
+
 ## Quick start
 
 After installation, the smoke test:
