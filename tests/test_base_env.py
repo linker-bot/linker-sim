@@ -33,6 +33,7 @@ def _make_handle(n_arm=7, n_hand=6) -> WorkstationHandle:
         default_gains={"arm": Gains(1.0, 0.1), "hand": Gains(2.0, 0.2)},
         gain_profiles={},
         components={"arm": ComponentRef("arms/fake", "left", "x")},
+        xrdf_paths={},
         raw_manifest={},
     )
 

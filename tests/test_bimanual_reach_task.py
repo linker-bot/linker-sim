@@ -39,6 +39,7 @@ def _bimanual_handle() -> WorkstationHandle:
         default_gains=gains,
         gain_profiles={},
         components={"arm_left": ComponentRef("arms/ar5", "left", "x")},
+        xrdf_paths={},
         raw_manifest={},
     )
 
