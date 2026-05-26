@@ -70,14 +70,15 @@ class TelemetryNpzSource:
             npz = npz / "telemetry.npz"
         if not npz.is_file():
             raise FileNotFoundError(f"telemetry not found: {npz}")
-        data = np.load(npz, allow_pickle=False)
-        if self.field not in data.files:
-            raise KeyError(
-                f"field {self.field!r} not in {npz} (keys: {list(data.files)})"
-            )
-        arr = data[self.field]
+        with np.load(npz, allow_pickle=False) as data:
+            if self.field not in data.files:
+                raise KeyError(
+                    f"field {self.field!r} not in {npz} (keys: {list(data.files)})"
+                )
+            arr = np.asarray(data[self.field])
         if arr.ndim != 2:
             raise ValueError(f"expected 2-D telemetry array, got {arr.shape}")
+        n_cols = int(arr.shape[1])
         self._npz_path = npz
         self._raw_full = arr
         self.num_frames = int(arr.shape[0])
@@ -93,6 +94,13 @@ class TelemetryNpzSource:
                     cols=(int(cols[0]), int(cols[1])),
                     sign=float(spec.get("sign", 1.0)),
                     decoder=spec.get("decoder"),
+                )
+        for role, spec in norm.items():
+            lo, hi = spec.cols
+            if not (0 <= lo < hi <= n_cols):
+                raise ValueError(
+                    f"role {role!r}: cols {spec.cols} out of range "
+                    f"for telemetry with {n_cols} columns"
                 )
         self.layout = norm
         self.roles = tuple(self.layout.keys())

@@ -6,7 +6,7 @@
 # math as linker_l6; the source hardware was L6 but the math applies
 # identically to the O6 default workstation).
 _target_: sim.io.replay.sources.TelemetryNpzSource
-path: episode_000004
+path: episode_000025
 field: qpos        # qpos | actions | effort | qvel
 hz: 30.0
 layout:

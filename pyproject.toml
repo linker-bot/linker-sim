@@ -23,9 +23,13 @@ tools = [
 ]
 
 # MJCF authoring + validation (PR #1b). Pulls MuJoCo on top of [tools].
+# torch is required at runtime by sim/runtime/replay.py and the backends
+# (sim/backends/{base,mujoco/backend}.py) — keep this in sync with the
+# isaac extra, which gets torch transitively via isaacsim.
 mujoco = [
     "dex-tool-rl[tools]",
     "mujoco>=3.1",
+    "torch>=2.0",
 ]
 
 # Isaac Sim 5 + IsaacLab extensions. Isaac Sim wheels come from NVIDIA's
