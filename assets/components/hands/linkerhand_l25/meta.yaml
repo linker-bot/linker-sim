@@ -1,0 +1,64 @@
+schema_version: 1
+kind: hand
+name: linkerhand_l25
+drive: position
+
+# L/R variants share structure but ship pre-mirrored meshes. The {S}
+# placeholder expands to `l` or `r` to form the joint-name prefix
+# (lh_*, rh_*) used in each variant's source URDF.
+variants:
+  left:
+    vars: {S: l}
+    urdf: variants/left/hand.urdf
+    mjcf: variants/left/hand.mjcf
+    meshdir: variants/left/meshes
+  right:
+    vars: {S: r}
+    urdf: variants/right/hand.urdf
+    mjcf: variants/right/hand.mjcf
+    meshdir: variants/right/meshes
+
+root_link: "{S}h_hand_base_link"
+
+mount_frames:
+  wrist_mount:
+    parent: "{S}h_hand_base_link"
+
+# 16 independently-driven joints + 5 mimic joints. The thumb has 4 active
+# DoF (cmc_roll, cmc_yaw, cmc_pitch, mcp); each finger has 3 (mcp_roll,
+# mcp_pitch, pip). The distal-interphalangeal joints (thumb_ip and the
+# four *_dip) are coupled to their proximal joint via URDF <mimic> tags;
+# MuJoCo-side the composed model carries an <equality polycoef> block.
+actuated_joints:
+  - "{S}h_thumb_cmc_roll"
+  - "{S}h_thumb_cmc_yaw"
+  - "{S}h_thumb_cmc_pitch"
+  - "{S}h_thumb_mcp"
+  - "{S}h_index_mcp_roll"
+  - "{S}h_index_mcp_pitch"
+  - "{S}h_index_pip"
+  - "{S}h_middle_mcp_roll"
+  - "{S}h_middle_mcp_pitch"
+  - "{S}h_middle_pip"
+  - "{S}h_ring_mcp_roll"
+  - "{S}h_ring_mcp_pitch"
+  - "{S}h_ring_pip"
+  - "{S}h_pinky_mcp_roll"
+  - "{S}h_pinky_mcp_pitch"
+  - "{S}h_pinky_pip"
+
+mimic_joints:
+  - "{S}h_thumb_ip"
+  - "{S}h_index_dip"
+  - "{S}h_middle_dip"
+  - "{S}h_ring_dip"
+  - "{S}h_pinky_dip"
+
+default_gains:
+  stiffness: 200.0
+  damping: 4.0
+
+gain_profiles:
+  joint:
+    stiffness: 200.0
+    damping: 4.0

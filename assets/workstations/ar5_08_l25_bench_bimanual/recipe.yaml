@@ -1,0 +1,50 @@
+schema_version: 1
+name: ar5_08_l25_bench_bimanual
+description: >
+  Bimanual AR5_08 + Linkerhand L25 workstation. Two AR5_08 arms (08-class
+  W4C4A6 wrist) mounted to the bench's left/right pads, each carrying its
+  own Linkerhand L25 (16 actuated + 5 mimic, mirrored meshes). Single
+  composed URDF -> single articulation in Isaac; roles arm_left /
+  arm_right / hand_left / hand_right are addressable through
+  `Robot.joint_ids_of(role)`. Mounts mirror ar5_08_o6_bench_bimanual.
+
+components:
+  base:
+    component: bases/bench_table
+    variant: default
+  arm_left:
+    component: arms/ar5_08
+    variant: left
+  arm_right:
+    component: arms/ar5_08
+    variant: right
+  hand_left:
+    component: hands/linkerhand_l25
+    variant: left
+  hand_right:
+    component: hands/linkerhand_l25
+    variant: right
+
+freeze_base: base
+
+mounts:
+  # AR5_08's natural extension axis is +y_arm (vs AR5_07's +z_arm). The
+  # bench's mount pads were authored for AR5_07 — without a corrective
+  # rpy here, both arms fold inward and self-contact at qpos=0. The +/-90
+  # roll maps +y_arm onto +z (AR5_07's chain axis) so the same pads work.
+  - child: arm_left:base_mount
+    parent: base:arm_left_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [1.5708, 0.0, -1.5708]
+  - child: arm_right:base_mount
+    parent: base:arm_right_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [-1.5708, 0.0, 1.5708]
+  - child: hand_left:wrist_mount
+    parent: arm_left:tool0
+    xyz: [0.0, 0.0, -0.038]
+    rpy: [3.1416, 0.0, -1.5708]
+  - child: hand_right:wrist_mount
+    parent: arm_right:tool0
+    xyz: [0.0, 0.0, -0.038]
+    rpy: [3.1416, 0.0, 1.5708]

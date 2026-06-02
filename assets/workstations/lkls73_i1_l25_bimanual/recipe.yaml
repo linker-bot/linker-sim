@@ -1,0 +1,49 @@
+schema_version: 1
+name: lkls73_i1_l25_bimanual
+description: >
+  Bimanual humanoid (source: lkls73_i1_dual_arm_description, robot name
+  A7V2_50_4.27). Torso + two 7-DOF arms + two Linkerhand L25 hands (16
+  actuated + 5 mimic per side), all welded into a single articulation via
+  the composer. Roles arm_left / arm_right / hand_left / hand_right are
+  addressable through Robot.joint_ids_of(role); the torso is a fixed base
+  welded to world.
+
+components:
+  base:
+    component: bases/lkls73_torso
+    variant: default
+  arm_left:
+    component: arms/lkls73_arm
+    variant: left
+  arm_right:
+    component: arms/lkls73_arm
+    variant: right
+  hand_left:
+    component: hands/linkerhand_l25
+    variant: left
+  hand_right:
+    component: hands/linkerhand_l25
+    variant: right
+
+freeze_base: base
+
+# Arm mount offsets are identity: the torso's mount-pad links already sit
+# at the shoulder-joint origins. Hand mounts mirror lkls73_i1_o6_bimanual's
+# quarter-turn so palms face inward.
+mounts:
+  - child: arm_left:base_mount
+    parent: base:arm_left_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+  - child: arm_right:base_mount
+    parent: base:arm_right_mount
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [0.0, 0.0, 0.0]
+  - child: hand_left:wrist_mount
+    parent: arm_left:tool0
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [3.1416, 0.0, -1.5708]
+  - child: hand_right:wrist_mount
+    parent: arm_right:tool0
+    xyz: [0.0, 0.0, 0.0]
+    rpy: [3.1416, 0.0, 1.5708]
