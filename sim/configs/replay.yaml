@@ -14,3 +14,4 @@ seed: 0
 headless: false
 realtime: true     # pace loop to source.hz wall-clock
 max_frames: null   # null = full source
+ee_poses: null     # path to npz with arm_<side>/hand_<side> keys; if set, bypass source for arm targets

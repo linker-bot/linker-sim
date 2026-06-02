@@ -30,6 +30,7 @@ Usage:
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -46,26 +47,42 @@ from omegaconf import DictConfig, OmegaConf
 OmegaConf.register_new_resolver("div", lambda a, b: a / b, replace=True)
 
 
-def _load_ee_poses(path: str | Path) -> dict[str, np.ndarray]:
-    """Load EE pose trajectories from npz.
+def _load_ee_poses(
+    path: str | Path,
+) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
+    """Load EE pose + optional hand-joint trajectories from npz.
 
-    Expected keys: arm role names (e.g. "arm_left", "arm_right").
-    Each value: (T, 7) float32 array [x, y, z, qw, qx, qy, qz]
-    in workstation-base frame.
+    Keys starting with "arm_" → (T, 7) [x, y, z, qw, qx, qy, qz] in
+    workstation-base frame. Keys starting with "hand_" → (T, N) joint
+    angles in radians driven directly into the actuated hand joints.
     """
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"ee_poses file not found: {path}")
     data = np.load(path, allow_pickle=False)
-    poses = {}
+    arm_poses: dict[str, np.ndarray] = {}
+    hand_targets: dict[str, np.ndarray] = {}
     for key in data.files:
         arr = data[key]
-        if arr.ndim != 2 or arr.shape[1] != 7:
+        if key.startswith("arm_"):
+            if arr.ndim != 2 or arr.shape[1] != 7:
+                raise ValueError(
+                    f"ee_poses[{key!r}]: expected shape (T, 7), got {arr.shape}"
+                )
+            arm_poses[key] = arr.astype(np.float32)
+        elif key.startswith("hand_"):
+            if arr.ndim != 2:
+                raise ValueError(
+                    f"ee_poses[{key!r}]: expected shape (T, N), got {arr.shape}"
+                )
+            hand_targets[key] = arr.astype(np.float32)
+        else:
             raise ValueError(
-                f"ee_poses[{key!r}]: expected shape (T, 7), got {arr.shape}"
+                f"ee_poses[{key!r}]: key must start with 'arm_' or 'hand_'"
             )
-        poses[key] = arr.astype(np.float32)
-    return poses
+    if not arm_poses:
+        raise ValueError(f"ee_poses {path}: no arm_* keys found")
+    return arm_poses, hand_targets
 
 
 def _compute_fk_targets(
@@ -101,6 +118,10 @@ def _run_ik_replay(
     *,
     source=None,
     gt_joint_targets=None,
+    hand_targets: dict[str, np.ndarray] | None = None,
+    viewer=None,
+    realtime: bool = False,
+    hz: float = 30.0,
 ):
     """Run IK replay loop and collect tracking errors.
 
@@ -137,8 +158,16 @@ def _run_ik_replay(
             for _ in range(sub_steps):
                 backend.step()
         print(f"[replay_ik] warm-up done ({warmup_steps} IK iterations on first frame)")
+        if viewer is not None:
+            viewer.sync()
 
+    period = 1.0 / hz if hz > 0 else 0.0
+    deadline = time.perf_counter() + period
     for t in range(n_frames):
+        if viewer is not None and not viewer.is_running():
+            print(f"[replay_ik] viewer closed; stopping at frame {t}")
+            break
+
         # Set IK targets
         for role, ik in ik_controllers.items():
             target_pose = torch.from_numpy(ee_targets[role][t]).unsqueeze(0)
@@ -150,17 +179,32 @@ def _run_ik_replay(
 
         # Drive hands directly if source available
         if source is not None:
-            hand_targets = source.joint_targets(t)
-            for role, tgt in hand_targets.items():
+            hand_role_targets = source.joint_targets(t)
+            for role, tgt in hand_role_targets.items():
                 if role.startswith("hand_"):
                     ids = robot.actuated_joint_ids_of(role)
                     robot.set_joint_position_target(
                         torch.from_numpy(tgt).unsqueeze(0), ids
                     )
+        elif hand_targets:
+            for role, arr in hand_targets.items():
+                ids = robot.actuated_joint_ids_of(role)
+                robot.set_joint_position_target(
+                    torch.from_numpy(arr[t]).unsqueeze(0), ids
+                )
 
         # Step physics
         for _ in range(sub_steps):
             backend.step()
+
+        if viewer is not None:
+            viewer.sync()
+        if realtime and period > 0:
+            now = time.perf_counter()
+            sleep_for = deadline - now
+            if sleep_for > 0:
+                time.sleep(sleep_for)
+            deadline += period
 
         # Measure Cartesian errors
         for role in arm_roles:
@@ -226,6 +270,77 @@ def _print_report(arm_roles, errors_pos, errors_ori, errors_joint):
                 )
 
 
+def _draw_trajectory_overlay(
+    viewer,
+    arm_targets: dict[str, np.ndarray],
+    *,
+    axis_every: int = 30,
+    axis_len: float = 0.04,
+    line_width: float = 2.0,
+    axis_width: float = 3.5,
+) -> None:
+    """Draw each arm's (T, 7) trajectory into viewer.user_scn.
+
+    Polyline through all positions in orange + RGB coordinate frames
+    every ``axis_every`` samples (frame 0 and frame T-1 always drawn).
+    Persistent — populated once, the viewer keeps rendering it across
+    sync()s.
+    """
+    import mujoco
+    from scipy.spatial.transform import Rotation
+
+    scn = viewer.user_scn
+    line_color = np.array([1.0, 0.55, 0.0, 1.0], dtype=np.float32)  # orange
+    axis_colors = (
+        np.array([1.0, 0.2, 0.2, 1.0], dtype=np.float32),  # x: red
+        np.array([0.2, 1.0, 0.2, 1.0], dtype=np.float32),  # y: green
+        np.array([0.3, 0.4, 1.0, 1.0], dtype=np.float32),  # z: blue
+    )
+
+    for poses in arm_targets.values():
+        positions = poses[:, :3].astype(np.float64)
+        quats_wxyz = poses[:, 3:7]
+        # scipy expects xyzw
+        rotations = Rotation.from_quat(quats_wxyz[:, [1, 2, 3, 0]])
+
+        # Polyline.
+        for i in range(len(positions) - 1):
+            if scn.ngeom >= scn.maxgeom:
+                return
+            g = scn.geoms[scn.ngeom]
+            mujoco.mjv_connector(
+                g,
+                int(mujoco.mjtGeom.mjGEOM_LINE),
+                line_width,
+                positions[i],
+                positions[i + 1],
+            )
+            g.rgba = line_color
+            scn.ngeom += 1
+
+        # Coordinate frames at every Nth waypoint, plus first and last.
+        idxs = set(range(0, len(positions), axis_every))
+        idxs.add(0)
+        idxs.add(len(positions) - 1)
+        for idx in sorted(idxs):
+            R = rotations[idx].as_matrix()
+            origin = positions[idx]
+            for axis in range(3):
+                if scn.ngeom >= scn.maxgeom:
+                    return
+                tip = origin + R[:, axis] * axis_len
+                g = scn.geoms[scn.ngeom]
+                mujoco.mjv_connector(
+                    g,
+                    int(mujoco.mjtGeom.mjGEOM_LINE),
+                    axis_width,
+                    origin,
+                    tip,
+                )
+                g.rgba = axis_colors[axis]
+                scn.ngeom += 1
+
+
 def _save_plot(arm_roles, errors_pos, errors_ori):
     """Save tracking error timeseries as PNG."""
     try:
@@ -287,14 +402,22 @@ def main(cfg: DictConfig) -> None:
     if ee_poses_path:
         # EE pose input mode: load directly from file
         print(f"[replay_ik] mode: ee_poses from {ee_poses_path}")
-        ee_targets = _load_ee_poses(ee_poses_path)
-        arm_roles = [k for k in ee_targets if k.startswith("arm_")]
-        n_frames = min(v.shape[0] for v in ee_targets.values())
+        ee_targets, hand_targets = _load_ee_poses(ee_poses_path)
+        arm_roles = list(ee_targets)
+        n_frames = min(
+            min(v.shape[0] for v in ee_targets.values()),
+            min((v.shape[0] for v in hand_targets.values()), default=10**9),
+        )
         if cfg.max_frames:
             n_frames = min(n_frames, int(cfg.max_frames))
         source = None
         gt_joint_targets = None
         hz = float(cfg.get("hz", cfg.source.hz if "source" in cfg else 30.0))
+        if hand_targets:
+            print(
+                f"[replay_ik] hand keys: "
+                + ", ".join(f"{k}{v.shape}" for k, v in hand_targets.items())
+            )
     else:
         # Validation mode: FK from recorded qpos
         print("[replay_ik] mode: from_qpos (validation)")
@@ -305,6 +428,7 @@ def main(cfg: DictConfig) -> None:
         if cfg.max_frames:
             n_frames = min(n_frames, int(cfg.max_frames))
         hz = float(source.hz)
+        hand_targets = None
 
         print("[replay_ik] computing FK from recorded qpos...")
         ee_targets = _compute_fk_targets(robot, source, arm_roles, n_frames)
@@ -330,12 +454,39 @@ def main(cfg: DictConfig) -> None:
 
     # --- Run IK replay ---
     print("[replay_ik] running IK replay...")
-    errors_pos, errors_ori, errors_joint = _run_ik_replay(
-        backend, robot, ik_controllers, ee_targets, arm_roles,
-        sub_steps, n_frames,
-        source=source,
-        gt_joint_targets=gt_joint_targets,
-    )
+    realtime = bool(cfg.get("realtime", False))
+    headless = bool(cfg.get("headless", True))
+
+    def _go(viewer):
+        return _run_ik_replay(
+            backend, robot, ik_controllers, ee_targets, arm_roles,
+            sub_steps, n_frames,
+            source=source,
+            gt_joint_targets=gt_joint_targets,
+            hand_targets=hand_targets,
+            viewer=viewer,
+            realtime=realtime,
+            hz=hz,
+        )
+
+    if headless:
+        errors_pos, errors_ori, errors_joint = _go(None)
+    else:
+        import mujoco.viewer as mjv
+
+        with mjv.launch_passive(
+            backend._model,
+            backend._data,
+            show_left_ui=False,
+            show_right_ui=False,
+        ) as viewer:
+            _draw_trajectory_overlay(viewer, ee_targets)
+            print(
+                "[replay_ik] viewer launched; "
+                f"trajectory overlay: {viewer.user_scn.ngeom} geoms "
+                "(orange polyline + RGB axes). Close window to stop early."
+            )
+            errors_pos, errors_ori, errors_joint = _go(viewer)
 
     # --- Report + plot ---
     _print_report(arm_roles, errors_pos, errors_ori, errors_joint)
