@@ -30,6 +30,7 @@ dist/
 .DS_Store
 .cursor/
 .claude/
+CLAUDE.md
 assets/usd_generated/
 *.usd
 *.usda
@@ -40,3 +41,6 @@ outputs/
 data/
 episode*/
 data.json
+
+# Internal-only docs (not part of the public release).
+_internal/

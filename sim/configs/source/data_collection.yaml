@@ -1,7 +1,8 @@
 # Linker-Hand-flavored real-robot recording. `path` points at a directory
-# containing `telemetry.npz` (default: `episode_000025/` at the repo
-# root). The recording is not tracked in this repo; supply your own and
-# either drop it at the default path or override on the CLI with
+# containing `telemetry.npz`. Default points at a tiny synthetic fixture
+# committed to the repo (`tests/fixtures/data_collection/`) so a fresh
+# clone runs `scripts/replay.py source=data_collection` end-to-end
+# without external data. For real recordings, override on the CLI:
 # `source.path=/abs/or/relative/path`.
 # Telemetry layout (verified empirically): qpos cols 0-13 are the two
 # arms in radians; cols 14-25 are 0-255 byte commands per finger for the
@@ -9,7 +10,7 @@
 # math as linker_l6; the source hardware was L6 but the math applies
 # identically to the O6 default workstation).
 _target_: sim.io.replay.sources.TelemetryNpzSource
-path: episode_000025
+path: tests/fixtures/data_collection
 field: qpos        # qpos | actions | effort | qvel
 hz: 30.0
 layout:

@@ -56,6 +56,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+# TODO(linker-sim): replace with `from umi_dex...` once umi-dex is published
+# to PyPI / internal index. Tracking: docs/REFACTOR_PLAN.md Phase 5.1.
 UMI_DEX_SRC = Path.home() / "codes" / "UMI-Dex" / "src"
 if str(UMI_DEX_SRC) not in sys.path:
     sys.path.insert(0, str(UMI_DEX_SRC))
