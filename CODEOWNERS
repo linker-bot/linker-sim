@@ -1,0 +1,36 @@
+# linker-sim (Linkerbot) — CODEOWNERS
+#
+# GitHub uses this file to suggest reviewers for pull requests. Lines starting
+# with # are comments. Each rule is: <path-pattern> <space-separated @owners>
+#
+# How to customize:
+# - Replace @linkerbot with real GitHub usernames or @org/team-slug when known.
+# - Add more specific paths above broader ones; when multiple patterns match a
+#   file, the last matching line wins.
+# - See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# -----------------------------------------------------------------------------
+
+# --- Default (everything) ---
+* @linkerbot
+
+# --- Asset layer (components, workstations, generated artifacts) ---
+/assets/ @linkerbot
+
+# --- Sim runtime (backends, controllers, tasks, envs, registry) ---
+/sim/ @linkerbot
+
+# --- Composer + validators + CI drift gate ---
+/tools/ @linkerbot
+
+# --- Hydra entrypoints + replay scripts ---
+/scripts/ @linkerbot
+
+# --- Tests ---
+/tests/ @linkerbot
+
+# --- CI / Community ---
+/.github/ @linkerbot
+
+# --- Documentation ---
+*.md @linkerbot
