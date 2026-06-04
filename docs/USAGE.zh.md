@@ -21,14 +21,14 @@ cd /path/to/linker-sim
 
 | 入口                       | 配置根                                                          | 用途                                                                       |
 |----------------------------|-----------------------------------------------------------------|----------------------------------------------------------------------------|
-| [scripts/run.py](../scripts/run.py)         | [sim/configs/config.yaml](../sim/configs/config.yaml) | 后端 + 控制器 + 任务 +（可选）录制器的滚动仿真。                          |
-| [scripts/replay.py](../scripts/replay.py)   | [sim/configs/replay.yaml](../sim/configs/replay.yaml) | 通过后端回放真实机器人遥测数据，绕过控制器、任务和 `BaseEnv`。            |
+| [scripts/run.py](../scripts/run.py)         | [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml) | 后端 + 控制器 + 任务 +（可选）录制器的滚动仿真。                          |
+| [scripts/replay.py](../scripts/replay.py)   | [linker_sim/configs/replay.yaml](../packages/linker-sim/src/linker_sim/configs/replay.yaml) | 通过后端回放真实机器人遥测数据，绕过控制器、任务和 `BaseEnv`。            |
 
 二者均为 [Hydra](https://hydra.cc) 入口。命令行中既可用 `group=name`
 切换配置组，也可用 `dotted.path=value` 覆盖任意字段。运行输出位于
 `outputs/YYYY-MM-DD/HH-MM-SS/`。
 
-配置组位于 [sim/configs/](../sim/configs/)：
+配置组位于 [linker_sim/configs/](../packages/linker-sim/src/linker_sim/configs/)：
 
 - `backend/` — `isaac.yaml`、`mujoco.yaml`
 - `robot/` — 包装某个 workstation 的 Hydra 配置
@@ -68,7 +68,7 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 - L6 手（沿用 / 并行）：`ar5_l6_bench_bimanual`、
   `lkls73_i1_bimanual`、`a7_lite_dc`。
 
-常用参数（定义于 [sim/configs/config.yaml](../sim/configs/config.yaml)）：
+常用参数（定义于 [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)）：
 
 | 字段                       | 默认值   | 含义                                              |
 |----------------------------|----------|---------------------------------------------------|
@@ -112,7 +112,7 @@ python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
 入口 [scripts/replay.py](../scripts/replay.py) 读取一个 `ReplaySource`
 （目前仅 `TelemetryNpzSource`），直接调用 `set_joint_position_target`
 驱动 workstation，**不**经过控制器、任务或 `BaseEnv`。手部列通过专用
-解码器映射（见 [sim/io/replay/hands.py](../sim/io/replay/hands.py)）。
+解码器映射（见 [linker_sim/io/replay/hands.py](../packages/linker-sim/src/linker_sim/io/replay/hands.py)）。
 
 > **手部解码精度提示。** `linker_l6` / `linker_o6` 把厂商 0–255 字节
 > 命令在每个关节 `[lower, upper]` 上做线性插值。真实 Linker Hand 的
@@ -141,7 +141,7 @@ python scripts/replay.py backend=isaac device=cuda:0 \
 
 1. 把 `.npz` 放在可读路径下；默认 key 为 `qpos`，形状 `(T, N)`。
 2. 编写 `sim/configs/source/<your_name>.yaml` 描述列布局，模板见
-   [sim/configs/source/data_collection.yaml](../sim/configs/source/data_collection.yaml)。
+   [linker_sim/configs/source/data_collection.yaml](../packages/linker-sim/src/linker_sim/configs/source/data_collection.yaml)。
    每个 role 的 `cols: [start, end)` 切片宽度 **必须** 等于该 role 在
    workstation 上的可驱动关节数。
 3. 运行：
@@ -149,7 +149,7 @@ python scripts/replay.py backend=isaac device=cuda:0 \
    python scripts/replay.py robot=<workstation> source=<your_name>
    ```
 
-回放参数（见 [sim/configs/replay.yaml](../sim/configs/replay.yaml)）：
+回放参数（见 [linker_sim/configs/replay.yaml](../packages/linker-sim/src/linker_sim/configs/replay.yaml)）：
 `realtime`（按 `source.hz` 节流）、`max_frames`（截断）、`headless`、
 `device`。
 
@@ -166,11 +166,11 @@ Recipe 位于 [assets/workstations/](../assets/workstations/)，组件位于
 
 ```bash
 # 单个 workstation。
-python -m linker_sim.tools.composer.compose assets/workstations/a7_lite_dc
+python -m linker_robot_assets.composer.compose assets/workstations/a7_lite_dc
 
 # 全量合成。
 for ws in assets/workstations/*/; do
-    python -m linker_sim.tools.composer.compose "$ws"
+    python -m linker_robot_assets.composer.compose "$ws"
 done
 ```
 
@@ -181,13 +181,13 @@ done
 
 ```bash
 # 单组件 MJCF 校验（合成前先跑）。
-python -m linker_sim.tools.validate_component_mjcf assets/components/arms/a7_lite/variants/left
-python -m linker_sim.tools.validate_component_mjcf assets/components/arms/a7_lite/variants/right
-python -m linker_sim.tools.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
+python -m linker_robot_assets.validate_component_mjcf assets/components/arms/a7_lite/variants/left
+python -m linker_robot_assets.validate_component_mjcf assets/components/arms/a7_lite/variants/right
+python -m linker_robot_assets.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
 
 # Workstation 校验：12 项检查（manifest 哈希、URDF 运动学、网格路径、
 # drift、URDF↔MJCF 1e-5 m / 1e-5 rad 帧位姿一致性）。
-python -m linker_sim.tools.validate_workstation assets/workstations/a7_lite_dc
+python -m linker_robot_assets.validate_workstation assets/workstations/a7_lite_dc
 ```
 
 ### Drift 守门（CI）
@@ -196,10 +196,10 @@ python -m linker_sim.tools.validate_workstation assets/workstations/a7_lite_dc
 
 ```bash
 # 全部 workstation。
-bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # 单个 workstation。
-bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh a7_lite_dc
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh a7_lite_dc
 ```
 
 退出码 0 = 干净，1 = 存在 drift。
@@ -253,7 +253,7 @@ gain_profiles:
   osc:    { stiffness: 150,  damping: 8 }   # controller=osc_* 时使用
 ```
 
-修改后必须重新合成 workstation（`python -m linker_sim.tools.composer.compose …`），
+修改后必须重新合成 workstation（`python -m linker_robot_assets.composer.compose …`），
 并提交新的 `manifest.yaml` / `workstation.urdf`。
 
 ### b) 控制器层覆盖（每个控制器配置）
@@ -282,7 +282,7 @@ python scripts/run.py controller=joint_pd_bimanual \
 OSC 控制器有自己的字段：`actuator_stiffness`、`actuator_damping`、
 任务空间的 `stiffness`、`damping_ratio`、`nullspace_stiffness`、
 `nullspace_damping_ratio`，详见
-[sim/configs/controller/osc_bimanual.yaml](../sim/configs/controller/osc_bimanual.yaml)。
+[linker_sim/configs/controller/osc_bimanual.yaml](../packages/linker-sim/src/linker_sim/configs/controller/osc_bimanual.yaml)。
 
 ### c) MuJoCo `<position>` 执行器增益（按组件 MJCF）
 
@@ -334,7 +334,7 @@ python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
 调好后将数值固化到组件 MJCF 和 meta.yaml（见上方 a/c 小节）。JSON 文件为
 会话级临时文件，不纳入版本管理。
 
-实现：[sim/io/gain_watcher.py](../sim/io/gain_watcher.py)。
+实现：[linker_sim/io/gain_watcher.py](../packages/linker-sim/src/linker_sim/io/gain_watcher.py)。
 
 ### e) OSC 控制器（未实现）
 
@@ -399,9 +399,9 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # 全量合成 + 校验
-for ws in assets/workstations/*/; do python -m linker_sim.tools.composer.compose "$ws"; done
-for ws in assets/workstations/*/; do python -m linker_sim.tools.validate_workstation "$ws"; done
-bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
+for ws in assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
+for ws in assets/workstations/*/; do python -m linker_robot_assets.validate_workstation "$ws"; done
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # 查看 registry handle
 python -m linker_sim.tools.registry_show a7_lite_dc

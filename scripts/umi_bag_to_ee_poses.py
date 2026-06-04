@@ -53,8 +53,10 @@ import numpy as np
 from scipy.spatial.transform import Rotation, Slerp
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT / "packages" / "linker-sim" / "src") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "packages" / "linker-sim" / "src"))
+for _src in ("packages/linker-sim/src", "packages/linker-robot-assets/src"):
+    _abs = str(REPO_ROOT / _src)
+    if _abs not in sys.path:
+        sys.path.insert(0, _abs)
 
 # TODO(linker-sim): replace with `from umi_dex...` once umi-dex is published
 # to PyPI / internal index. Tracking: docs/REFACTOR_PLAN.md Phase 5.1.

@@ -18,11 +18,15 @@ explicit = true
 [tool.uv.sources]
 isaacsim = { index = "nvidia" }
 
-# pytest needs to import linker_sim without a wheel install (CI may run
-# straight from a fresh clone). Adding the package src/ to pythonpath
-# makes `from linker_sim.X import Y` work for tests/.
+# pytest needs to import linker_sim and linker_robot_assets without a
+# wheel install (CI may run straight from a fresh clone). Adding both
+# package src/ dirs to pythonpath makes `from linker_sim.X import Y` and
+# `from linker_robot_assets.X import Y` work for tests/.
 [tool.pytest.ini_options]
-pythonpath = ["packages/linker-sim/src"]
+pythonpath = [
+    "packages/linker-sim/src",
+    "packages/linker-robot-assets/src",
+]
 
 # ----------------------------- ruff -------------------------------------- #
 

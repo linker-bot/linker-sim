@@ -8,10 +8,19 @@ version = "0.1.0"
 description = "Multi-robot, multi-sim RL simulation backbone (Isaac Sim + MuJoCo)."
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
-# No root-level runtime dependencies. Workflows (tools / mujoco / isaac)
+# Runtime: registry resolves the bundled asset tree via
+# linker_robot_assets.asset_root(). Workflows (tools / mujoco / isaac)
 # install their own subsets — see [project.optional-dependencies]. A
-# CI runner that only validates asset composition needs `[tools]`, nothing
-# more.
+# CI runner that only validates asset composition needs `[tools]` from
+# linker-robot-assets directly, nothing more.
+dependencies = [
+    "linker-robot-assets",
+]
+
+[tool.uv.sources]
+# Resolve linker-robot-assets from the workspace rather than PyPI when
+# this package is installed inside the workspace.
+linker-robot-assets = { workspace = true }
 
 [project.optional-dependencies]
 # Composer, validator, registry CLI. Stdlib + pyyaml. Safe on any Python

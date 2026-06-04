@@ -31,31 +31,34 @@ it's driving.
 ## 2. Directory layout
 
 ```
-assets/                                  # repo-root for now; Phase 2 moves into linker-robot-assets
-  components/
-    arms/
-      ar5/
-        meta.yaml
-        variants/left/{arm.urdf, meshes/*.STL}
-        variants/right/{arm.urdf, meshes/*.STL}
-      lkls73_arm/ ...
-    bases/
-      bench_table/  lkls73_torso/ ...
-    hands/
-      linkerhand_l6/ ...
-  workstations/
-    ar5_l6_bench_bimanual/
-      recipe.yaml          # authored
-      workstation.urdf     # generated, committed
-      manifest.yaml        # generated, committed
-    lkls73_i1_bimanual/
+packages/linker-robot-assets/src/linker_robot_assets/
+  assets/
+    components/
+      arms/
+        ar5/
+          meta.yaml
+          variants/left/{arm.urdf, meshes/*.STL}
+          variants/right/{arm.urdf, meshes/*.STL}
+        lkls73_arm/ ...
+      bases/
+        bench_table/  lkls73_torso/ ...
+      hands/
+        linkerhand_l6/ ...
+    workstations/
+      ar5_l6_bench_bimanual/
+        recipe.yaml          # authored
+        workstation.urdf     # generated, committed
+        manifest.yaml        # generated, committed
+      lkls73_i1_bimanual/
+  composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
+  validate_workstation.py
+  validate_component_mjcf.py
+  ci/check_drift.sh
+  __init__.py                # loader API: asset_root, workstations, load_manifest
 packages/linker-sim/src/linker_sim/
+  registry.py                # runtime entry point; calls linker_robot_assets.asset_root()
   tools/
-    composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
-    validate_workstation.py
-    registry_show.py
-    ci/check_drift.sh
-  registry.py              # runtime entry point
+    registry_show.py         # CLI: dump a workstation handle
 ```
 
 Components are the unit of reuse. Workstations are the unit of
@@ -68,7 +71,7 @@ deployment — one per physical robot configuration we care about.
 ### 3.1 Component `meta.yaml`
 
 Declares what a component exposes to the composer. Authored by hand.
-Schema lives in [linker_sim/tools/composer/schemas.py:112-205](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py#L112-L205).
+Schema lives in [linker_robot_assets/composer/schemas.py:112-205](../packages/linker-robot-assets/src/linker_robot_assets/composer/schemas.py#L112-L205).
 
 Key fields:
 - `kind`: `arm | hand | base | sensor`
@@ -89,7 +92,7 @@ Key fields:
 ### 3.2 Workstation `recipe.yaml`
 
 The composition spec. Schema at
-[linker_sim/tools/composer/schemas.py:265-340](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py#L265-L340).
+[linker_robot_assets/composer/schemas.py:265-340](../packages/linker-robot-assets/src/linker_robot_assets/composer/schemas.py#L265-L340).
 
 ```yaml
 components:
@@ -113,13 +116,13 @@ physics_overrides: {}
 - **`freeze_base: <role>`** adds a `world` link and a fixed joint from
   world to the named component's `root_link`.
 - **`mounts`** are **always fixed joints** — this is a hard composer
-  invariant ([urdf_ops.py:182-194](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py#L182-L194)).
+  invariant ([urdf_ops.py:182-194](../packages/linker-robot-assets/src/linker_robot_assets/composer/urdf_ops.py#L182-L194)).
   See §6 for the consequence.
 
 ### 3.3 Generated `manifest.yaml`
 
 Written by the composer, committed to git. Schema at
-[schemas.py:373-430](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py#L373-L430). Contains:
+[schemas.py:373-430](../packages/linker-robot-assets/src/linker_robot_assets/composer/schemas.py#L373-L430). Contains:
 - sha256 of recipe + every component's sources
 - sha256 of the composed URDF
 - per-role actuated/mimic joint lists (prefixed names)
@@ -134,14 +137,14 @@ re-parses the URDF.
 
 ## 4. Composition algorithm
 
-Entry point: `python -m linker_sim.tools.composer.compose <workstation_dir>`
-([linker_sim/tools/composer/compose.py:130-291](../packages/linker-sim/src/linker_sim/tools/composer/compose.py#L130-L291)).
+Entry point: `python -m linker_robot_assets.composer.compose <workstation_dir>`
+([linker_robot_assets/composer/compose.py:130-291](../packages/linker-robot-assets/src/linker_robot_assets/composer/compose.py#L130-L291)).
 Pipeline:
 
 1. **Load** the recipe and each referenced component's `meta.yaml`.
 2. **Resolve variants** — pick the named variant (or the only one).
 3. **Per component, compile**
-   ([urdf_ops.py:222-257](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py#L222-L257)):
+   ([urdf_ops.py:222-257](../packages/linker-robot-assets/src/linker_robot_assets/composer/urdf_ops.py#L222-L257)):
    - parse the variant's URDF
    - prefix every `link/joint/material/transmission name` with
      `<role>_`; rewrite every `<parent link>`, `<child link>`,
@@ -149,7 +152,7 @@ Pipeline:
    - rewrite `<mesh filename>` paths so they resolve from the
      workstation directory (meshes stay in place; no copies)
    - collect actuated vs mimic joint names in document order
-4. **Merge** ([urdf_ops.py:263-416](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py#L263-L416))
+4. **Merge** ([urdf_ops.py:263-416](../packages/linker-robot-assets/src/linker_robot_assets/composer/urdf_ops.py#L263-L416))
    into one `<robot>`:
    - optional `world` link (if `freeze_base` is set)
    - deduped top-level `<material>` defs
@@ -165,7 +168,7 @@ Pipeline:
    emission is stubbed pending PR #1b).
 
 Determinism is enforced by
-[linker_sim/tools/composer/determinism.py](../packages/linker-sim/src/linker_sim/tools/composer/determinism.py) —
+[linker_robot_assets/composer/determinism.py](../packages/linker-robot-assets/src/linker_robot_assets/composer/determinism.py) —
 stable float formatting + consistent indentation — so composed output
 is byte-stable across runs and platforms.
 
@@ -173,10 +176,10 @@ is byte-stable across runs and platforms.
 
 ## 5. Runtime consumption
 
-One file: [sim/registry.py](../sim/registry.py).
+One file: [linker_sim/registry.py](../packages/linker-sim/src/linker_sim/registry.py).
 
 ```python
-from sim.registry import discover, load
+from linker_sim.registry import discover, load
 
 names = discover()                  # ["ar5_l6_bench_bimanual", "lkls73_i1_bimanual"]
 handle = load("lkls73_i1_bimanual")
@@ -250,9 +253,9 @@ Three complementary gates:
 
 | Tool | What it checks |
 |---|---|
-| `python -m linker_sim.tools.composer.compose <ws>` | Compose cleanly; errors on schema problems, mesh resolution, unknown mount frames. |
-| `python -m linker_sim.tools.validate_workstation <ws>` | 8 checks: manifest hash self-consistency (recipe, components, URDF), joint-count vs URDF, EE/mount link resolution, mesh files on disk, single connected kinematic tree, drift ([linker_sim/tools/validate_workstation.py:78-226](../packages/linker-sim/src/linker_sim/tools/validate_workstation.py#L78-L226)). |
-| `bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh` | Re-runs the composer in memory for every workstation; fails if any committed artifact diverges from fresh output. CI uses this. |
+| `python -m linker_robot_assets.composer.compose <ws>` | Compose cleanly; errors on schema problems, mesh resolution, unknown mount frames. |
+| `python -m linker_robot_assets.validate_workstation <ws>` | 8 checks: manifest hash self-consistency (recipe, components, URDF), joint-count vs URDF, EE/mount link resolution, mesh files on disk, single connected kinematic tree, drift ([linker_robot_assets/validate_workstation.py:78-226](../packages/linker-robot-assets/src/linker_robot_assets/validate_workstation.py#L78-L226)). |
+| `bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh` | Re-runs the composer in memory for every workstation; fails if any committed artifact diverges from fresh output. CI uses this. |
 
 Inspection: `python -m linker_sim.tools.registry_show <ws>` prints the loaded
 `WorkstationHandle` — roles, joints, frames, gains — without involving
@@ -261,9 +264,9 @@ any sim backend.
 Recommended workflow when editing a component or recipe:
 
 ```bash
-python -m linker_sim.tools.composer.compose assets/workstations/<ws>       # regen
-python -m linker_sim.tools.validate_workstation assets/workstations/<ws>   # sanity
-bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh                                    # all green
+python -m linker_robot_assets.composer.compose assets/workstations/<ws>       # regen
+python -m linker_robot_assets.validate_workstation assets/workstations/<ws>   # sanity
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh                                    # all green
 git add assets/workstations/<ws>/{workstation.urdf,manifest.yaml}
 ```
 
@@ -308,13 +311,13 @@ git add assets/workstations/<ws>/{workstation.urdf,manifest.yaml}
 
 ## 9. Reference paths
 
-- Composer entry: [linker_sim/tools/composer/compose.py](../packages/linker-sim/src/linker_sim/tools/composer/compose.py)
-- Composer primitives: [linker_sim/tools/composer/urdf_ops.py](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py)
-- Schemas: [linker_sim/tools/composer/schemas.py](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py)
-- Determinism: [linker_sim/tools/composer/determinism.py](../packages/linker-sim/src/linker_sim/tools/composer/determinism.py)
-- Validator: [linker_sim/tools/validate_workstation.py](../packages/linker-sim/src/linker_sim/tools/validate_workstation.py)
-- CI drift gate: [linker_sim/tools/ci/check_drift.sh](../packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh)
-- Runtime registry: [sim/registry.py](../sim/registry.py)
+- Composer entry: [linker_robot_assets/composer/compose.py](../packages/linker-robot-assets/src/linker_robot_assets/composer/compose.py)
+- Composer primitives: [linker_robot_assets/composer/urdf_ops.py](../packages/linker-robot-assets/src/linker_robot_assets/composer/urdf_ops.py)
+- Schemas: [linker_robot_assets/composer/schemas.py](../packages/linker-robot-assets/src/linker_robot_assets/composer/schemas.py)
+- Determinism: [linker_robot_assets/composer/determinism.py](../packages/linker-robot-assets/src/linker_robot_assets/composer/determinism.py)
+- Validator: [linker_robot_assets/validate_workstation.py](../packages/linker-robot-assets/src/linker_robot_assets/validate_workstation.py)
+- CI drift gate: [linker_robot_assets/ci/check_drift.sh](../packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh)
+- Runtime registry: [linker_sim/registry.py](../packages/linker-sim/src/linker_sim/registry.py)
 - Inspection CLI: [linker_sim/tools/registry_show.py](../packages/linker-sim/src/linker_sim/tools/registry_show.py)
 - Example component (arm): [assets/components/arms/ar5/meta.yaml](../assets/components/arms/ar5/meta.yaml)
 - Example workstation (bimanual humanoid): [assets/workstations/lkls73_i1_bimanual/recipe.yaml](../assets/workstations/lkls73_i1_bimanual/recipe.yaml)

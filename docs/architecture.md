@@ -9,11 +9,11 @@ which are not part of the public release.
 1. **Asset layer** — `assets/`. Per-component `meta.yaml` and per-side
    variants (URDF + MJCF + meshes) are composed into a per-workstation
    monolithic `workstation.urdf` + `workstation.mjcf` + `manifest.yaml`
-   via `linker_sim.tools.composer`. Generated artifacts are committed; CI gates
+   via `linker_robot_assets.composer`. Generated artifacts are committed; CI gates
    on drift between recipe and committed output.
 
 2. **Runtime layer** — `sim/`. A thin sim-agnostic registry
-   (`sim/registry.py`) returns a `WorkstationHandle` that backends
+   (`linker_sim/registry.py`) returns a `WorkstationHandle` that backends
    (`sim/backends/{isaac,mujoco}/`) consume. Controllers
    (`sim/controllers/{joint_pd,osc,ik}.py`) and tasks (`sim/tasks/`)
    are protocol-shaped and backend-agnostic. The manifest is the

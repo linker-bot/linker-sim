@@ -25,13 +25,11 @@ from typing import Any
 import yaml
 
 
-# Resolved against the repo root by default. Overridable per-call for tests
-# or when running from a different checkout.
-# Layout: repo_root / packages / linker-sim / src / linker_sim / registry.py
-# parents[4] climbs back to repo_root so we can reach `assets/workstations`.
-# TODO(phase-2): swap for `linker_robot_assets.asset_root() / "workstations"`
-# once the assets package is populated. Tracking: docs/REFACTOR_PLAN.md 2.5.
-_DEFAULT_ROOT = Path(__file__).resolve().parents[4] / "assets" / "workstations"
+from linker_robot_assets import asset_root
+
+# Resolved against the bundled asset tree by default. Overridable per-call
+# for tests or when running from a different checkout.
+_DEFAULT_ROOT = asset_root() / "workstations"
 
 
 # ----------------------------- Handle ------------------------------------- #
@@ -145,7 +143,7 @@ def load(name: str, root: Path | None = None) -> WorkstationHandle:
     if not manifest_path.is_file():
         raise RegistryError(
             f"{name}: manifest.yaml missing — run "
-            f"`python -m linker_sim.tools.composer.compose assets/workstations/{name}`"
+            f"`python -m linker_robot_assets.composer.compose assets/workstations/{name}`"
         )
 
     with manifest_path.open() as f:

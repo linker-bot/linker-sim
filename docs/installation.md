@@ -200,13 +200,13 @@ The composer and validator don't need Isaac Sim — just `.[tools]`.
 
 ```bash
 # Recompose one workstation after editing its recipe / a referenced component
-python -m linker_sim.tools.composer.compose assets/workstations/ar5_l6_bench_bimanual
+python -m linker_robot_assets.composer.compose assets/workstations/ar5_l6_bench_bimanual
 
 # Recompose everything
-for ws in assets/workstations/*/; do python -m linker_sim.tools.composer.compose "$ws"; done
+for ws in assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
 
 # Validate (8 checks: manifest hashes, kinematic structure, mesh resolution, composer drift)
-python -m linker_sim.tools.validate_workstation assets/workstations/ar5_l6_bench_bimanual
+python -m linker_robot_assets.validate_workstation assets/workstations/ar5_l6_bench_bimanual
 
 # List composed workstations
 python -m linker_sim.tools.registry_show
@@ -215,7 +215,7 @@ python -m linker_sim.tools.registry_show
 python -m linker_sim.tools.registry_show ar5_l6_bench_bimanual
 
 # CI drift check (fails if committed artifacts are stale)
-bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 ```
 
 ### Daily activation (full install)

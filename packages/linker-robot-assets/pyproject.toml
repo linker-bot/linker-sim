@@ -5,9 +5,30 @@ build-backend = "hatchling.build"
 [project]
 name = "linker-robot-assets"
 version = "0.1.0"
-description = "Robot asset bundles + composer (Phase 2 placeholder)."
+description = "Bundled robot assets (URDF / MJCF / meshes) + composer + validators."
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
+# Runtime dependencies — what `from linker_robot_assets import ...` needs.
+# Composer + validators have heavier deps; those go in [authoring].
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Authoring toolchain: composer (`python -m linker_robot_assets.composer.compose`)
+# and validators (`python -m linker_robot_assets.validate_workstation`,
+# `python -m linker_robot_assets.validate_component_mjcf`). Pulls in
+# mujoco for MJCF compile/inertia checks and numpy for FK math.
+authoring = [
+    "mujoco>=3.1",
+    "numpy>=1.24",
+]
+
+# ----------------------------- hatch packaging ---------------------------- #
+# Default packages = ["src/linker_robot_assets"] — that captures the entire
+# package tree, including the bundled `assets/` data dir (sibling of
+# __init__.py). Mesh binaries (.STL, .obj, …) are tracked via git LFS at
+# the repo root; CI must `git lfs pull` before `python -m build`.
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/linker_robot_assets"]

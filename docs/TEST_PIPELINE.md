@@ -89,7 +89,7 @@ produces from current sources.
 ### 1A. Recompose all workstations
 
 ```fish
-for ws in assets/workstations/*/; python -m linker_sim.tools.composer.compose $ws; end
+for ws in assets/workstations/*/; python -m linker_robot_assets.composer.compose $ws; end
 ```
 
 **Expected:** 6 workstations recomposed (`ar5_l6_bench_bimanual`,
@@ -101,7 +101,7 @@ for ws in assets/workstations/*/; python -m linker_sim.tools.composer.compose $w
 ### 1B. Validate (8 checks: hashes, joint count, EE link, mount frames, mesh paths, single tree, drift)
 
 ```fish
-for ws in assets/workstations/*/; python -m linker_sim.tools.validate_workstation $ws; end
+for ws in assets/workstations/*/; python -m linker_robot_assets.validate_workstation $ws; end
 ```
 
 **Expected:** All 8 checks pass per workstation, exit 0.
@@ -109,7 +109,7 @@ for ws in assets/workstations/*/; python -m linker_sim.tools.validate_workstatio
 ### 1C. CI drift gate
 
 ```fish
-bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 ```
 
 **Expected:** green across all 6 workstations.

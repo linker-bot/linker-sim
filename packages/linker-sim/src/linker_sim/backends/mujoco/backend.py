@@ -59,7 +59,7 @@ class MujocoSimBackend:
         if handle.mjcf_path is None:
             raise FileNotFoundError(
                 f"{ws_name}: workstation.mjcf missing — run "
-                f"`python -m linker_sim.tools.composer.compose assets/workstations/{ws_name}`"
+                f"`python -m linker_robot_assets.composer.compose assets/workstations/{ws_name}`"
             )
 
         self._model = mujoco.MjModel.from_xml_path(str(handle.mjcf_path))
