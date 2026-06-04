@@ -12,8 +12,8 @@ from dataclasses import dataclass
 import pytest
 import torch
 
-from sim.envs.base import BaseEnv, BaseEnvCfg, Task
-from sim.registry import ComponentRef, Gains, WorkstationHandle
+from linker_sim.envs.base import BaseEnv, BaseEnvCfg, Task
+from linker_sim.registry import ComponentRef, Gains, WorkstationHandle
 
 
 def _make_handle(n_arm=7, n_hand=6) -> WorkstationHandle:

@@ -12,9 +12,9 @@ import pytest
 torch = pytest.importorskip("torch")
 mujoco = pytest.importorskip("mujoco")
 
-from sim.backends.base import Robot
-from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
-from sim.controllers.joint_pd import JointPDController, JointPDControllerCfg
+from linker_sim.backends.base import Robot
+from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+from linker_sim.controllers.joint_pd import JointPDController, JointPDControllerCfg
 
 
 # ar5_l6_bench_bimanual: arm_left/arm_right have 7 actuated each, hand_left/

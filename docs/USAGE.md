@@ -10,7 +10,7 @@ root:
 
 ```bash
 source ~/opt/IsaacLab/env_isaaclab/bin/activate
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 ```
 
 If ROS 2 is sourced in your shell rc, prefix Python commands with
@@ -173,11 +173,11 @@ components under [assets/components/](../assets/components/).
 
 ```bash
 # One workstation.
-python -m tools.composer.compose assets/workstations/a7_lite_dc
+python -m linker_sim.tools.composer.compose assets/workstations/a7_lite_dc
 
 # All of them.
 for ws in assets/workstations/*/; do
-    python -m tools.composer.compose "$ws"
+    python -m linker_sim.tools.composer.compose "$ws"
 done
 ```
 
@@ -188,13 +188,13 @@ ships an MJCF), and `manifest.yaml`. Commit all three.
 
 ```bash
 # Per-component MJCF sanity (run before composing).
-python -m tools.validate_component_mjcf assets/components/arms/a7_lite/variants/left
-python -m tools.validate_component_mjcf assets/components/arms/a7_lite/variants/right
-python -m tools.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
+python -m linker_sim.tools.validate_component_mjcf assets/components/arms/a7_lite/variants/left
+python -m linker_sim.tools.validate_component_mjcf assets/components/arms/a7_lite/variants/right
+python -m linker_sim.tools.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
 
 # Workstation: 12 checks (manifest hashes, URDF kinematics, mesh
 # resolution, drift, MJCF parity at 1e-5 m / 1e-5 rad).
-python tools/validate_workstation.py assets/workstations/a7_lite_dc
+python -m linker_sim.tools.validate_workstation assets/workstations/a7_lite_dc
 ```
 
 ### Drift gate (CI)
@@ -203,10 +203,10 @@ Catches recipe/component edits that forgot to re-commit generated files:
 
 ```bash
 # All workstations.
-bash tools/ci/check_drift.sh
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
 
 # Single workstation.
-bash tools/ci/check_drift.sh a7_lite_dc
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh a7_lite_dc
 ```
 
 Exit 0 = clean, 1 = drift.
@@ -214,8 +214,8 @@ Exit 0 = clean, 1 = drift.
 ### Inspect what the runtime sees
 
 ```bash
-python tools/registry_show.py                  # list workstations
-python tools/registry_show.py a7_lite_dc       # dump roles, joints, frames
+python -m linker_sim.tools.registry_show                  # list workstations
+python -m linker_sim.tools.registry_show a7_lite_dc       # dump roles, joints, frames
 ```
 
 ### Adding a new workstation
@@ -256,7 +256,7 @@ gain_profiles:
   osc:    { stiffness: 150,  damping: 8 }   # used when controller=osc_*
 ```
 
-After editing: re-compose the workstation (`python -m tools.composer.compose …`)
+After editing: re-compose the workstation (`python -m linker_sim.tools.composer.compose …`)
 and commit the regenerated `manifest.yaml` / `workstation.urdf`.
 
 ### b) Controller-level overrides (per controller config)
@@ -408,12 +408,12 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # Compose + validate everything
-for ws in assets/workstations/*/; do python -m tools.composer.compose "$ws"; done
-for ws in assets/workstations/*/; do python tools/validate_workstation.py "$ws"; done
-bash tools/ci/check_drift.sh
+for ws in assets/workstations/*/; do python -m linker_sim.tools.composer.compose "$ws"; done
+for ws in assets/workstations/*/; do python -m linker_sim.tools.validate_workstation "$ws"; done
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
 
 # Inspect a registry handle
-python tools/registry_show.py a7_lite_dc
+python -m linker_sim.tools.registry_show a7_lite_dc
 
 # Live PD gain tuning (MuJoCo, edit /tmp/dex_pd_gains.json while running)
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

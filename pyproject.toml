@@ -1,79 +1,15 @@
-[build-system]
-requires = ["hatchling>=1.24"]
-build-backend = "hatchling.build"
+# uv workspace root for `linker-sim`. Two members live under `packages/`:
+# `linker-sim` (sim runtime + tools) and `linker-robot-assets` (asset
+# bundles, currently a Phase 2 placeholder). This root carries no
+# `[project]` table — it's a "virtual" workspace, only the members
+# install. Per-package metadata lives in each member's pyproject.toml.
 
-[project]
-name = "dex-tool-rl"
-version = "0.1.0"
-description = "Multi-robot, multi-sim RL simulation backbone (Isaac Sim + MuJoCo)."
-readme = "README.md"
-requires-python = ">=3.11,<3.13"
-# No root-level runtime dependencies. Workflows (tools / mujoco / isaac)
-# install their own subsets — see [project.optional-dependencies]. A
-# CI runner that only validates asset composition needs `[tools]`, nothing
-# more.
+[tool.uv.workspace]
+members = ["packages/*"]
 
-[project.optional-dependencies]
-# Composer, validator, registry CLI. Stdlib + pyyaml. Safe on any Python
-# 3.11 env without a GPU. Hydra is included here because `scripts/run.py`
-# imports it on the happy-path and it's pure Python.
-tools = [
-    "pyyaml>=6.0",
-    "hydra-core>=1.3",
-]
-
-# MJCF authoring + validation (PR #1b). Pulls MuJoCo on top of [tools].
-# torch is required at runtime by sim/runtime/replay.py and the backends
-# (sim/backends/{base,mujoco/backend}.py) — keep this in sync with the
-# isaac extra, which gets torch transitively via isaacsim.
-mujoco = [
-    "dex-tool-rl[tools]",
-    "mujoco>=3.1",
-    "torch>=2.0",
-]
-
-# Isaac Sim 5 + IsaacLab extensions. Isaac Sim wheels come from NVIDIA's
-# pypi index (see [[tool.uv.index]] below). IsaacLab's own extensions
-# (isaaclab, isaaclab_assets, ...) are installed separately via
-# `./isaaclab.sh -i` from the IsaacLab clone — see docs/installation.md.
-isaac = [
-    "dex-tool-rl[tools]",
-    # IsaacLab v2.3.2 requires Isaac Sim 5.1 (it pins
-    # isaacsim.asset.importer.urdf==2.4.31, which ships with 5.1 — not 5.0).
-    # See docs/installation.md troubleshooting for the symptom.
-    "isaacsim[all,extscache]==5.1.0.0",
-    # flatdict 4.0.1 lacks a pkg_resources build dep declaration and
-    # modern setuptools no longer exposes it implicitly. Pinned here;
-    # install with `--no-build-isolation` per docs/installation.md.
-    "flatdict==4.0.1",
-]
-
-# LeRobot-compatible parquet sink (sim.io.recorder.LeRobotSink). Opt-in
-# because pyarrow is heavy and not needed for JSONL recording.
-lerobot = [
-    "dex-tool-rl[tools]",
-    "pyarrow>=14.0",
-]
-
-dev = [
-    "ruff>=0.6",
-    "pytest>=8.0",
-    # The pytest gate documented in docs/USAGE.md imports torch
-    # unconditionally from several test files. Keep this in sync with
-    # the runtime extras above.
-    "torch>=2.0",
-]
-
-# Convenience: everything except dev tools.
-all = [
-    "dex-tool-rl[tools,mujoco,isaac,lerobot]",
-]
-
-# --------------------------- uv configuration ----------------------------- #
 # NVIDIA's pypi hosts the isaacsim wheels. uv resolves isaacsim from this
-# index when [isaac] is active; other packages continue to resolve from
-# the default index.
-
+# index when [isaac] is active on the linker-sim package; other packages
+# continue to resolve from the default index.
 [[tool.uv.index]]
 name = "nvidia"
 url = "https://pypi.nvidia.com"
@@ -82,10 +18,11 @@ explicit = true
 [tool.uv.sources]
 isaacsim = { index = "nvidia" }
 
-# ----------------------------- hatch packaging ---------------------------- #
-
-[tool.hatch.build.targets.wheel]
-packages = ["sim", "tools"]
+# pytest needs to import linker_sim without a wheel install (CI may run
+# straight from a fresh clone). Adding the package src/ to pythonpath
+# makes `from linker_sim.X import Y` work for tests/.
+[tool.pytest.ini_options]
+pythonpath = ["packages/linker-sim/src"]
 
 # ----------------------------- ruff -------------------------------------- #
 

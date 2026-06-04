@@ -9,7 +9,7 @@
 
 ```bash
 source ~/opt/IsaacLab/env_isaaclab/bin/activate
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 ```
 
 如果你的 shell rc 中加载了 ROS 2，请在 Python 命令前加上
@@ -166,11 +166,11 @@ Recipe 位于 [assets/workstations/](../assets/workstations/)，组件位于
 
 ```bash
 # 单个 workstation。
-python -m tools.composer.compose assets/workstations/a7_lite_dc
+python -m linker_sim.tools.composer.compose assets/workstations/a7_lite_dc
 
 # 全量合成。
 for ws in assets/workstations/*/; do
-    python -m tools.composer.compose "$ws"
+    python -m linker_sim.tools.composer.compose "$ws"
 done
 ```
 
@@ -181,13 +181,13 @@ done
 
 ```bash
 # 单组件 MJCF 校验（合成前先跑）。
-python -m tools.validate_component_mjcf assets/components/arms/a7_lite/variants/left
-python -m tools.validate_component_mjcf assets/components/arms/a7_lite/variants/right
-python -m tools.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
+python -m linker_sim.tools.validate_component_mjcf assets/components/arms/a7_lite/variants/left
+python -m linker_sim.tools.validate_component_mjcf assets/components/arms/a7_lite/variants/right
+python -m linker_sim.tools.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
 
 # Workstation 校验：12 项检查（manifest 哈希、URDF 运动学、网格路径、
 # drift、URDF↔MJCF 1e-5 m / 1e-5 rad 帧位姿一致性）。
-python tools/validate_workstation.py assets/workstations/a7_lite_dc
+python -m linker_sim.tools.validate_workstation assets/workstations/a7_lite_dc
 ```
 
 ### Drift 守门（CI）
@@ -196,10 +196,10 @@ python tools/validate_workstation.py assets/workstations/a7_lite_dc
 
 ```bash
 # 全部 workstation。
-bash tools/ci/check_drift.sh
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
 
 # 单个 workstation。
-bash tools/ci/check_drift.sh a7_lite_dc
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh a7_lite_dc
 ```
 
 退出码 0 = 干净，1 = 存在 drift。
@@ -207,8 +207,8 @@ bash tools/ci/check_drift.sh a7_lite_dc
 ### 查看运行时看到了什么
 
 ```bash
-python tools/registry_show.py                 # 列出所有 workstation
-python tools/registry_show.py a7_lite_dc      # 打印 roles / joints / frames
+python -m linker_sim.tools.registry_show                 # 列出所有 workstation
+python -m linker_sim.tools.registry_show a7_lite_dc      # 打印 roles / joints / frames
 ```
 
 ### 新增一个 workstation
@@ -253,7 +253,7 @@ gain_profiles:
   osc:    { stiffness: 150,  damping: 8 }   # controller=osc_* 时使用
 ```
 
-修改后必须重新合成 workstation（`python -m tools.composer.compose …`），
+修改后必须重新合成 workstation（`python -m linker_sim.tools.composer.compose …`），
 并提交新的 `manifest.yaml` / `workstation.urdf`。
 
 ### b) 控制器层覆盖（每个控制器配置）
@@ -399,12 +399,12 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # 全量合成 + 校验
-for ws in assets/workstations/*/; do python -m tools.composer.compose "$ws"; done
-for ws in assets/workstations/*/; do python tools/validate_workstation.py "$ws"; done
-bash tools/ci/check_drift.sh
+for ws in assets/workstations/*/; do python -m linker_sim.tools.composer.compose "$ws"; done
+for ws in assets/workstations/*/; do python -m linker_sim.tools.validate_workstation "$ws"; done
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
 
 # 查看 registry handle
-python tools/registry_show.py a7_lite_dc
+python -m linker_sim.tools.registry_show a7_lite_dc
 
 # 实时 PD 增益调参（MuJoCo，运行时编辑 /tmp/dex_pd_gains.json）
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

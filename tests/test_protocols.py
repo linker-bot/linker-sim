@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import pytest
 
-from sim.backends.base import Robot, SimBackend
-from sim.backends.mujoco import MujocoBackendCfg, MujocoSimBackend
+from linker_sim.backends.base import Robot, SimBackend
+from linker_sim.backends.mujoco import MujocoBackendCfg, MujocoSimBackend
 
 
 def test_mujoco_backend_constructs():

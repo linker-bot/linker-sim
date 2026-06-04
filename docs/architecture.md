@@ -9,7 +9,7 @@ which are not part of the public release.
 1. **Asset layer** — `assets/`. Per-component `meta.yaml` and per-side
    variants (URDF + MJCF + meshes) are composed into a per-workstation
    monolithic `workstation.urdf` + `workstation.mjcf` + `manifest.yaml`
-   via `tools/composer/`. Generated artifacts are committed; CI gates
+   via `linker_sim.tools.composer`. Generated artifacts are committed; CI gates
    on drift between recipe and committed output.
 
 2. **Runtime layer** — `sim/`. A thin sim-agnostic registry

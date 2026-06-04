@@ -103,10 +103,10 @@ Five phases. Each step has a "done when" check. Phase 0 then Phase 1 is the reco
 
 | # | Step | Done when |
 |---|---|---|
-| 1.1 | Rename GitHub repo `dex-tool-rl` → `linker-sim`. Update local remotes. | `git remote -v` shows `linker-sim`. Old URL still resolves via GitHub redirect. |
-| 1.2 | Update `pyproject.toml`: `[project] name = "linker-sim"`. Search and replace `dex-tool-rl` → `linker-sim` in docs, configs, READMEs. Search for any Python module named `dex_tool_rl` (likely none). | `grep -r dex-tool-rl` returns nothing except CHANGELOG entries describing the rename. |
-| 1.3 | Convert root `pyproject.toml` to a `uv` workspace root with two members: `packages/linker-sim/` and `packages/linker-robot-assets/`. Move `sim/` and `tools/` into `packages/linker-sim/src/linker_sim/`. Apps stay at repo root in `apps/`. | `uv sync` resolves both members. `pytest` still passes. |
-| 1.4 | Update local references: `~/codes/dex-tool-rl` → `~/codes/linker-sim` in any local config or memory entries. Update CLAUDE.md memory `umi_dex_integration.md` to reflect new layout. | Memory entries match reality. |
+| 1.1 | Rename Gitea repo `Workstation_IsaacSims` → `linker-sim` (origin is Gitea, not GitHub — `gitea.linkerhub.work/LinkerOS/`). Update local remote URL. Optionally publish a public mirror to GitHub when ready. | **Deferred** (per session 2026-06-04 decision): doing code changes only; remote rename + working-dir rename happen later. `git remote -v` still shows `Workstation_IsaacSims` until then. |
+| 1.2 | Update `pyproject.toml`: `[project] name = "linker-sim"`. Search and replace `dex-tool-rl` → `linker-sim` in docs, configs, READMEs. Search for any Python module named `dex_tool_rl` (likely none). | **Done** in `refactor/phase-1`: `grep -r dex-tool-rl` returns nothing except history references in this file. |
+| 1.3 | Convert root `pyproject.toml` to a `uv` workspace root with two members: `packages/linker-sim/` and `packages/linker-robot-assets/`. Move `sim/` and `tools/` into `packages/linker-sim/src/linker_sim/`. Apps stay at repo root in `apps/`. | **Done** in `refactor/phase-1`: virtual workspace root resolves both members; `pytest tests/ -q` → 31 passed; `scripts/replay.py source=data_collection headless=true` runs the synthetic fixture end-to-end. `apps/` still deferred — entry scripts remain in `scripts/`. |
+| 1.4 | Update local references: `~/codes/dex-tool-rl` → `~/codes/linker-sim` in any local config or memory entries. Update auto-memory `umi_dex_integration.md` to reflect new layout. | **Partial**: auto-memory updated to reflect `packages/linker-sim/src/` layout. Working-dir rename paired with 1.1, deferred. |
 
 ### Phase 2 — Extract `linker-robot-assets`
 

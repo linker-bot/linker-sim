@@ -24,8 +24,8 @@ import numpy as np
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT / "packages" / "linker-sim" / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "packages" / "linker-sim" / "src"))
 
 import hydra
 from hydra.utils import instantiate
@@ -34,9 +34,9 @@ from omegaconf import DictConfig, OmegaConf
 OmegaConf.register_new_resolver("div", lambda a, b: a / b, replace=True)
 
 
-@hydra.main(config_path=str(REPO_ROOT / "sim" / "configs"), config_name="replay", version_base="1.3")
+@hydra.main(config_path="pkg://linker_sim.configs", config_name="replay", version_base="1.3")
 def main(cfg: DictConfig) -> None:
-    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+    from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
 
     source = instantiate(cfg.source)
 

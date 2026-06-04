@@ -1,0 +1,12 @@
+# Arms-only replay from a converted recording stored in episode_json/.
+_target_: linker_sim.io.replay.sources.TelemetryNpzSource
+path: episode_json
+field: qpos
+hz: 30.0
+layout:
+  arm_left:
+    cols: [0, 7]
+    sign: 1.0
+  arm_right:
+    cols: [7, 14]
+    sign: 1.0

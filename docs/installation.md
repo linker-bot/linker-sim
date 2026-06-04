@@ -25,7 +25,7 @@ Use this if you only need the MuJoCo backend — e.g. replaying telemetry on a d
 ### Setup
 
 ```bash
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 
 # Create a venv with your system Python (3.11 or 3.12)
 python3 -m venv .venv-mujoco
@@ -44,7 +44,7 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection headless=true m
 ### Daily activation
 
 ```bash
-source /path/to/dex-tool-rl/.venv-mujoco/bin/activate
+source /path/to/linker-sim/.venv-mujoco/bin/activate
 ```
 
 ---
@@ -140,7 +140,7 @@ IsaacLab scripts of note:
 From this repo's root, with `env_isaaclab` still activated:
 
 ```bash
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 uv pip install -e '.[tools]'          # composer / validator / registry
 # Or: `.[all]` once you want MJCF tooling (PR #1b, pulls mujoco).
 ```
@@ -162,7 +162,7 @@ For daily work with IsaacLab already installed, `.[tools]` is usually enough.
 With `env_isaaclab` activated:
 
 ```bash
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 python scripts/run.py max_steps=200 headless=true
 ```
 
@@ -200,22 +200,22 @@ The composer and validator don't need Isaac Sim — just `.[tools]`.
 
 ```bash
 # Recompose one workstation after editing its recipe / a referenced component
-python -m tools.composer.compose assets/workstations/ar5_l6_bench_bimanual
+python -m linker_sim.tools.composer.compose assets/workstations/ar5_l6_bench_bimanual
 
 # Recompose everything
-for ws in assets/workstations/*/; do python -m tools.composer.compose "$ws"; done
+for ws in assets/workstations/*/; do python -m linker_sim.tools.composer.compose "$ws"; done
 
 # Validate (8 checks: manifest hashes, kinematic structure, mesh resolution, composer drift)
-python tools/validate_workstation.py assets/workstations/ar5_l6_bench_bimanual
+python -m linker_sim.tools.validate_workstation assets/workstations/ar5_l6_bench_bimanual
 
 # List composed workstations
-python tools/registry_show.py
+python -m linker_sim.tools.registry_show
 
 # Dump the registry handle for one workstation
-python tools/registry_show.py ar5_l6_bench_bimanual
+python -m linker_sim.tools.registry_show ar5_l6_bench_bimanual
 
 # CI drift check (fails if committed artifacts are stale)
-bash tools/ci/check_drift.sh
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh
 ```
 
 ### Daily activation (full install)
@@ -224,14 +224,14 @@ After setup, a typical day looks like:
 
 ```bash
 source ~/opt/IsaacLab/env_isaaclab/bin/activate
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 # ... work ...
 ```
 
 Alias it if you want:
 
 ```bash
-alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/dex-tool-rl'
+alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/linker-sim'
 ```
 
 ## Troubleshooting

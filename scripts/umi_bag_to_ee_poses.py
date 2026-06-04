@@ -53,8 +53,8 @@ import numpy as np
 from scipy.spatial.transform import Rotation, Slerp
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT / "packages" / "linker-sim" / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "packages" / "linker-sim" / "src"))
 
 # TODO(linker-sim): replace with `from umi_dex...` once umi-dex is published
 # to PyPI / internal index. Tracking: docs/REFACTOR_PLAN.md Phase 5.1.
@@ -160,7 +160,7 @@ def _spawn_workstation_anchors(
     workstation_name: str, arm_side: str
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Return (T_ws←tool0_default, hand_lo (rad), hand_hi (rad))."""
-    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+    from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
 
     backend = MujocoSimBackend(
         MujocoBackendCfg(

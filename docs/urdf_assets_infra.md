@@ -31,7 +31,7 @@ it's driving.
 ## 2. Directory layout
 
 ```
-assets/
+assets/                                  # repo-root for now; Phase 2 moves into linker-robot-assets
   components/
     arms/
       ar5/
@@ -49,12 +49,12 @@ assets/
       workstation.urdf     # generated, committed
       manifest.yaml        # generated, committed
     lkls73_i1_bimanual/
-tools/
-  composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
-  validate_workstation.py
-  registry_show.py
-  ci/check_drift.sh
-sim/
+packages/linker-sim/src/linker_sim/
+  tools/
+    composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
+    validate_workstation.py
+    registry_show.py
+    ci/check_drift.sh
   registry.py              # runtime entry point
 ```
 
@@ -68,7 +68,7 @@ deployment — one per physical robot configuration we care about.
 ### 3.1 Component `meta.yaml`
 
 Declares what a component exposes to the composer. Authored by hand.
-Schema lives in [tools/composer/schemas.py:112-205](../tools/composer/schemas.py#L112-L205).
+Schema lives in [linker_sim/tools/composer/schemas.py:112-205](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py#L112-L205).
 
 Key fields:
 - `kind`: `arm | hand | base | sensor`
@@ -89,7 +89,7 @@ Key fields:
 ### 3.2 Workstation `recipe.yaml`
 
 The composition spec. Schema at
-[tools/composer/schemas.py:265-340](../tools/composer/schemas.py#L265-L340).
+[linker_sim/tools/composer/schemas.py:265-340](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py#L265-L340).
 
 ```yaml
 components:
@@ -113,13 +113,13 @@ physics_overrides: {}
 - **`freeze_base: <role>`** adds a `world` link and a fixed joint from
   world to the named component's `root_link`.
 - **`mounts`** are **always fixed joints** — this is a hard composer
-  invariant ([urdf_ops.py:182-194](../tools/composer/urdf_ops.py#L182-L194)).
+  invariant ([urdf_ops.py:182-194](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py#L182-L194)).
   See §6 for the consequence.
 
 ### 3.3 Generated `manifest.yaml`
 
 Written by the composer, committed to git. Schema at
-[schemas.py:373-430](../tools/composer/schemas.py#L373-L430). Contains:
+[schemas.py:373-430](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py#L373-L430). Contains:
 - sha256 of recipe + every component's sources
 - sha256 of the composed URDF
 - per-role actuated/mimic joint lists (prefixed names)
@@ -134,14 +134,14 @@ re-parses the URDF.
 
 ## 4. Composition algorithm
 
-Entry point: `python -m tools.composer.compose <workstation_dir>`
-([tools/composer/compose.py:130-291](../tools/composer/compose.py#L130-L291)).
+Entry point: `python -m linker_sim.tools.composer.compose <workstation_dir>`
+([linker_sim/tools/composer/compose.py:130-291](../packages/linker-sim/src/linker_sim/tools/composer/compose.py#L130-L291)).
 Pipeline:
 
 1. **Load** the recipe and each referenced component's `meta.yaml`.
 2. **Resolve variants** — pick the named variant (or the only one).
 3. **Per component, compile**
-   ([urdf_ops.py:222-257](../tools/composer/urdf_ops.py#L222-L257)):
+   ([urdf_ops.py:222-257](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py#L222-L257)):
    - parse the variant's URDF
    - prefix every `link/joint/material/transmission name` with
      `<role>_`; rewrite every `<parent link>`, `<child link>`,
@@ -149,7 +149,7 @@ Pipeline:
    - rewrite `<mesh filename>` paths so they resolve from the
      workstation directory (meshes stay in place; no copies)
    - collect actuated vs mimic joint names in document order
-4. **Merge** ([urdf_ops.py:263-416](../tools/composer/urdf_ops.py#L263-L416))
+4. **Merge** ([urdf_ops.py:263-416](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py#L263-L416))
    into one `<robot>`:
    - optional `world` link (if `freeze_base` is set)
    - deduped top-level `<material>` defs
@@ -165,7 +165,7 @@ Pipeline:
    emission is stubbed pending PR #1b).
 
 Determinism is enforced by
-[tools/composer/determinism.py](../tools/composer/determinism.py) —
+[linker_sim/tools/composer/determinism.py](../packages/linker-sim/src/linker_sim/tools/composer/determinism.py) —
 stable float formatting + consistent indentation — so composed output
 is byte-stable across runs and platforms.
 
@@ -250,20 +250,20 @@ Three complementary gates:
 
 | Tool | What it checks |
 |---|---|
-| `python -m tools.composer.compose <ws>` | Compose cleanly; errors on schema problems, mesh resolution, unknown mount frames. |
-| `python tools/validate_workstation.py <ws>` | 8 checks: manifest hash self-consistency (recipe, components, URDF), joint-count vs URDF, EE/mount link resolution, mesh files on disk, single connected kinematic tree, drift ([tools/validate_workstation.py:78-226](../tools/validate_workstation.py#L78-L226)). |
-| `bash tools/ci/check_drift.sh` | Re-runs the composer in memory for every workstation; fails if any committed artifact diverges from fresh output. CI uses this. |
+| `python -m linker_sim.tools.composer.compose <ws>` | Compose cleanly; errors on schema problems, mesh resolution, unknown mount frames. |
+| `python -m linker_sim.tools.validate_workstation <ws>` | 8 checks: manifest hash self-consistency (recipe, components, URDF), joint-count vs URDF, EE/mount link resolution, mesh files on disk, single connected kinematic tree, drift ([linker_sim/tools/validate_workstation.py:78-226](../packages/linker-sim/src/linker_sim/tools/validate_workstation.py#L78-L226)). |
+| `bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh` | Re-runs the composer in memory for every workstation; fails if any committed artifact diverges from fresh output. CI uses this. |
 
-Inspection: `python tools/registry_show.py <ws>` prints the loaded
+Inspection: `python -m linker_sim.tools.registry_show <ws>` prints the loaded
 `WorkstationHandle` — roles, joints, frames, gains — without involving
 any sim backend.
 
 Recommended workflow when editing a component or recipe:
 
 ```bash
-python -m tools.composer.compose assets/workstations/<ws>       # regen
-python tools/validate_workstation.py assets/workstations/<ws>   # sanity
-bash tools/ci/check_drift.sh                                    # all green
+python -m linker_sim.tools.composer.compose assets/workstations/<ws>       # regen
+python -m linker_sim.tools.validate_workstation assets/workstations/<ws>   # sanity
+bash packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh                                    # all green
 git add assets/workstations/<ws>/{workstation.urdf,manifest.yaml}
 ```
 
@@ -308,13 +308,13 @@ git add assets/workstations/<ws>/{workstation.urdf,manifest.yaml}
 
 ## 9. Reference paths
 
-- Composer entry: [tools/composer/compose.py](../tools/composer/compose.py)
-- Composer primitives: [tools/composer/urdf_ops.py](../tools/composer/urdf_ops.py)
-- Schemas: [tools/composer/schemas.py](../tools/composer/schemas.py)
-- Determinism: [tools/composer/determinism.py](../tools/composer/determinism.py)
-- Validator: [tools/validate_workstation.py](../tools/validate_workstation.py)
-- CI drift gate: [tools/ci/check_drift.sh](../tools/ci/check_drift.sh)
+- Composer entry: [linker_sim/tools/composer/compose.py](../packages/linker-sim/src/linker_sim/tools/composer/compose.py)
+- Composer primitives: [linker_sim/tools/composer/urdf_ops.py](../packages/linker-sim/src/linker_sim/tools/composer/urdf_ops.py)
+- Schemas: [linker_sim/tools/composer/schemas.py](../packages/linker-sim/src/linker_sim/tools/composer/schemas.py)
+- Determinism: [linker_sim/tools/composer/determinism.py](../packages/linker-sim/src/linker_sim/tools/composer/determinism.py)
+- Validator: [linker_sim/tools/validate_workstation.py](../packages/linker-sim/src/linker_sim/tools/validate_workstation.py)
+- CI drift gate: [linker_sim/tools/ci/check_drift.sh](../packages/linker-sim/src/linker_sim/tools/ci/check_drift.sh)
 - Runtime registry: [sim/registry.py](../sim/registry.py)
-- Inspection CLI: [tools/registry_show.py](../tools/registry_show.py)
+- Inspection CLI: [linker_sim/tools/registry_show.py](../packages/linker-sim/src/linker_sim/tools/registry_show.py)
 - Example component (arm): [assets/components/arms/ar5/meta.yaml](../assets/components/arms/ar5/meta.yaml)
 - Example workstation (bimanual humanoid): [assets/workstations/lkls73_i1_bimanual/recipe.yaml](../assets/workstations/lkls73_i1_bimanual/recipe.yaml)

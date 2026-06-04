@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "linker-robot-assets"
+version = "0.1.0"
+description = "Robot asset bundles + composer (Phase 2 placeholder)."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/linker_robot_assets"]

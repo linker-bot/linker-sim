@@ -225,7 +225,7 @@ authors write them with raw (unprefixed) source-names.
 
 ## 9. What the MJCF validator checks
 
-Run `python -m tools.validate_component_mjcf <component_dir> [--variant NAME]`.
+Run `python -m linker_sim.tools.validate_component_mjcf <component_dir> [--variant NAME]`.
 The tool implements the following checks per component variant; exits 0
 on OK/WARN, 1 on FAIL.
 
@@ -284,5 +284,5 @@ For each composed workstation (PR #1b — separate validator):
 - [ ] `balanceinertia` is **not** set (strip it if lifting from URDF's embedded `<mujoco>` block).
 - [ ] Equality constraints for mimic couplings (if any) present at top level, with `polycoef` of exactly 5 elements.
 - [ ] `<contact><exclude>` for every adjacent body pair (full-mesh colliders interpenetrate at joints).
-- [ ] `python -m tools.validate_component_mjcf <component_dir>` reports `=> overall: OK`.
+- [ ] `python -m linker_sim.tools.validate_component_mjcf <component_dir>` reports `=> overall: OK`.
 - [ ] Visual smoke check in `mujoco.viewer` — drag each joint slider, verify mimic couplings track, verify mount-frame sites land where expected.
