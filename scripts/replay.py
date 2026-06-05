@@ -45,6 +45,8 @@ def main(cfg: DictConfig) -> None:
 
     if cfg.backend.name == "mujoco":
         _replay_mujoco(cfg)
+    elif cfg.backend.name == "viser":
+        _replay_viser(cfg)
     else:
         _replay_isaac(cfg)
 
@@ -95,6 +97,32 @@ def _replay_mujoco(cfg: DictConfig) -> None:
                    stop_flag=stop_flag,
                    loop=True,
                    restart_flag=restart_flag)
+
+
+def _replay_viser(cfg: DictConfig) -> None:
+    from linker_sim.backends.viser.backend import ViserBackendCfg, ViserSimBackend
+    from linker_sim.runtime.replay import run_replay
+
+    source = instantiate(cfg.source)
+    backend = ViserSimBackend(ViserBackendCfg(
+        workstations={cfg.robot.role_name: cfg.robot.workstation_name},
+        num_envs=int(cfg.num_envs),
+        dt=float(cfg.backend.dt),
+        device="cpu",
+        host=str(cfg.backend.host),
+        port=int(cfg.backend.port),
+        headless=bool(cfg.headless),
+    ))
+    try:
+        robot = backend.robots[cfg.robot.role_name]
+        run_replay(
+            backend, robot, source,
+            realtime=bool(cfg.realtime),
+            max_frames=cfg.max_frames,
+            loop=not bool(cfg.headless),
+        )
+    finally:
+        backend.close()
 
 
 def _configure_mujoco_replay_camera(viewer, model) -> None:

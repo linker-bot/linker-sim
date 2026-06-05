@@ -68,6 +68,23 @@ For everything else (MuJoCo, replay, gain tuning, composing new
 workstations, recording episodes), see [docs/USAGE.md](docs/USAGE.md)
 ([中文](docs/USAGE.zh.md)).
 
+### Data collection team — browser visualization
+
+For visualizing bag replays in a browser without Isaac Sim or a GPU,
+use the `[viser]` profile. Install both workspace members into a
+Python 3.11 or 3.12 venv (this profile is incompatible with the
+`env_isaaclab` env — viser pulls a newer `websockets` than Isaac Sim
+pins):
+
+```bash
+python3 -m venv .venv-viser && source .venv-viser/bin/activate
+pip install -e packages/linker-robot-assets -e packages/linker-sim[viser]
+python scripts/replay.py backend=viser source=data_collection robot=a7_lite_dc
+```
+
+Open the URL printed at startup (default `http://127.0.0.1:8080`).
+Replay-only for now; teleop deferred (Phase 4+).
+
 ## Development notes
 
 - Keep generated artifacts out of git (`__pycache__`, virtual envs,
