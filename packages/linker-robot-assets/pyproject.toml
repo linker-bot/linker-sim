@@ -9,19 +9,20 @@ description = "Bundled robot assets (URDF / MJCF / meshes) + composer + validato
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 # Runtime dependencies — what `from linker_robot_assets import ...` needs.
-# Composer + validators have heavier deps; those go in [authoring].
+# numpy is required by `linker_robot_assets.decoders.hand` (Phase 4 public
+# API). Composer + validators have heavier deps; those go in [authoring].
 dependencies = [
     "pyyaml>=6.0",
+    "numpy>=1.24",
 ]
 
 [project.optional-dependencies]
 # Authoring toolchain: composer (`python -m linker_robot_assets.composer.compose`)
 # and validators (`python -m linker_robot_assets.validate_workstation`,
 # `python -m linker_robot_assets.validate_component_mjcf`). Pulls in
-# mujoco for MJCF compile/inertia checks and numpy for FK math.
+# mujoco for MJCF compile/inertia checks (numpy is a runtime dep above).
 authoring = [
     "mujoco>=3.1",
-    "numpy>=1.24",
 ]
 
 # ----------------------------- hatch packaging ---------------------------- #
