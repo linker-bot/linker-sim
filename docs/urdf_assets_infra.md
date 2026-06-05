@@ -221,8 +221,8 @@ Two patterns handle this:
   first revolute (`L1_Joint`) hangs from it with identity origin. The
   positional offset the source URDF had on `L1_Joint` is absorbed into
   the parent base's mount-pad link instead. See
-  [lkls73_torso/base.urdf:42-54](../assets/components/bases/lkls73_torso/variants/default/base.urdf#L42-L54)
-  and [lkls73_arm/variants/left/arm.urdf](../assets/components/arms/lkls73_arm/variants/left/arm.urdf).
+  [lkls73_torso/base.urdf:42-54](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/lkls73_torso/variants/default/base.urdf#L42-L54)
+  and [lkls73_arm/variants/left/arm.urdf](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/lkls73_arm/variants/left/arm.urdf).
 
 ### `{V}` expansion applies to meta fields only
 
@@ -264,10 +264,10 @@ any sim backend.
 Recommended workflow when editing a component or recipe:
 
 ```bash
-python -m linker_robot_assets.composer.compose assets/workstations/<ws>       # regen
-python -m linker_robot_assets.validate_workstation assets/workstations/<ws>   # sanity
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/<ws>       # regen
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/<ws>   # sanity
 bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh                                    # all green
-git add assets/workstations/<ws>/{workstation.urdf,manifest.yaml}
+git add packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/<ws>/{workstation.urdf,manifest.yaml}
 ```
 
 ---
@@ -319,5 +319,5 @@ git add assets/workstations/<ws>/{workstation.urdf,manifest.yaml}
 - CI drift gate: [linker_robot_assets/ci/check_drift.sh](../packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh)
 - Runtime registry: [linker_sim/registry.py](../packages/linker-sim/src/linker_sim/registry.py)
 - Inspection CLI: [linker_sim/tools/registry_show.py](../packages/linker-sim/src/linker_sim/tools/registry_show.py)
-- Example component (arm): [assets/components/arms/ar5/meta.yaml](../assets/components/arms/ar5/meta.yaml)
-- Example workstation (bimanual humanoid): [assets/workstations/lkls73_i1_bimanual/recipe.yaml](../assets/workstations/lkls73_i1_bimanual/recipe.yaml)
+- Example component (arm): [assets/components/arms/ar5/meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/ar5/meta.yaml)
+- Example workstation (bimanual humanoid): [assets/workstations/lkls73_i1_bimanual/recipe.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/lkls73_i1_bimanual/recipe.yaml)

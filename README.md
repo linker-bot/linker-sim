@@ -39,7 +39,7 @@ Quick MuJoCo-only setup:
 
 ```bash
 python3 -m venv .venv-mujoco && source .venv-mujoco/bin/activate
-pip install -e ".[mujoco]"
+pip install -e packages/linker-sim[mujoco]
 ```
 
 > **Source-checkout only.** Use editable installs (`pip install -e`).

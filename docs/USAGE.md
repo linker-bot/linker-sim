@@ -166,17 +166,17 @@ Replay knobs (in [linker_sim/configs/replay.yaml](../packages/linker-sim/src/lin
 
 A workstation is `recipe.yaml` → `workstation.urdf` + `workstation.mjcf`
 + `manifest.yaml` (manifest is the single source of truth the runtime
-reads). Recipes live under [assets/workstations/](../assets/workstations/);
-components under [assets/components/](../assets/components/).
+reads). Recipes live under [assets/workstations/](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/);
+components under [assets/components/](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/).
 
 ### Compose
 
 ```bash
 # One workstation.
-python -m linker_robot_assets.composer.compose assets/workstations/a7_lite_dc
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
 
 # All of them.
-for ws in assets/workstations/*/; do
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do
     python -m linker_robot_assets.composer.compose "$ws"
 done
 ```
@@ -188,13 +188,13 @@ ships an MJCF), and `manifest.yaml`. Commit all three.
 
 ```bash
 # Per-component MJCF sanity (run before composing).
-python -m linker_robot_assets.validate_component_mjcf assets/components/arms/a7_lite/variants/left
-python -m linker_robot_assets.validate_component_mjcf assets/components/arms/a7_lite/variants/right
-python -m linker_robot_assets.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/left
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/right
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/a7_lite_torso/variants/default
 
 # Workstation: 12 checks (manifest hashes, URDF kinematics, mesh
 # resolution, drift, MJCF parity at 1e-5 m / 1e-5 rad).
-python -m linker_robot_assets.validate_workstation assets/workstations/a7_lite_dc
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
 ```
 
 ### Drift gate (CI)
@@ -244,7 +244,7 @@ Three places gains live. Edit the right one for what you want to change.
 
 ### a) Component defaults (per role, per arm — affects every workstation that uses it)
 
-[meta.yaml](../assets/components/arms/lkls73_arm/meta.yaml) per
+[meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/lkls73_arm/meta.yaml) per
 component:
 
 ```yaml
@@ -294,7 +294,7 @@ the actuator (`kp`); damping lives on the **joint** (`damping`
 attribute) because MuJoCo integrates joint damping implicitly
 (unconditionally stable), whereas actuator `kv` is explicit and can
 diverge at high values. Edit the per-component MJCF (e.g.
-[arm.mjcf](../assets/components/arms/a7_lite/variants/left/arm.mjcf)):
+[arm.mjcf](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/left/arm.mjcf)):
 
 ```xml
 <!-- Joint: damping here (implicit, stable) -->
@@ -408,8 +408,8 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # Compose + validate everything
-for ws in assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
-for ws in assets/workstations/*/; do python -m linker_robot_assets.validate_workstation "$ws"; done
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.validate_workstation "$ws"; done
 bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # Inspect a registry handle

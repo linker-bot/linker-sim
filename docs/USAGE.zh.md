@@ -159,17 +159,17 @@ python scripts/replay.py backend=isaac device=cuda:0 \
 
 一个 workstation = `recipe.yaml` → `workstation.urdf` +
 `workstation.mjcf` + `manifest.yaml`（运行时只读 manifest）。
-Recipe 位于 [assets/workstations/](../assets/workstations/)，组件位于
-[assets/components/](../assets/components/)。
+Recipe 位于 [assets/workstations/](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/)，组件位于
+[assets/components/](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/)。
 
 ### 合成
 
 ```bash
 # 单个 workstation。
-python -m linker_robot_assets.composer.compose assets/workstations/a7_lite_dc
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
 
 # 全量合成。
-for ws in assets/workstations/*/; do
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do
     python -m linker_robot_assets.composer.compose "$ws"
 done
 ```
@@ -181,13 +181,13 @@ done
 
 ```bash
 # 单组件 MJCF 校验（合成前先跑）。
-python -m linker_robot_assets.validate_component_mjcf assets/components/arms/a7_lite/variants/left
-python -m linker_robot_assets.validate_component_mjcf assets/components/arms/a7_lite/variants/right
-python -m linker_robot_assets.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/left
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/right
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/a7_lite_torso/variants/default
 
 # Workstation 校验：12 项检查（manifest 哈希、URDF 运动学、网格路径、
 # drift、URDF↔MJCF 1e-5 m / 1e-5 rad 帧位姿一致性）。
-python -m linker_robot_assets.validate_workstation assets/workstations/a7_lite_dc
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
 ```
 
 ### Drift 守门（CI）
@@ -242,7 +242,7 @@ python -m linker_sim.tools.registry_show a7_lite_dc      # 打印 roles / joints
 ### a) 组件默认值（按 role / 按臂 — 影响所有引用它的 workstation）
 
 每个组件的
-[meta.yaml](../assets/components/arms/lkls73_arm/meta.yaml)：
+[meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/lkls73_arm/meta.yaml)：
 
 ```yaml
 default_gains:
@@ -289,7 +289,7 @@ OSC 控制器有自己的字段：`actuator_stiffness`、`actuator_damping`、
 MuJoCo 把增益固化在模型加载时。刚度放在执行器的 `kp` 上；阻尼放在
 **关节**的 `damping` 属性上，因为 MuJoCo 对关节阻尼做隐式积分（无条件
 稳定），而执行器的 `kv` 是显式积分，在高数值时会发散。修改各组件 MJCF
-（例如 [arm.mjcf](../assets/components/arms/a7_lite/variants/left/arm.mjcf)）：
+（例如 [arm.mjcf](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/left/arm.mjcf)）：
 
 ```xml
 <!-- 关节：阻尼在此（隐式积分，稳定） -->
@@ -399,8 +399,8 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # 全量合成 + 校验
-for ws in assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
-for ws in assets/workstations/*/; do python -m linker_robot_assets.validate_workstation "$ws"; done
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.validate_workstation "$ws"; done
 bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # 查看 registry handle

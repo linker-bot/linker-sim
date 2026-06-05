@@ -32,7 +32,8 @@ python3 -m venv .venv-mujoco
 source .venv-mujoco/bin/activate
 
 # Install MuJoCo subset (pulls mujoco, pyyaml, hydra-core)
-pip install -e ".[mujoco]"
+# The repo root is a uv workspace; extras live on the linker-sim package.
+pip install -e packages/linker-sim[mujoco]
 ```
 
 ### Verify
@@ -141,21 +142,28 @@ From this repo's root, with `env_isaaclab` still activated:
 
 ```bash
 cd /path/to/linker-sim
-uv pip install -e '.[tools]'          # composer / validator / registry
-# Or: `.[all]` once you want MJCF tooling (PR #1b, pulls mujoco).
+uv pip install -e 'packages/linker-sim[tools]'          # composer / validator / registry
+# Or: `packages/linker-sim[all]` once you want MJCF tooling (pulls mujoco).
 ```
 
-This installs `sim/` and `tools/` into the active env (`env_isaaclab`), pulls `pyyaml` for the composer, and registers the project for editable imports so `from sim.registry import load` works without `sys.path` hacks.
+The repo root is a `uv` workspace with no `[project]` table; extras live
+on the `linker-sim` member, so install paths reference `packages/linker-sim`
+rather than `.`. This installs `linker_sim/` (and resolves
+`linker-robot-assets` from the workspace) into the active env
+(`env_isaaclab`), pulls `pyyaml` for the composer, and registers the
+project for editable imports so `from linker_sim.registry import load`
+works without `sys.path` hacks.
 
-Optional extras:
+Optional extras (attach to `packages/linker-sim`):
 
-- `.[tools]` — composer + validator + registry (CPU-safe; no Isaac)
-- `.[mujoco]` — the above plus `mujoco` (for MJCF authoring/validation)
-- `.[isaac]` — Isaac Sim + flatdict (only needed if you're *not* installing IsaacLab's Isaac Sim from step 2c; most users skip this)
-- `.[dev]` — `ruff`, `pytest`
-- `.[all]` — `tools` + `mujoco` + `isaac`
+- `[tools]` — composer + validator + registry (CPU-safe; no Isaac)
+- `[mujoco]` — the above plus `mujoco` (for MJCF authoring/validation)
+- `[isaac]` — Isaac Sim + flatdict (only needed if you're *not* installing IsaacLab's Isaac Sim from step 2c; most users skip this)
+- `[dev]` — `ruff`, `pytest`
+- `[all]` — `tools` + `mujoco` + `isaac`
 
-For daily work with IsaacLab already installed, `.[tools]` is usually enough.
+For daily work with IsaacLab already installed,
+`uv pip install -e 'packages/linker-sim[tools]'` is usually enough.
 
 ### 4) Verify — Isaac smoke test
 
@@ -200,13 +208,13 @@ The composer and validator don't need Isaac Sim — just `.[tools]`.
 
 ```bash
 # Recompose one workstation after editing its recipe / a referenced component
-python -m linker_robot_assets.composer.compose assets/workstations/ar5_l6_bench_bimanual
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/ar5_l6_bench_bimanual
 
 # Recompose everything
-for ws in assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
 
 # Validate (8 checks: manifest hashes, kinematic structure, mesh resolution, composer drift)
-python -m linker_robot_assets.validate_workstation assets/workstations/ar5_l6_bench_bimanual
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/ar5_l6_bench_bimanual
 
 # List composed workstations
 python -m linker_sim.tools.registry_show
@@ -241,7 +249,7 @@ alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/link
 - **`[isaaclab.python-…] dependency: 'isaacsim.asset.importer.urdf' = { version='=2.4.31' } can't be satisfied`** at runtime — Isaac Sim version mismatch. IsaacLab v2.3.2 needs Isaac Sim 5.1; if you installed 5.0, upgrade: `uv pip uninstall isaacsim && uv pip install 'isaacsim[all,extscache]==5.1.0' --extra-index-url https://pypi.nvidia.com && ./isaaclab.sh -i`.
 - **`Failed to build flatdict==4.0.1` / `ModuleNotFoundError: No module named 'pkg_resources'`** — Install flatdict with build isolation disabled: `uv pip install setuptools && uv pip install flatdict==4.0.1 --no-build-isolation`, then re-run `-i`.
 - **Isaac Sim import errors about Python version / ABI mismatch** — Confirm your venv Python is 3.11 (`python --version`). Isaac Sim 5.x does not load under 3.10 or 3.12. The MuJoCo-only profile works fine on 3.12.
-- **`ModuleNotFoundError: sim` or `tools`** — You haven't run `uv pip install -e '.[tools]'` in the active env, or the wrong env is active.
+- **`ModuleNotFoundError: linker_sim` or `linker_robot_assets`** — You haven't run `uv pip install -e 'packages/linker-sim[tools]'` in the active env (which transitively pulls `linker-robot-assets` from the workspace), or the wrong env is active.
 - **Isaac Sim window doesn't launch / crashes early** — Verify NVIDIA driver/GPU compatibility and system graphics stack.
 - **Wrong Python interpreter in shell** — `which python` and re-activate the intended venv.
 - **Asset path errors** — Composed workstation URDFs use relative paths like `../../components/…/meshes/…`. Run commands from this repo's root so paths resolve correctly, or pass absolute paths.
