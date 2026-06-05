@@ -13,14 +13,16 @@ and usage.
 
 ## Install
 
-From the repository root:
+From the repository root. `uv` honours the workspace's `[tool.uv.sources]`
+and resolves `linker-robot-assets` automatically; plain `pip` does not, so
+install both workspace members explicitly.
 
 ```bash
-pip install -e packages/linker-sim[mujoco]      # MuJoCo-only profile
-pip install -e packages/linker-sim[isaac]       # Isaac Sim profile (in env_isaaclab)
-pip install -e packages/linker-sim[tools]       # composer / validator only
-```
+# uv (single command resolves linker-robot-assets from the workspace)
+uv pip install -e 'packages/linker-sim[mujoco]'
 
-`linker-robot-assets` is resolved from the workspace via `[tool.uv.sources]`
-when installed under `uv`; under plain `pip`, install both packages
-explicitly.
+# plain pip — install both members
+pip install -e packages/linker-robot-assets -e packages/linker-sim[mujoco]
+pip install -e packages/linker-robot-assets -e packages/linker-sim[isaac]   # in env_isaaclab
+pip install -e packages/linker-robot-assets -e packages/linker-sim[tools]   # composer / validator only
+```

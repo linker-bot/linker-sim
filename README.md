@@ -15,16 +15,25 @@ robots, with both Isaac Sim and MuJoCo backends.
 
 ## Project layout
 
-- `assets/components/{arms,bases,hands}/` — reusable component
-  subtrees (URDF + MJCF + meshes + `meta.yaml`).
-- `assets/workstations/<name>/` — `recipe.yaml` plus generated
-  `workstation.{urdf,mjcf}` and `manifest.yaml`.
-- `sim/backends/{isaac,mujoco}/` — backend implementations.
-- `sim/controllers/` — `joint_pd`, `osc`, `ik`.
-- `sim/tasks/` — task definitions.
-- `sim/envs/test_osc/` — interactive OSC gain tuner.
+This repo is a `uv` workspace with two members under `packages/`:
+
+- `packages/linker-robot-assets/` — asset bundles + composer + validators.
+  - `src/linker_robot_assets/assets/components/{arms,bases,hands}/` —
+    reusable component subtrees (URDF + MJCF + meshes + `meta.yaml`).
+  - `src/linker_robot_assets/assets/workstations/<name>/` — `recipe.yaml`
+    plus generated `workstation.{urdf,mjcf}` and `manifest.yaml`.
+  - `src/linker_robot_assets/composer/` — recipe → URDF/MJCF/manifest.
+  - `src/linker_robot_assets/ci/check_drift.sh` — composer drift gate.
+- `packages/linker-sim/` — sim runtime (depends on `linker-robot-assets`).
+  - `src/linker_sim/backends/{isaac,mujoco}/` — backend implementations.
+  - `src/linker_sim/controllers/` — `joint_pd`, `osc`, `ik`.
+  - `src/linker_sim/tasks/` — task definitions.
+  - `src/linker_sim/configs/` — Hydra configs (`pkg://linker_sim.configs`).
+
+Top-level entry points and supporting trees:
+
 - `scripts/run.py` / `scripts/replay.py` — Hydra entrypoints.
-- `tools/` — composer, validators, registry inspector, drift gate.
+- `tests/` — pytest suite with synthetic fixtures.
 - `docs/` — installation, usage, asset and MJCF authoring guides,
   test pipeline.
 
@@ -39,7 +48,7 @@ Quick MuJoCo-only setup:
 
 ```bash
 python3 -m venv .venv-mujoco && source .venv-mujoco/bin/activate
-pip install -e packages/linker-sim[mujoco]
+pip install -e packages/linker-robot-assets -e packages/linker-sim[mujoco]
 ```
 
 > **Source-checkout only.** Use editable installs (`pip install -e`).

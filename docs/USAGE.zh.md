@@ -338,8 +338,8 @@ python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
 
 ### e) OSC 控制器（未实现）
 
-OSC 控制器（`sim/controllers/osc.py`）及其调参器
-（`sim/envs/test_osc/gain_tuner_osc.py`）已标记为桩代码——之前的实现
+OSC 控制器（`linker_sim/controllers/osc.py`）及其调参器
+（`linker_sim/envs/test_osc/gain_tuner_osc.py`）已标记为桩代码——之前的实现
 从未经过验证。Hydra 配置 `controller=osc_bimanual` 仍存在，但运行时
 会抛出 `NotImplementedError`。
 

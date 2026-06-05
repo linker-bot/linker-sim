@@ -52,8 +52,7 @@ Update per tier as it's run. `last-run` uses ISO date (`YYYY-MM-DD`).
 | 5A   | Record a reach episode                | pass    | 2026-05-11 | JSONL episodes contain obs/action/reward/terminated/truncated. |
 | 5B   | Action-replay                         | pass    | 2026-05-11 | Doc had `mode=` — needs `+mode=` (hydra struct). Patched. |
 | 5C   | State-inject replay                   | pass    | 2026-05-11 | |
-| 6A   | Gain tuner hot-reload                 | pass    | 2026-05-11 | Optional; legacy path. |
-| 6B   | Long-horizon bimanual stability       | pass    | 2026-05-11 | GPU memory flat over the run. |
+| 6A   | Long-horizon bimanual stability       | pass    | 2026-05-11 | GPU memory flat over the run. |
 
 ---
 
@@ -89,7 +88,7 @@ produces from current sources.
 ### 1A. Recompose all workstations
 
 ```fish
-for ws in assets/workstations/*/; python -m linker_robot_assets.composer.compose $ws; end
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; python -m linker_robot_assets.composer.compose $ws; end
 ```
 
 **Expected:** 6 workstations recomposed (`ar5_l6_bench_bimanual`,
@@ -101,7 +100,7 @@ for ws in assets/workstations/*/; python -m linker_robot_assets.composer.compose
 ### 1B. Validate (8 checks: hashes, joint count, EE link, mount frames, mesh paths, single tree, drift)
 
 ```fish
-for ws in assets/workstations/*/; python -m linker_robot_assets.validate_workstation $ws; end
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; python -m linker_robot_assets.validate_workstation $ws; end
 ```
 
 **Expected:** All 8 checks pass per workstation, exit 0.
@@ -309,17 +308,7 @@ python scripts/replay.py +episode=$EPISODE +mode=state_inject controller=osc_bim
 
 ## Tier 6 — Optional / long-horizon
 
-### 6A. Gain tuner hot-reload
-
-```fish
-python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --arm_role arm_left
-```
-
-Edit `sim/envs/test_osc/osc_gains.json` while running; arm behavior
-should change without restart. Legacy path — see
-[PR1_PROGRESS.md:373-377](PR1_PROGRESS.md#L373-L377).
-
-### 6B. Long-horizon bimanual stability
+### 6A. Long-horizon bimanual stability
 
 ```fish
 python scripts/run.py robot=ar5_l6_bench_bimanual controller=osc_bimanual task=bimanual_reach \

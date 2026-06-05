@@ -346,8 +346,8 @@ Implementation: [linker_sim/io/gain_watcher.py](../packages/linker-sim/src/linke
 
 ### e) OSC controller (not implemented)
 
-The OSC controller (`sim/controllers/osc.py`) and its tuner
-(`sim/envs/test_osc/gain_tuner_osc.py`) are stubbed out — the previous
+The OSC controller (`linker_sim/controllers/osc.py`) and its tuner
+(`linker_sim/envs/test_osc/gain_tuner_osc.py`) are stubbed out — the previous
 implementation was never validated. The Hydra config
 `controller=osc_bimanual` still exists but will raise
 `NotImplementedError` at runtime.

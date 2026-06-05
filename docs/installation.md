@@ -33,7 +33,9 @@ source .venv-mujoco/bin/activate
 
 # Install MuJoCo subset (pulls mujoco, pyyaml, hydra-core)
 # The repo root is a uv workspace; extras live on the linker-sim package.
-pip install -e packages/linker-sim[mujoco]
+# Plain pip doesn't honor [tool.uv.sources], so install both workspace
+# members explicitly.
+pip install -e packages/linker-robot-assets -e packages/linker-sim[mujoco]
 ```
 
 ### Verify
@@ -52,7 +54,7 @@ source /path/to/linker-sim/.venv-mujoco/bin/activate
 
 ## B) Full install (Isaac Sim + MuJoCo, Python 3.11 only)
 
-This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installed **outside this repo** at a shared location; this repo's Python packages (`sim/`, `tools/`) install on top via `pip`.
+This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installed **outside this repo** at a shared location; this repo's two workspace members (`packages/linker-sim/` and `packages/linker-robot-assets/`) install on top via `pip` or `uv pip`.
 
 One Python environment is used end-to-end: the IsaacLab-managed `env_isaaclab`. Composer, validator, registry tools, and runtime all share it.
 
@@ -194,17 +196,9 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 See [USAGE.md](USAGE.md) for the full set of `scripts/run.py` knobs and
 the MuJoCo backend.
 
-### 5) Tune OSC gains (optional)
+### 5) Compose and validate workstations
 
-```bash
-python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --arm_role arm_left
-```
-
-Creates `sim/envs/test_osc/osc_gains.json` on first run and hot-reloads while running.
-
-### 6) Compose and validate workstations
-
-The composer and validator don't need Isaac Sim — just `.[tools]`.
+The composer and validator don't need Isaac Sim — just `packages/linker-sim[tools]` (and the `linker-robot-assets` member it depends on).
 
 ```bash
 # Recompose one workstation after editing its recipe / a referenced component
