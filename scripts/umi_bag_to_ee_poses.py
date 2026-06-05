@@ -53,8 +53,10 @@ import numpy as np
 from scipy.spatial.transform import Rotation, Slerp
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+for _src in ("packages/linker-sim/src", "packages/linker-robot-assets/src"):
+    _abs = str(REPO_ROOT / _src)
+    if _abs not in sys.path:
+        sys.path.insert(0, _abs)
 
 # TODO(linker-sim): replace with `from umi_dex...` once umi-dex is published
 # to PyPI / internal index. Tracking: docs/REFACTOR_PLAN.md Phase 5.1.
@@ -158,9 +160,14 @@ def _resample_nearest(
 
 def _spawn_workstation_anchors(
     workstation_name: str, arm_side: str
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return (T_ws←tool0_default, hand_lo (rad), hand_hi (rad))."""
-    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+) -> tuple[np.ndarray, str]:
+    """Return (T_ws←tool0_default, hand_component_name).
+
+    `hand_component_name` is the bare component dir (e.g. ``"linkerhand_l6"``,
+    stripped of the ``"hands/"`` kind prefix from the manifest) and is fed
+    to `linker_robot_assets.decoders.decode_hand` for telemetry channels.
+    """
+    from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
 
     backend = MujocoSimBackend(
         MujocoBackendCfg(
@@ -174,34 +181,48 @@ def _spawn_workstation_anchors(
     robot.write_joint_state(robot.joint_pos_default, robot.joint_vel_default)
     ee = robot.ee_pose_b(f"arm_{arm_side}:tool0")[0].numpy()
     T_ws_tool0 = _pose_to_T(ee[:3], ee[3:7])
-    lo, hi = robot.actuated_joint_limits_of(f"hand_{arm_side}")
-    return T_ws_tool0, lo.numpy().astype(np.float64), hi.numpy().astype(np.float64)
+
+    hand_role = f"hand_{arm_side}"
+    ref = robot.handle.components.get(hand_role)
+    if ref is None:
+        raise ValueError(
+            f"workstation {workstation_name!r}: no component for role "
+            f"{hand_role!r} (have: {list(robot.handle.components)})"
+        )
+    # ComponentRef.name is "hands/<dir>"; decode_hand wants the bare dir.
+    hand_component = ref.name.split("/", 1)[-1]
+    return T_ws_tool0, hand_component
 
 
 # ---------- hand decoding ----------
 
-def _decode_hand(raw_counts: np.ndarray, hand_lo: np.ndarray, hand_hi: np.ndarray) -> np.ndarray:
+def _decode_hand(
+    raw_counts: np.ndarray, hand_component: str, side: str
+) -> np.ndarray:
     """Decode raw 12-bit ADC counts → joint radians.
 
-    Pipeline: counts → percent_open (0..100) via UMI-Dex's per-finger
-    calibrator (handles thumb_roll wrap) → joint radians via:
+    Pipeline: counts → percent (0..100) via UMI-Dex's per-finger
+    calibrator (handles thumb_roll wrap) → radians via
+    `linker_robot_assets.decoders.decode_hand` (linear-fit-v0).
 
-        joint = lo + (1 - percent_open/100) * (hi - lo)
+    Convention: percent=0 → URDF lower limit; percent=100 → upper.
+    This is INVERTED relative to the pre-Phase-4 inline math
+    (`(1 - percent/100) * (hi - lo)`) — Phase 4 adopts the
+    `linker_sim.io.replay.hands` convention so all decoders agree.
+    Existing bagged outputs predate the stamp; the absence of
+    `decoder_convention` in old `.npz` files signals "pre-Phase-4".
 
-    convention matches existing `linker_o6` decoder (raw=open → joint=lo,
-    raw=closed → joint=hi).
-
-    Future bags will publish percent directly; when that lands, this
-    function collapses to the linear map only — drop the Calibrator
-    import.
+    Future bags will publish percent directly; when that lands, drop
+    the Calibrator import and pass percent straight to `decode_hand`.
     """
     from umi_dex.controllers.calibrate import Calibrator
+    from linker_robot_assets.decoders import decode_hand
 
     calib = Calibrator()
     pct = np.array(
         [calib.map_counts(row.tolist()) for row in raw_counts], dtype=np.float64
     )
-    return (hand_lo + (1.0 - pct / 100.0) * (hand_hi - hand_lo)).astype(np.float32)
+    return decode_hand(hand_component, side, pct)
 
 
 # ---------- main ----------
@@ -349,7 +370,7 @@ def main() -> None:
     T_remap_inv = np.eye(4); T_remap_inv[:3, :3] = R_remap.T
     rebased = np.stack([T_remap @ d @ T_remap_inv for d in rebased])
 
-    T_ws_tool0, hand_lo, hand_hi = _spawn_workstation_anchors(
+    T_ws_tool0, hand_component = _spawn_workstation_anchors(
         args.workstation, args.arm
     )
     # Anchor: translate, then rotate (anchor orientation), then yaw the
@@ -382,7 +403,9 @@ def main() -> None:
             flush=True,
         )
 
-    hand_rad = None if args.no_hand else _decode_hand(counts_rs, hand_lo, hand_hi)
+    hand_rad = (
+        None if args.no_hand else _decode_hand(counts_rs, hand_component, args.arm)
+    )
 
     # Verify invariants.
     assert arm_pose.shape == (len(target_ns), 7), arm_pose.shape
@@ -404,6 +427,12 @@ def main() -> None:
     payload = {f"arm_{args.arm}": arm_pose}
     if not args.no_hand:
         payload[f"hand_{args.arm}"] = hand_rad
+        # Phase 4.5: stamp the decoder convention so downstream tooling
+        # (and any future SDK-vN migration) can identify which math
+        # produced these joint values. Pre-Phase-4 outputs lack this
+        # field; absence == "linear-fit, sign-inverted, pre-rebase".
+        from linker_robot_assets.decoders import CONVENTION as _DECODER_CONVENTION
+        payload["decoder_convention"] = np.array(_DECODER_CONVENTION)
     np.savez(args.out, **payload)
     shapes = ", ".join(f"{k} {v.shape}" for k, v in payload.items())
     print(f"[umi-prep] wrote {args.out}: {shapes}", flush=True)

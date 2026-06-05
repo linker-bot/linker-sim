@@ -12,7 +12,7 @@ component meta or the bimanual recipe changes.
 
 from __future__ import annotations
 
-from sim.registry import load
+from linker_sim.registry import load
 
 
 def test_bimanual_workstation_has_five_roles():

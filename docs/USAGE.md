@@ -10,7 +10,7 @@ root:
 
 ```bash
 source ~/opt/IsaacLab/env_isaaclab/bin/activate
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 ```
 
 If ROS 2 is sourced in your shell rc, prefix Python commands with
@@ -22,14 +22,14 @@ If ROS 2 is sourced in your shell rc, prefix Python commands with
 
 | Entrypoint                | Config root                | What it does                                       |
 |---------------------------|----------------------------|----------------------------------------------------|
-| [scripts/run.py](../scripts/run.py)         | [sim/configs/config.yaml](../sim/configs/config.yaml)  | Backend + controller + task + (optional) recorder rollout. |
-| [scripts/replay.py](../scripts/replay.py)   | [sim/configs/replay.yaml](../sim/configs/replay.yaml)  | Replay external real-robot telemetry through a backend. No controllers, no task, no `BaseEnv`. |
+| [scripts/run.py](../scripts/run.py)         | [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)  | Backend + controller + task + (optional) recorder rollout. |
+| [scripts/replay.py](../scripts/replay.py)   | [linker_sim/configs/replay.yaml](../packages/linker-sim/src/linker_sim/configs/replay.yaml)  | Replay external real-robot telemetry through a backend. No controllers, no task, no `BaseEnv`. |
 
 Both are [Hydra](https://hydra.cc) entrypoints. Override anything on the
 CLI by setting `group=name` (config group) or `dotted.path=value`
 (direct override). Output dirs land under `outputs/YYYY-MM-DD/HH-MM-SS/`.
 
-Config groups live under [sim/configs/](../sim/configs/):
+Config groups live under [linker_sim/configs/](../packages/linker-sim/src/linker_sim/configs/):
 
 - `backend/` — `isaac.yaml`, `mujoco.yaml`
 - `robot/` — Hydra wrapper around a workstation name
@@ -69,7 +69,7 @@ Shipped workstations (Hydra group `robot`):
 - L6 hand (legacy / parallel): `ar5_l6_bench_bimanual`,
   `lkls73_i1_bimanual`, `a7_lite_dc`.
 
-Common knobs (defined in [sim/configs/config.yaml](../sim/configs/config.yaml)):
+Common knobs (defined in [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)):
 
 | Key                       | Default | Meaning                                                |
 |---------------------------|---------|--------------------------------------------------------|
@@ -114,7 +114,7 @@ Use [scripts/replay.py](../scripts/replay.py). It reads a
 `ReplaySource` (currently `TelemetryNpzSource`), drives the workstation
 with `set_joint_position_target` directly, and bypasses controllers,
 tasks, and `BaseEnv`. Hand columns are decoded via per-joint mappers
-(see [sim/io/replay/hands.py](../sim/io/replay/hands.py)).
+(see [linker_sim/io/replay/hands.py](../packages/linker-sim/src/linker_sim/io/replay/hands.py)).
 
 > **Hand-decoder accuracy caveat.** The `linker_l6` and `linker_o6`
 > decoders linearly interpolate the vendor's 0–255 byte command across
@@ -123,7 +123,7 @@ tasks, and `BaseEnv`. Hand columns are decoded via per-joint mappers
 > arm tracking is faithful but **finger pose is approximate**. Replace
 > these decoders with vendor curves (or a per-joint LUT) before
 > claiming physical replay fidelity. Tracked inline as a TODO in
-> [sim/io/replay/hands.py](../sim/io/replay/hands.py).
+> [linker_sim/io/replay/hands.py](../packages/linker-sim/src/linker_sim/io/replay/hands.py).
 
 ```bash
 # Real-robot recording at episode_000025/telemetry.npz, MuJoCo viewport,
@@ -148,7 +148,7 @@ Hotkeys (MuJoCo windowed mode): press `Q` in the viewport to stop.
    key shaped `(T, N)`.
 2. Author `sim/configs/source/<your_name>.yaml` describing the column
    layout. Template (annotated) is
-   [sim/configs/source/data_collection.yaml](../sim/configs/source/data_collection.yaml).
+   [linker_sim/configs/source/data_collection.yaml](../packages/linker-sim/src/linker_sim/configs/source/data_collection.yaml).
    Each role's `cols: [start, end)` slice **must** match the
    workstation's actuated-joint count for that role.
 3. Run:
@@ -156,7 +156,7 @@ Hotkeys (MuJoCo windowed mode): press `Q` in the viewport to stop.
    python scripts/replay.py robot=<workstation> source=<your_name>
    ```
 
-Replay knobs (in [sim/configs/replay.yaml](../sim/configs/replay.yaml)):
+Replay knobs (in [linker_sim/configs/replay.yaml](../packages/linker-sim/src/linker_sim/configs/replay.yaml)):
 `realtime` (pace to `source.hz`), `max_frames` (clip), `headless`,
 `device`.
 
@@ -166,18 +166,18 @@ Replay knobs (in [sim/configs/replay.yaml](../sim/configs/replay.yaml)):
 
 A workstation is `recipe.yaml` → `workstation.urdf` + `workstation.mjcf`
 + `manifest.yaml` (manifest is the single source of truth the runtime
-reads). Recipes live under [assets/workstations/](../assets/workstations/);
-components under [assets/components/](../assets/components/).
+reads). Recipes live under [assets/workstations/](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/);
+components under [assets/components/](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/).
 
 ### Compose
 
 ```bash
 # One workstation.
-python -m tools.composer.compose assets/workstations/a7_lite_dc
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
 
 # All of them.
-for ws in assets/workstations/*/; do
-    python -m tools.composer.compose "$ws"
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do
+    python -m linker_robot_assets.composer.compose "$ws"
 done
 ```
 
@@ -188,13 +188,13 @@ ships an MJCF), and `manifest.yaml`. Commit all three.
 
 ```bash
 # Per-component MJCF sanity (run before composing).
-python -m tools.validate_component_mjcf assets/components/arms/a7_lite/variants/left
-python -m tools.validate_component_mjcf assets/components/arms/a7_lite/variants/right
-python -m tools.validate_component_mjcf assets/components/bases/a7_lite_torso/variants/default
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/left
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/right
+python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/a7_lite_torso/variants/default
 
 # Workstation: 12 checks (manifest hashes, URDF kinematics, mesh
 # resolution, drift, MJCF parity at 1e-5 m / 1e-5 rad).
-python tools/validate_workstation.py assets/workstations/a7_lite_dc
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
 ```
 
 ### Drift gate (CI)
@@ -203,10 +203,10 @@ Catches recipe/component edits that forgot to re-commit generated files:
 
 ```bash
 # All workstations.
-bash tools/ci/check_drift.sh
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # Single workstation.
-bash tools/ci/check_drift.sh a7_lite_dc
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh a7_lite_dc
 ```
 
 Exit 0 = clean, 1 = drift.
@@ -214,8 +214,8 @@ Exit 0 = clean, 1 = drift.
 ### Inspect what the runtime sees
 
 ```bash
-python tools/registry_show.py                  # list workstations
-python tools/registry_show.py a7_lite_dc       # dump roles, joints, frames
+python -m linker_sim.tools.registry_show                  # list workstations
+python -m linker_sim.tools.registry_show a7_lite_dc       # dump roles, joints, frames
 ```
 
 ### Adding a new workstation
@@ -244,7 +244,7 @@ Three places gains live. Edit the right one for what you want to change.
 
 ### a) Component defaults (per role, per arm — affects every workstation that uses it)
 
-[meta.yaml](../assets/components/arms/lkls73_arm/meta.yaml) per
+[meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/lkls73_arm/meta.yaml) per
 component:
 
 ```yaml
@@ -256,7 +256,7 @@ gain_profiles:
   osc:    { stiffness: 150,  damping: 8 }   # used when controller=osc_*
 ```
 
-After editing: re-compose the workstation (`python -m tools.composer.compose …`)
+After editing: re-compose the workstation (`python -m linker_robot_assets.composer.compose …`)
 and commit the regenerated `manifest.yaml` / `workstation.urdf`.
 
 ### b) Controller-level overrides (per controller config)
@@ -285,7 +285,7 @@ python scripts/run.py controller=joint_pd_bimanual \
 OSC has its own block — `actuator_stiffness`, `actuator_damping`,
 `stiffness` (task-space), `damping_ratio`, `nullspace_stiffness`,
 `nullspace_damping_ratio` — see
-[sim/configs/controller/osc_bimanual.yaml](../sim/configs/controller/osc_bimanual.yaml).
+[linker_sim/configs/controller/osc_bimanual.yaml](../packages/linker-sim/src/linker_sim/configs/controller/osc_bimanual.yaml).
 
 ### c) MuJoCo `<position>` actuator gains (per-component MJCF)
 
@@ -294,7 +294,7 @@ the actuator (`kp`); damping lives on the **joint** (`damping`
 attribute) because MuJoCo integrates joint damping implicitly
 (unconditionally stable), whereas actuator `kv` is explicit and can
 diverge at high values. Edit the per-component MJCF (e.g.
-[arm.mjcf](../assets/components/arms/a7_lite/variants/left/arm.mjcf)):
+[arm.mjcf](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/left/arm.mjcf)):
 
 ```xml
 <!-- Joint: damping here (implicit, stable) -->
@@ -342,12 +342,12 @@ every 0.5 s:
 Once tuned, promote the values to the component MJCF and meta.yaml
 (sections a/c above). The JSON file is session-only and not tracked.
 
-Implementation: [sim/io/gain_watcher.py](../sim/io/gain_watcher.py).
+Implementation: [linker_sim/io/gain_watcher.py](../packages/linker-sim/src/linker_sim/io/gain_watcher.py).
 
 ### e) OSC controller (not implemented)
 
-The OSC controller (`sim/controllers/osc.py`) and its tuner
-(`sim/envs/test_osc/gain_tuner_osc.py`) are stubbed out — the previous
+The OSC controller (`linker_sim/controllers/osc.py`) and its tuner
+(`linker_sim/envs/test_osc/gain_tuner_osc.py`) are stubbed out — the previous
 implementation was never validated. The Hydra config
 `controller=osc_bimanual` still exists but will raise
 `NotImplementedError` at runtime.
@@ -408,12 +408,12 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # Compose + validate everything
-for ws in assets/workstations/*/; do python -m tools.composer.compose "$ws"; done
-for ws in assets/workstations/*/; do python tools/validate_workstation.py "$ws"; done
-bash tools/ci/check_drift.sh
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.validate_workstation "$ws"; done
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # Inspect a registry handle
-python tools/registry_show.py a7_lite_dc
+python -m linker_sim.tools.registry_show a7_lite_dc
 
 # Live PD gain tuning (MuJoCo, edit /tmp/dex_pd_gains.json while running)
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

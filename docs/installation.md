@@ -25,14 +25,17 @@ Use this if you only need the MuJoCo backend — e.g. replaying telemetry on a d
 ### Setup
 
 ```bash
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 
 # Create a venv with your system Python (3.11 or 3.12)
 python3 -m venv .venv-mujoco
 source .venv-mujoco/bin/activate
 
 # Install MuJoCo subset (pulls mujoco, pyyaml, hydra-core)
-pip install -e ".[mujoco]"
+# The repo root is a uv workspace; extras live on the linker-sim package.
+# Plain pip doesn't honor [tool.uv.sources], so install both workspace
+# members explicitly.
+pip install -e packages/linker-robot-assets -e packages/linker-sim[mujoco]
 ```
 
 ### Verify
@@ -44,14 +47,14 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection headless=true m
 ### Daily activation
 
 ```bash
-source /path/to/dex-tool-rl/.venv-mujoco/bin/activate
+source /path/to/linker-sim/.venv-mujoco/bin/activate
 ```
 
 ---
 
 ## B) Full install (Isaac Sim + MuJoCo, Python 3.11 only)
 
-This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installed **outside this repo** at a shared location; this repo's Python packages (`sim/`, `tools/`) install on top via `pip`.
+This project assumes Linux with a working NVIDIA GPU stack. IsaacLab is installed **outside this repo** at a shared location; this repo's two workspace members (`packages/linker-sim/` and `packages/linker-robot-assets/`) install on top via `pip` or `uv pip`.
 
 One Python environment is used end-to-end: the IsaacLab-managed `env_isaaclab`. Composer, validator, registry tools, and runtime all share it.
 
@@ -140,29 +143,36 @@ IsaacLab scripts of note:
 From this repo's root, with `env_isaaclab` still activated:
 
 ```bash
-cd /path/to/dex-tool-rl
-uv pip install -e '.[tools]'          # composer / validator / registry
-# Or: `.[all]` once you want MJCF tooling (PR #1b, pulls mujoco).
+cd /path/to/linker-sim
+uv pip install -e 'packages/linker-sim[tools]'          # composer / validator / registry
+# Or: `packages/linker-sim[all]` once you want MJCF tooling (pulls mujoco).
 ```
 
-This installs `sim/` and `tools/` into the active env (`env_isaaclab`), pulls `pyyaml` for the composer, and registers the project for editable imports so `from sim.registry import load` works without `sys.path` hacks.
+The repo root is a `uv` workspace with no `[project]` table; extras live
+on the `linker-sim` member, so install paths reference `packages/linker-sim`
+rather than `.`. This installs `linker_sim/` (and resolves
+`linker-robot-assets` from the workspace) into the active env
+(`env_isaaclab`), pulls `pyyaml` for the composer, and registers the
+project for editable imports so `from linker_sim.registry import load`
+works without `sys.path` hacks.
 
-Optional extras:
+Optional extras (attach to `packages/linker-sim`):
 
-- `.[tools]` — composer + validator + registry (CPU-safe; no Isaac)
-- `.[mujoco]` — the above plus `mujoco` (for MJCF authoring/validation)
-- `.[isaac]` — Isaac Sim + flatdict (only needed if you're *not* installing IsaacLab's Isaac Sim from step 2c; most users skip this)
-- `.[dev]` — `ruff`, `pytest`
-- `.[all]` — `tools` + `mujoco` + `isaac`
+- `[tools]` — composer + validator + registry (CPU-safe; no Isaac)
+- `[mujoco]` — the above plus `mujoco` (for MJCF authoring/validation)
+- `[isaac]` — Isaac Sim + flatdict (only needed if you're *not* installing IsaacLab's Isaac Sim from step 2c; most users skip this)
+- `[dev]` — `ruff`, `pytest`
+- `[all]` — `tools` + `mujoco` + `isaac`
 
-For daily work with IsaacLab already installed, `.[tools]` is usually enough.
+For daily work with IsaacLab already installed,
+`uv pip install -e 'packages/linker-sim[tools]'` is usually enough.
 
 ### 4) Verify — Isaac smoke test
 
 With `env_isaaclab` activated:
 
 ```bash
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 python scripts/run.py max_steps=200 headless=true
 ```
 
@@ -186,36 +196,28 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 See [USAGE.md](USAGE.md) for the full set of `scripts/run.py` knobs and
 the MuJoCo backend.
 
-### 5) Tune OSC gains (optional)
+### 5) Compose and validate workstations
 
-```bash
-python sim/envs/test_osc/gain_tuner_osc.py --num_envs 1 --arm_role arm_left
-```
-
-Creates `sim/envs/test_osc/osc_gains.json` on first run and hot-reloads while running.
-
-### 6) Compose and validate workstations
-
-The composer and validator don't need Isaac Sim — just `.[tools]`.
+The composer and validator don't need Isaac Sim — just `packages/linker-sim[tools]` (and the `linker-robot-assets` member it depends on).
 
 ```bash
 # Recompose one workstation after editing its recipe / a referenced component
-python -m tools.composer.compose assets/workstations/ar5_l6_bench_bimanual
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/ar5_l6_bench_bimanual
 
 # Recompose everything
-for ws in assets/workstations/*/; do python -m tools.composer.compose "$ws"; done
+for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
 
 # Validate (8 checks: manifest hashes, kinematic structure, mesh resolution, composer drift)
-python tools/validate_workstation.py assets/workstations/ar5_l6_bench_bimanual
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/ar5_l6_bench_bimanual
 
 # List composed workstations
-python tools/registry_show.py
+python -m linker_sim.tools.registry_show
 
 # Dump the registry handle for one workstation
-python tools/registry_show.py ar5_l6_bench_bimanual
+python -m linker_sim.tools.registry_show ar5_l6_bench_bimanual
 
 # CI drift check (fails if committed artifacts are stale)
-bash tools/ci/check_drift.sh
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 ```
 
 ### Daily activation (full install)
@@ -224,14 +226,14 @@ After setup, a typical day looks like:
 
 ```bash
 source ~/opt/IsaacLab/env_isaaclab/bin/activate
-cd /path/to/dex-tool-rl
+cd /path/to/linker-sim
 # ... work ...
 ```
 
 Alias it if you want:
 
 ```bash
-alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/dex-tool-rl'
+alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/linker-sim'
 ```
 
 ## Troubleshooting
@@ -241,7 +243,7 @@ alias dexrl='source ~/opt/IsaacLab/env_isaaclab/bin/activate && cd /path/to/dex-
 - **`[isaaclab.python-…] dependency: 'isaacsim.asset.importer.urdf' = { version='=2.4.31' } can't be satisfied`** at runtime — Isaac Sim version mismatch. IsaacLab v2.3.2 needs Isaac Sim 5.1; if you installed 5.0, upgrade: `uv pip uninstall isaacsim && uv pip install 'isaacsim[all,extscache]==5.1.0' --extra-index-url https://pypi.nvidia.com && ./isaaclab.sh -i`.
 - **`Failed to build flatdict==4.0.1` / `ModuleNotFoundError: No module named 'pkg_resources'`** — Install flatdict with build isolation disabled: `uv pip install setuptools && uv pip install flatdict==4.0.1 --no-build-isolation`, then re-run `-i`.
 - **Isaac Sim import errors about Python version / ABI mismatch** — Confirm your venv Python is 3.11 (`python --version`). Isaac Sim 5.x does not load under 3.10 or 3.12. The MuJoCo-only profile works fine on 3.12.
-- **`ModuleNotFoundError: sim` or `tools`** — You haven't run `uv pip install -e '.[tools]'` in the active env, or the wrong env is active.
+- **`ModuleNotFoundError: linker_sim` or `linker_robot_assets`** — You haven't run `uv pip install -e 'packages/linker-sim[tools]'` in the active env (which transitively pulls `linker-robot-assets` from the workspace), or the wrong env is active.
 - **Isaac Sim window doesn't launch / crashes early** — Verify NVIDIA driver/GPU compatibility and system graphics stack.
 - **Wrong Python interpreter in shell** — `which python` and re-activate the intended venv.
 - **Asset path errors** — Composed workstation URDFs use relative paths like `../../components/…/meshes/…`. Run commands from this repo's root so paths resolve correctly, or pass absolute paths.

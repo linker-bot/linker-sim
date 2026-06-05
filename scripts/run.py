@@ -23,8 +23,10 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+for _src in ("packages/linker-sim/src", "packages/linker-robot-assets/src"):
+    _abs = str(REPO_ROOT / _src)
+    if _abs not in sys.path:
+        sys.path.insert(0, _abs)
 
 import hydra
 from hydra.utils import instantiate
@@ -46,7 +48,7 @@ def _launch_isaac(cfg: DictConfig):
     return app_launcher.app
 
 
-@hydra.main(config_path=str(REPO_ROOT / "sim" / "configs"), config_name="config", version_base="1.3")
+@hydra.main(config_path="pkg://linker_sim.configs", config_name="config", version_base="1.3")
 def main(cfg: DictConfig) -> None:
     print("[run] resolved cfg:\n" + OmegaConf.to_yaml(cfg), flush=True)
 
@@ -67,7 +69,7 @@ def main(cfg: DictConfig) -> None:
 
 
 def _run_mujoco(cfg: DictConfig) -> None:
-    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+    from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
 
     if getattr(cfg.robot, "rigid_bodies", None):
         raise SystemExit(
@@ -102,7 +104,7 @@ def _run_mujoco(cfg: DictConfig) -> None:
 
 
 def _run_isaac(cfg: DictConfig) -> None:
-    from sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
+    from linker_sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
 
     rigid_bodies = {}
     if getattr(cfg.robot, "rigid_bodies", None):
@@ -133,8 +135,8 @@ def _run_rollout(
     mj_viewer=None,
     mj_reset_flag: list | None = None,
 ) -> None:
-    from sim.envs.base import BaseEnv, BaseEnvCfg
-    from sim.io.recorder import Recorder
+    from linker_sim.envs.base import BaseEnv, BaseEnvCfg
+    from linker_sim.io.recorder import Recorder
 
     controllers = [instantiate(entry) for entry in cfg.controller.entries]
     task = instantiate(cfg.task, backend=backend)
@@ -160,7 +162,7 @@ def _run_rollout(
     if bool(OmegaConf.select(cfg, "gain_tuner", default=False)):
         from pathlib import Path as _Path
 
-        from sim.io.gain_watcher import GainWatcher
+        from linker_sim.io.gain_watcher import GainWatcher
 
         _gp = str(OmegaConf.select(cfg, "gain_tuner_path", default="/tmp/dex_pd_gains.json"))
         gain_watcher = GainWatcher(backend.robots[cfg.robot.role_name], _Path(_gp))

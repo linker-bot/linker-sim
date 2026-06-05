@@ -1,0 +1,7 @@
+# @package _global_
+backend:
+  name: viser
+  dt: ${div:1,30}        # 30 Hz; ViserSimBackend.step() is a no-op anyway, but
+                         # this picks sub_steps=1 for typical 30Hz bag replay.
+  host: 127.0.0.1
+  port: 8080

@@ -1,0 +1,16 @@
+schema_version: 1
+convention: linear-fit-v0
+
+# SDK channel index -> templated actuated-joint name. {S} expands to
+# `l` (left) or `r` (right) per side; matches meta.yaml's convention.
+# Note: O6's thumb channel 0 is `cmc_yaw` (vs. L6's `cmc_roll`) — they
+# differ in the first thumb DoF axis. Mirrors meta.yaml:actuated_joints.
+channels:
+  - "{S}h_thumb_cmc_yaw"
+  - "{S}h_thumb_cmc_pitch"
+  - "{S}h_index_mcp_pitch"
+  - "{S}h_middle_mcp_pitch"
+  - "{S}h_ring_mcp_pitch"
+  - "{S}h_pinky_mcp_pitch"
+
+clip_overrides: {}

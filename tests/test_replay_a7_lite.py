@@ -18,9 +18,9 @@ import pytest
 torch = pytest.importorskip("torch")
 mujoco = pytest.importorskip("mujoco")
 
-from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
-from sim.io.replay.sources import TelemetryNpzSource
-from sim.runtime.replay import run_replay
+from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+from linker_sim.io.replay.sources import TelemetryNpzSource
+from linker_sim.runtime.replay import run_replay
 
 
 # Mirror sim/configs/source/data_collection.yaml. Kept in-test so a

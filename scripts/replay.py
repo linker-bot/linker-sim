@@ -27,8 +27,10 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+for _src in ("packages/linker-sim/src", "packages/linker-robot-assets/src"):
+    _abs = str(REPO_ROOT / _src)
+    if _abs not in sys.path:
+        sys.path.insert(0, _abs)
 
 import hydra
 from hydra.utils import instantiate
@@ -37,19 +39,21 @@ from omegaconf import DictConfig, OmegaConf
 OmegaConf.register_new_resolver("div", lambda a, b: a / b, replace=True)
 
 
-@hydra.main(config_path=str(REPO_ROOT / "sim" / "configs"), config_name="replay", version_base="1.3")
+@hydra.main(config_path="pkg://linker_sim.configs", config_name="replay", version_base="1.3")
 def main(cfg: DictConfig) -> None:
     print("[replay] resolved cfg:\n" + OmegaConf.to_yaml(cfg), flush=True)
 
     if cfg.backend.name == "mujoco":
         _replay_mujoco(cfg)
+    elif cfg.backend.name == "viser":
+        _replay_viser(cfg)
     else:
         _replay_isaac(cfg)
 
 
 def _replay_mujoco(cfg: DictConfig) -> None:
-    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
-    from sim.runtime.replay import run_replay
+    from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+    from linker_sim.runtime.replay import run_replay
 
     source = instantiate(cfg.source)
     backend = MujocoSimBackend(MujocoBackendCfg(
@@ -95,6 +99,32 @@ def _replay_mujoco(cfg: DictConfig) -> None:
                    restart_flag=restart_flag)
 
 
+def _replay_viser(cfg: DictConfig) -> None:
+    from linker_sim.backends.viser.backend import ViserBackendCfg, ViserSimBackend
+    from linker_sim.runtime.replay import run_replay
+
+    source = instantiate(cfg.source)
+    backend = ViserSimBackend(ViserBackendCfg(
+        workstations={cfg.robot.role_name: cfg.robot.workstation_name},
+        num_envs=int(cfg.num_envs),
+        dt=float(cfg.backend.dt),
+        device="cpu",
+        host=str(cfg.backend.host),
+        port=int(cfg.backend.port),
+        headless=bool(cfg.headless),
+    ))
+    try:
+        robot = backend.robots[cfg.robot.role_name]
+        run_replay(
+            backend, robot, source,
+            realtime=bool(cfg.realtime),
+            max_frames=cfg.max_frames,
+            loop=not bool(cfg.headless),
+        )
+    finally:
+        backend.close()
+
+
 def _configure_mujoco_replay_camera(viewer, model) -> None:
     """Use a wide fixed default view so the replay robot is fully visible."""
 
@@ -135,8 +165,8 @@ def _replay_isaac(cfg: DictConfig) -> None:
         import carb.input
         import omni.appwindow
 
-        from sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
-        from sim.runtime.replay import run_replay
+        from linker_sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
+        from linker_sim.runtime.replay import run_replay
 
         rigid_bodies = {}
         if getattr(cfg.robot, "rigid_bodies", None):

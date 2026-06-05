@@ -13,9 +13,9 @@ from pathlib import Path
 
 import torch
 
-from sim.envs.base import BaseEnv, BaseEnvCfg
-from sim.io.recorder import JsonlSink, Recorder, RecorderCfg, null_sink
-from sim.io.replayer import ReplayEpisode
+from linker_sim.envs.base import BaseEnv, BaseEnvCfg
+from linker_sim.io.recorder import JsonlSink, Recorder, RecorderCfg, null_sink
+from linker_sim.io.replayer import ReplayEpisode
 
 # Reuse fakes from test_base_env.
 import tests.test_base_env as _te

@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import torch
 
-from sim.registry import ComponentRef, Gains, WorkstationHandle
-from sim.tasks.bimanual_reach import ArmSpec, BimanualReachTask, BimanualReachTaskCfg
+from linker_sim.registry import ComponentRef, Gains, WorkstationHandle
+from linker_sim.tasks.bimanual_reach import ArmSpec, BimanualReachTask, BimanualReachTaskCfg
 
 
 def _bimanual_handle() -> WorkstationHandle:

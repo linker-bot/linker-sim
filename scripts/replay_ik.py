@@ -37,8 +37,10 @@ import numpy as np
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+for _src in ("packages/linker-sim/src", "packages/linker-robot-assets/src"):
+    _abs = str(REPO_ROOT / _src)
+    if _abs not in sys.path:
+        sys.path.insert(0, _abs)
 
 import hydra
 from hydra.utils import instantiate
@@ -376,16 +378,16 @@ def _save_plot(arm_roles, errors_pos, errors_ori):
 
 
 @hydra.main(
-    config_path=str(REPO_ROOT / "sim" / "configs"),
+    config_path="pkg://linker_sim.configs",
     config_name="replay",
     version_base="1.3",
 )
 def main(cfg: DictConfig) -> None:
     print("[replay_ik] resolved cfg:\n" + OmegaConf.to_yaml(cfg), flush=True)
 
-    from sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
-    from sim.controllers.ik import IkController, IkControllerCfg
-    from sim.io.replay.sources import TelemetryNpzSource
+    from linker_sim.backends.mujoco.backend import MujocoBackendCfg, MujocoSimBackend
+    from linker_sim.controllers.ik import IkController, IkControllerCfg
+    from linker_sim.io.replay.sources import TelemetryNpzSource
 
     # --- Backend + robot ---
     backend = MujocoSimBackend(MujocoBackendCfg(
