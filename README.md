@@ -85,6 +85,9 @@ python scripts/replay.py backend=viser source=data_collection robot=a7_lite_dc
 Open the URL printed at startup (default `http://127.0.0.1:8080`).
 Replay-only for now; teleop deferred (Phase 4+).
 
+See [docs/known_limitations.md](docs/known_limitations.md) for the
+hand-decoder linear-fit caveat and the UMI-Dex path-hack TODO.
+
 ## Development notes
 
 - Keep generated artifacts out of git (`__pycache__`, virtual envs,

@@ -1,0 +1,25 @@
+schema_version: 1
+convention: linear-fit-v0
+
+# SDK channel index -> templated actuated-joint name. L25 has 16 active
+# DoF (thumb 4, four fingers × 3). {S} expands to `l` or `r` per side;
+# matches meta.yaml:actuated_joints exactly.
+channels:
+  - "{S}h_thumb_cmc_roll"
+  - "{S}h_thumb_cmc_yaw"
+  - "{S}h_thumb_cmc_pitch"
+  - "{S}h_thumb_mcp"
+  - "{S}h_index_mcp_roll"
+  - "{S}h_index_mcp_pitch"
+  - "{S}h_index_pip"
+  - "{S}h_middle_mcp_roll"
+  - "{S}h_middle_mcp_pitch"
+  - "{S}h_middle_pip"
+  - "{S}h_ring_mcp_roll"
+  - "{S}h_ring_mcp_pitch"
+  - "{S}h_ring_pip"
+  - "{S}h_pinky_mcp_roll"
+  - "{S}h_pinky_mcp_pitch"
+  - "{S}h_pinky_pip"
+
+clip_overrides: {}
