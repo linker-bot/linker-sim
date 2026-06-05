@@ -1,0 +1,232 @@
+<mujoco model="linkerhand_l30_right">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="hand_linkerhand_l30_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="hand_linkerhand_l30_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+    <default class="hand_linkerhand_l30_joint">
+      <joint armature="3.4707e-08" damping="4.0" frictionloss="0.5"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="base_link" file="base_link.STL"/>
+    <mesh name="wrist_carpal_link0" file="wrist_carpal_link0.STL"/>
+    <mesh name="pinky_metacarpals" file="pinky_metacarpals.STL"/>
+    <mesh name="pinky_proximal" file="pinky_proximal.STL"/>
+    <mesh name="pinky_middle" file="pinky_middle.STL"/>
+    <mesh name="pinky_distal" file="pinky_distal.STL"/>
+    <mesh name="ring_metacarpals" file="ring_metacarpals.STL"/>
+    <mesh name="ring_proximal" file="ring_proximal.STL"/>
+    <mesh name="ring_middle" file="ring_middle.STL"/>
+    <mesh name="ring_distal" file="ring_distal.STL"/>
+    <mesh name="middle_metacarpals" file="middle_metacarpals.STL"/>
+    <mesh name="middle_proximal" file="middle_proximal.STL"/>
+    <mesh name="middle_middle" file="middle_middle.STL"/>
+    <mesh name="middle_distal" file="middle_distal.STL"/>
+    <mesh name="index_metacarpals" file="index_metacarpals.STL"/>
+    <mesh name="index_proximal" file="index_proximal.STL"/>
+    <mesh name="index_middle" file="index_middle.STL"/>
+    <mesh name="index_distal" file="index_distal.STL"/>
+    <mesh name="thumb_metacarpals_base2" file="thumb_metacarpals_base2.STL"/>
+    <mesh name="thumb_metacarpals_base1" file="thumb_metacarpals_base1.STL"/>
+    <mesh name="thumb_proximal" file="thumb_proximal.STL"/>
+    <mesh name="thumb_distal" file="thumb_distal.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="rh_hand_base_link" pos="0 0 0">
+      <inertial pos="1.34997853025096E-05 5.20757498699078E-05 0.105451129174887" mass="1.1019729965561" fullinertia="0.00259916260865796 0.00252693593916793 0.000938081291926509 -3.6014476606497E-08 -8.31944871687104E-07 1.1601017491222E-07"/>
+      <geom class="hand_linkerhand_l30_visual" mesh="base_link"/>
+      <geom class="hand_linkerhand_l30_collision" mesh="base_link"/>
+      <site name="wrist_mount" pos="0 0 0"/>
+      <body name="rh_wrist_carpal_link0" pos="0 0 0.2305">
+        <inertial pos="-0.00547862271877416 0.000831657003959401 0.0345473802919119" mass="0.0758139997927062" fullinertia="5.22716274861779E-05 2.12566322252109E-05 3.40774932449244E-05 6.14178336989994E-07 -2.23105062017991E-07 -1.25309388746648E-06"/>
+        <joint name="rh_wrist_pitch" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="-0.7025 0.7025"/>
+        <geom class="hand_linkerhand_l30_visual" mesh="wrist_carpal_link0"/>
+        <geom class="hand_linkerhand_l30_collision" mesh="wrist_carpal_link0"/>
+        <body name="rh_pinky_metacarpals" pos="0 -0.02775 0.05" euler="0 0 0.13963">
+          <inertial pos="0.00047899772283731 -0.00161247667923029 0.00914563285045394" mass="0.00315276276084261" fullinertia="2.40672836058198E-07 2.13701012719156E-07 1.64596765595736E-07 3.38076908914706E-09 -1.91734920353186E-08 8.93823748003473E-09"/>
+          <joint name="rh_pinky_mcp_roll" class="hand_linkerhand_l30_joint" type="hinge" axis="-1 0 0" range="-0.2 0.2"/>
+          <geom class="hand_linkerhand_l30_visual" mesh="pinky_metacarpals"/>
+          <geom class="hand_linkerhand_l30_collision" mesh="pinky_metacarpals"/>
+          <body name="rh_pinky_proximal" pos="0.002 -0.002952 0.016742" euler="0.17458 -0.024029 -0.0042378">
+            <inertial pos="-0.000234267029365919 1.28073751982198E-05 0.0110434476468514" mass="0.00479440018495299" fullinertia="5.41988690353388E-07 5.41812698556009E-07 1.72528282650046E-07 2.77379639368324E-10 1.25650131556322E-08 7.40383831537823E-10"/>
+            <joint name="rh_pinky_mcp_pitch" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.518"/>
+            <geom class="hand_linkerhand_l30_visual" mesh="pinky_proximal"/>
+            <geom class="hand_linkerhand_l30_collision" mesh="pinky_proximal"/>
+            <body name="rh_pinky_middle" pos="0.00071664 0 0.029369">
+              <inertial pos="-0.000283617054129369 2.99844076915093E-05 0.00957719095179971" mass="0.00407756335683284" fullinertia="3.54101225813942E-07 3.43763143489045E-07 1.2877449237394E-07 8.38929508141049E-11 9.21289669548542E-09 4.5478316545087E-10"/>
+              <joint name="rh_pinky_pip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.562"/>
+              <geom class="hand_linkerhand_l30_visual" mesh="pinky_middle"/>
+              <geom class="hand_linkerhand_l30_collision" mesh="pinky_middle"/>
+              <body name="rh_pinky_distal" pos="0.00059978 0 0.024225">
+                <inertial pos="-0.00152722952961314 -9.41012275955388E-07 0.0107763355731674" mass="0.00350221876137739" fullinertia="1.9393109727325E-07 1.87876559658542E-07 7.9067228021648E-08 2.41846703654458E-13 3.87728982118656E-08 -2.83866008428921E-10"/>
+                <joint name="rh_pinky_dip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.548"/>
+                <geom class="hand_linkerhand_l30_visual" mesh="pinky_distal"/>
+                <geom class="hand_linkerhand_l30_collision" mesh="pinky_distal"/>
+              </body>
+            </body>
+          </body>
+        </body>
+        <body name="rh_ring_metacarpals" pos="-0.003 -0.00975 0.06" euler="0 0 0.069813">
+          <inertial pos="0.000478996748681476 -0.00080924722795033 0.00925137003625814" mass="0.00315276086792121" fullinertia="2.40672821282273E-07 2.14880025807652E-07 1.63417652850151E-07 1.69681993605174E-09 -1.93952166274462E-08 4.53899709152229E-09"/>
+          <joint name="rh_ring_mcp_roll" class="hand_linkerhand_l30_joint" type="hinge" axis="-1 0 0" range="-0.2 0.2"/>
+          <geom class="hand_linkerhand_l30_visual" mesh="ring_metacarpals"/>
+          <geom class="hand_linkerhand_l30_collision" mesh="ring_metacarpals"/>
+          <body name="rh_ring_proximal" pos="0.002 -0.0014816 0.016935" euler="0.087268 -0.0060713 -0.00053117">
+            <inertial pos="-0.000436425216992183 1.28404138992205E-05 0.0110372889121969" mass="0.00479436144684085" fullinertia="5.41406791292963E-07 5.41814214291651E-07 1.73111475290965E-07 2.63620817230693E-10 1.93183017478601E-08 7.44496833387681E-10"/>
+            <joint name="rh_ring_mcp_pitch" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.518"/>
+            <geom class="hand_linkerhand_l30_visual" mesh="ring_proximal"/>
+            <geom class="hand_linkerhand_l30_collision" mesh="ring_proximal"/>
+            <body name="rh_ring_middle" pos="0.00017893 0 0.029377">
+              <inertial pos="-0.000458856151455769 2.99377064817002E-05 0.00957042299484478" mass="0.0040775629579783" fullinertia="3.53688098440957E-07 3.43761529986346E-07 1.29187857143143E-07 7.57772965627901E-11 1.33306823356219E-08 4.55256750599591E-10"/>
+              <joint name="rh_ring_pip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.562"/>
+              <geom class="hand_linkerhand_l30_visual" mesh="ring_middle"/>
+              <geom class="hand_linkerhand_l30_collision" mesh="ring_middle"/>
+              <body name="rh_ring_distal" pos="0.00015625 0 0.024232">
+                <inertial pos="-0.00172373661429197 -3.11164879571516E-06 0.0107449568961589" mass="0.00350309873692714" fullinertia="1.92474403425827E-07 1.87876261680957E-07 8.05469188316873E-08 1.20640092848527E-11 4.08558876609648E-08 -3.02192799661368E-10"/>
+                <joint name="rh_ring_dip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.548"/>
+                <geom class="hand_linkerhand_l30_visual" mesh="ring_distal"/>
+                <geom class="hand_linkerhand_l30_collision" mesh="ring_distal"/>
+              </body>
+            </body>
+          </body>
+        </body>
+        <body name="rh_middle_metacarpals" pos="-0.005 0.00825 0.065">
+          <inertial pos="0.00047899548693118 1.41619452224268E-07 0.00928670109183821" mass="0.00315275775646281" fullinertia="2.40672780720461E-07 2.15277136067171E-07 1.63020377144717E-07 -5.20446677231627E-14 -1.94693391828821E-08 1.85891442301762E-12"/>
+          <joint name="rh_middle_mcp_roll" class="hand_linkerhand_l30_joint" type="hinge" axis="-1 0 0" range="-0.2 0.2"/>
+          <geom class="hand_linkerhand_l30_visual" mesh="middle_metacarpals"/>
+          <geom class="hand_linkerhand_l30_collision" mesh="middle_metacarpals"/>
+          <body name="rh_middle_proximal" pos="0.002 0 0.017">
+            <inertial pos="-0.000503676561097574 1.28371561243946E-05 0.0110344491482042" mass="0.00479437392482954" fullinertia="5.41159825069566E-07 5.41815893098318E-07 1.73360745028601E-07 2.58921833842032E-10 2.15611177437861E-08 7.45760482120116E-10"/>
+            <joint name="rh_middle_mcp_pitch" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.518"/>
+            <geom class="hand_linkerhand_l30_visual" mesh="middle_proximal"/>
+            <geom class="hand_linkerhand_l30_collision" mesh="middle_proximal"/>
+            <body name="rh_middle_middle" pos="0 0 0.029378">
+              <inertial pos="-0.000517169925277983 2.98754228977918E-05 0.00956757871676495" mass="0.00407751219338067" fullinertia="3.53514463922685E-07 3.43756499464857E-07 1.29358605987391E-07 7.3657022527871E-11 1.46982208762124E-08 4.54539300765412E-10"/>
+              <joint name="rh_middle_pip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.562"/>
+              <geom class="hand_linkerhand_l30_visual" mesh="middle_middle"/>
+              <geom class="hand_linkerhand_l30_collision" mesh="middle_middle"/>
+              <body name="rh_middle_distal" pos="0 0 0.024233">
+                <inertial pos="-0.00179110085677154 -6.27155990778894E-06 0.010733619122048" mass="0.00350329971145851" fullinertia="1.91968474310272E-07 1.87867916882108E-07 8.10470449793565E-08 3.25672934795713E-11 4.15319931660195E-08 -3.3342923408079E-10"/>
+                <joint name="rh_middle_dip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.548"/>
+                <geom class="hand_linkerhand_l30_visual" mesh="middle_distal"/>
+                <geom class="hand_linkerhand_l30_collision" mesh="middle_distal"/>
+              </body>
+            </body>
+          </body>
+        </body>
+        <body name="rh_index_metacarpals" pos="-0.003 0.02625 0.057" euler="0 0 -0.069813">
+          <inertial pos="0.000478996777616184 0.000809530043186162 0.00925134480081063" mass="0.0031527611229287" fullinertia="2.40672827567239E-07 2.14880686092309E-07 1.63417005834223E-07 -1.69690354862444E-09 -1.93952088930029E-08 -4.53533244376235E-09"/>
+          <joint name="rh_index_mcp_roll" class="hand_linkerhand_l30_joint" type="hinge" axis="-1 0 0" range="-0.2 0.2"/>
+          <geom class="hand_linkerhand_l30_visual" mesh="index_metacarpals"/>
+          <geom class="hand_linkerhand_l30_collision" mesh="index_metacarpals"/>
+          <body name="rh_index_proximal" pos="0.002 0.0014816 0.016935" euler="-0.087268 -0.0060713 0.00053117">
+            <inertial pos="-0.000436423915832606 1.28334138158707E-05 0.011037321692611" mass="0.00479437219436745" fullinertia="5.41409333909171E-07 5.418162711372E-07 1.7311148126546E-07 2.63454275053774E-10 1.93181339182685E-08 7.44368464202594E-10"/>
+            <joint name="rh_index_mcp_pitch" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.518"/>
+            <geom class="hand_linkerhand_l30_visual" mesh="index_proximal"/>
+            <geom class="hand_linkerhand_l30_collision" mesh="index_proximal"/>
+            <body name="rh_index_middle" pos="0.00017893 0 0.029377">
+              <inertial pos="-0.000458822279497813 2.98667460889579E-05 0.00957075840404303" mass="0.00407737340758924" fullinertia="3.53679765665942E-07 3.43747612801422E-07 1.29185351052137E-07 7.73502662201553E-11 1.33307995394426E-08 4.53934187547464E-10"/>
+              <joint name="rh_index_pip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.562"/>
+              <geom class="hand_linkerhand_l30_visual" mesh="index_middle"/>
+              <geom class="hand_linkerhand_l30_collision" mesh="index_middle"/>
+              <body name="rh_index_distal" pos="0.00015625 0 0.024232">
+                <inertial pos="-0.00172529715263095 -9.8125680076562E-06 0.0107465442546318" mass="0.00350310773876192" fullinertia="1.92457776267061E-07 1.87882674002941E-07 8.05208762631977E-08 4.51291785144363E-11 4.08559018614112E-08 -3.64177551156427E-10"/>
+                <joint name="rh_index_dip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.548"/>
+                <geom class="hand_linkerhand_l30_visual" mesh="index_distal"/>
+                <geom class="hand_linkerhand_l30_collision" mesh="index_distal"/>
+              </body>
+            </body>
+          </body>
+        </body>
+        <body name="rh_thumb_metacarpals_base2" pos="0.015642 0.028971 0.031219" euler="1.0663 0 0.56506">
+          <inertial pos="0.00140716608232868 -0.000215030364679764 0.00050862596168498" mass="0.00283467118910261" fullinertia="3.86771204569161E-07 2.15283713072314E-07 2.60754627853635E-07 -6.68966448036077E-09 3.05128856464755E-08 -1.66795900318767E-09"/>
+          <joint name="rh_thumb_cmc_yaw" class="hand_linkerhand_l30_joint" type="hinge" axis="0 -1 0" range="0 0.611"/>
+          <geom class="hand_linkerhand_l30_visual" mesh="thumb_metacarpals_base2"/>
+          <geom class="hand_linkerhand_l30_collision" mesh="thumb_metacarpals_base2"/>
+          <body name="rh_thumb_metacarpals_base1" pos="0.0069427 0 0.00097112" euler="1.3702 -0.030509 1.2029">
+            <inertial pos="-0.000213476380251654 -0.000532069894374182 0.0160980509396563" mass="0.00835249200420063" fullinertia="1.01638676364008E-06 1.04839095443304E-06 6.35659859863981E-07 1.2553507859926E-08 1.40859720287893E-08 5.65918879478242E-08"/>
+            <joint name="rh_thumb_cmc_roll" class="hand_linkerhand_l30_joint" type="hinge" axis="0 0.99262 0.12129" range="0 0.742"/>
+            <geom class="hand_linkerhand_l30_visual" mesh="thumb_metacarpals_base1"/>
+            <geom class="hand_linkerhand_l30_collision" mesh="thumb_metacarpals_base1"/>
+            <body name="rh_thumb_proximal" pos="0 -2.9779E-05 0.032459" euler="0 0 -1.8779">
+              <inertial pos="0.0004698957445948 -1.42304414728345E-05 0.0117379012913003" mass="0.00620949277513976" fullinertia="8.34862567637161E-07 7.84162143895955E-07 3.48505483249654E-07 -2.5638759889086E-10 -2.86311776076476E-08 -7.50656847047271E-10"/>
+              <joint name="rh_thumb_mcp" class="hand_linkerhand_l30_joint" type="hinge" axis="0 -1 0" range="0 1.021"/>
+              <geom class="hand_linkerhand_l30_visual" mesh="thumb_proximal"/>
+              <geom class="hand_linkerhand_l30_collision" mesh="thumb_proximal"/>
+              <body name="rh_thumb_distal" pos="0.0001393 0 0.027884" euler="0 0 -3.1416">
+                <inertial pos="-0.00200123514084175 1.76224135736425E-05 0.0140428970076925" mass="0.00845658276975738" fullinertia="7.76073349541239E-07 7.64474995724765E-07 3.30171534955403E-07 -2.3221198597549E-11 1.66699009282245E-07 9.14563011760167E-10"/>
+                <joint name="rh_thumb_dip" class="hand_linkerhand_l30_joint" type="hinge" axis="0 1 0" range="0 1.484"/>
+                <geom class="hand_linkerhand_l30_visual" mesh="thumb_distal"/>
+                <geom class="hand_linkerhand_l30_collision" mesh="thumb_distal"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="rh_wrist_pitch_act" joint="rh_wrist_pitch" kp="200" kv="0" ctrlrange="-0.7025 0.7025"/>
+    <position name="rh_thumb_cmc_yaw_act" joint="rh_thumb_cmc_yaw" kp="200" kv="0" ctrlrange="0 0.611"/>
+    <position name="rh_thumb_cmc_roll_act" joint="rh_thumb_cmc_roll" kp="200" kv="0" ctrlrange="0 0.742"/>
+    <position name="rh_thumb_mcp_act" joint="rh_thumb_mcp" kp="200" kv="0" ctrlrange="0 1.021"/>
+    <position name="rh_thumb_dip_act" joint="rh_thumb_dip" kp="200" kv="0" ctrlrange="0 1.484"/>
+    <position name="rh_index_mcp_roll_act" joint="rh_index_mcp_roll" kp="200" kv="0" ctrlrange="-0.2 0.2"/>
+    <position name="rh_index_mcp_pitch_act" joint="rh_index_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.518"/>
+    <position name="rh_index_pip_act" joint="rh_index_pip" kp="200" kv="0" ctrlrange="0 1.562"/>
+    <position name="rh_middle_mcp_roll_act" joint="rh_middle_mcp_roll" kp="200" kv="0" ctrlrange="-0.2 0.2"/>
+    <position name="rh_middle_mcp_pitch_act" joint="rh_middle_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.518"/>
+    <position name="rh_middle_pip_act" joint="rh_middle_pip" kp="200" kv="0" ctrlrange="0 1.562"/>
+    <position name="rh_ring_mcp_roll_act" joint="rh_ring_mcp_roll" kp="200" kv="0" ctrlrange="-0.2 0.2"/>
+    <position name="rh_ring_mcp_pitch_act" joint="rh_ring_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.518"/>
+    <position name="rh_ring_pip_act" joint="rh_ring_pip" kp="200" kv="0" ctrlrange="0 1.562"/>
+    <position name="rh_pinky_mcp_roll_act" joint="rh_pinky_mcp_roll" kp="200" kv="0" ctrlrange="-0.2 0.2"/>
+    <position name="rh_pinky_mcp_pitch_act" joint="rh_pinky_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.518"/>
+    <position name="rh_pinky_pip_act" joint="rh_pinky_pip" kp="200" kv="0" ctrlrange="0 1.562"/>
+  </actuator>
+
+  <equality>
+    <joint name="rh_couple_index" joint1="rh_index_dip" joint2="rh_index_pip" polycoef="0 1 0 0 0"/>
+    <joint name="rh_couple_middle" joint1="rh_middle_dip" joint2="rh_middle_pip" polycoef="0 1 0 0 0"/>
+    <joint name="rh_couple_ring" joint1="rh_ring_dip" joint2="rh_ring_pip" polycoef="0 1 0 0 0"/>
+    <joint name="rh_couple_pinky" joint1="rh_pinky_dip" joint2="rh_pinky_pip" polycoef="0 1 0 0 0"/>
+  </equality>
+
+  <contact>
+    <exclude body1="rh_hand_base_link" body2="rh_wrist_carpal_link0"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_pinky_metacarpals"/>
+    <exclude body1="rh_pinky_metacarpals" body2="rh_pinky_proximal"/>
+    <exclude body1="rh_pinky_proximal" body2="rh_pinky_middle"/>
+    <exclude body1="rh_pinky_middle" body2="rh_pinky_distal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_ring_metacarpals"/>
+    <exclude body1="rh_ring_metacarpals" body2="rh_ring_proximal"/>
+    <exclude body1="rh_ring_proximal" body2="rh_ring_middle"/>
+    <exclude body1="rh_ring_middle" body2="rh_ring_distal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_middle_metacarpals"/>
+    <exclude body1="rh_middle_metacarpals" body2="rh_middle_proximal"/>
+    <exclude body1="rh_middle_proximal" body2="rh_middle_middle"/>
+    <exclude body1="rh_middle_middle" body2="rh_middle_distal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_index_metacarpals"/>
+    <exclude body1="rh_index_metacarpals" body2="rh_index_proximal"/>
+    <exclude body1="rh_index_proximal" body2="rh_index_middle"/>
+    <exclude body1="rh_index_middle" body2="rh_index_distal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_thumb_metacarpals_base2"/>
+    <exclude body1="rh_thumb_metacarpals_base2" body2="rh_thumb_metacarpals_base1"/>
+    <exclude body1="rh_thumb_metacarpals_base1" body2="rh_thumb_proximal"/>
+    <exclude body1="rh_thumb_proximal" body2="rh_thumb_distal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_thumb_metacarpals_base1"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_index_proximal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_middle_proximal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_ring_proximal"/>
+    <exclude body1="rh_wrist_carpal_link0" body2="rh_pinky_proximal"/>
+  </contact>
+</mujoco>
