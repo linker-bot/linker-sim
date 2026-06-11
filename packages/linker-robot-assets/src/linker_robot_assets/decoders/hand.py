@@ -19,7 +19,6 @@ operates on the SDK 0–100 percent scale rather than 0–255 bytes.
 Tracked at:
 
 - docs/known_limitations.md (linear-fit + UMI-Dex path hack)
-- docs/REFACTOR_PLAN.md Phase 5.2 (SDK-vN unification)
 """
 
 from __future__ import annotations

@@ -29,7 +29,7 @@ from linker_sim.registry import WorkstationHandle
 
 
 _REPLAY_ONLY_MSG = (
-    "Viser backend is replay-only — see Phase 3 of docs/REFACTOR_PLAN.md. "
+    "Viser backend is replay-only. "
     "Use the MuJoCo or Isaac backend for dynamics / control."
 )
 
