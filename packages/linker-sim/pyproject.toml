@@ -64,8 +64,8 @@ lerobot = [
     "pyarrow>=14.0",
 ]
 
-# Viser backend — browser-based replay viewer. Replay-only for now (Phase 3
-# of docs/REFACTOR_PLAN.md); teleop deferred. yourdfpy is required by
+# Viser backend — browser-based replay viewer. Replay-only for now;
+# teleop deferred. yourdfpy is required by
 # viser.extras.ViserUrdf and is NOT pulled by viser itself; numpy and
 # trimesh come transitively via viser/yourdfpy. torch is needed at runtime
 # because the Robot/SimBackend protocols are torch-typed (joint_pos and

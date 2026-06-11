@@ -59,7 +59,7 @@ for _src in ("packages/linker-sim/src", "packages/linker-robot-assets/src"):
         sys.path.insert(0, _abs)
 
 # TODO(linker-sim): replace with `from umi_dex...` once umi-dex is published
-# to PyPI / internal index. Tracking: docs/REFACTOR_PLAN.md Phase 5.1.
+# to PyPI / internal index.
 UMI_DEX_SRC = Path.home() / "codes" / "UMI-Dex" / "src"
 if str(UMI_DEX_SRC) not in sys.path:
     sys.path.insert(0, str(UMI_DEX_SRC))

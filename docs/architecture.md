@@ -35,8 +35,8 @@ which are not part of the public release.
 - **Manifest as runtime contract.** Backends never re-parse URDF/MJCF.
   They read `manifest.yaml` for joint names, end-effector links, gains,
   base/EE frames. Schema changes to the manifest are breaking changes
-  for every consumer (sim runtime, real-robot replay, teleop) — see
-  `docs/REFACTOR_PLAN.md` for the planned versioning gate.
+  for every consumer (sim runtime, real-robot replay, teleop); a
+  versioning gate is planned.
 
 - **No xacro in the pipeline.** Author-side xacro is fine for component
   authoring, but the composer only consumes flat URDFs. Reason: keep
@@ -76,7 +76,7 @@ v0; refinement deferred until orientation error visibly matters.
 
 The hand-angle decoder currently delegates to UMI-Dex's `Calibrator`.
 Replacing it with a linker-sim native, manifest-driven decoder is on
-the refactor roadmap (see `docs/REFACTOR_PLAN.md` Phase 4).
+the refactor roadmap.
 
 ## Where to read what
 
@@ -87,4 +87,3 @@ the refactor roadmap (see `docs/REFACTOR_PLAN.md` Phase 4).
 | Asset / URDF authoring | [docs/urdf_assets_infra.md](urdf_assets_infra.md) |
 | Component MJCF authoring | [docs/component_mjcf_authoring.md](component_mjcf_authoring.md) |
 | Test pipeline | [docs/TEST_PIPELINE.md](TEST_PIPELINE.md) |
-| Refactor / open-source plan | [docs/REFACTOR_PLAN.md](REFACTOR_PLAN.md) |
