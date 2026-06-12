@@ -205,12 +205,10 @@ def _decode_hand(
     calibrator (handles thumb_roll wrap) → radians via
     `linker_robot_assets.decoders.decode_hand` (linear-fit-v0).
 
-    Convention: percent=0 → URDF lower limit; percent=100 → upper.
-    This is INVERTED relative to the pre-Phase-4 inline math
-    (`(1 - percent/100) * (hi - lo)`) — Phase 4 adopts the
-    `linker_sim.io.replay.hands` convention so all decoders agree.
-    Existing bagged outputs predate the stamp; the absence of
-    `decoder_convention` in old `.npz` files signals "pre-Phase-4".
+    Convention: percent=100 → URDF lower limit (rest / open hand);
+    percent=0 → upper limit (full travel). Matches
+    `linker_sim.io.replay.hands` (scale=255, inverted=True),
+    confirmed empirically against Linker Hand O6 telemetry.
 
     Future bags will publish percent directly; when that lands, drop
     the Calibrator import and pass percent straight to `decode_hand`.

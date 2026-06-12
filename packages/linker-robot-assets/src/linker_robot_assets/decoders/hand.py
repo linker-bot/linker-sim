@@ -7,14 +7,14 @@ corresponding actuated joint. When the SDK lands an angle convention,
 bump `CONVENTION` to `sdk-vN` and re-run any bagged data stamped with
 `linear-fit-v0`.
 
-Convention:
+Convention (verified empirically against Linker Hand O6 telemetry):
 
-    sdk_value = 0   -> joint at URDF lower limit
-    sdk_value = 100 -> joint at URDF upper limit
-    joint = lower + sdk/100 * (upper - lower)
+    sdk_value = 100 -> joint at URDF lower limit (rest / open)
+    sdk_value = 0   -> joint at URDF upper limit (full travel)
+    joint = lower + (100 - sdk)/100 * (upper - lower)
 
-This matches `linker_sim.io.replay.hands` (raw=0 byte → lower limit) but
-operates on the SDK 0–100 percent scale rather than 0–255 bytes.
+Matches `linker_sim.io.replay.hands` (raw=full-scale byte → lower limit)
+but operates on the SDK 0–100 percent scale rather than 0–255 bytes.
 
 Tracked at:
 
@@ -157,5 +157,5 @@ def decode_hand(
             hi[i] = float(bounds[1])
 
     sdk_clipped = np.clip(sdk, 0.0, 100.0)
-    out = lo.astype(np.float32) + (sdk_clipped / 100.0) * (hi - lo).astype(np.float32)
+    out = lo.astype(np.float32) + ((100.0 - sdk_clipped) / 100.0) * (hi - lo).astype(np.float32)
     return out.astype(np.float32)
