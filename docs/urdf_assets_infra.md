@@ -35,21 +35,31 @@ packages/linker-robot-assets/src/linker_robot_assets/
   assets/
     components/
       arms/
-        ar5/
+        ar5/                   # original AR5 (legacy parametrization)
           meta.yaml
-          variants/left/{arm.urdf, meshes/*.STL}
-          variants/right/{arm.urdf, meshes/*.STL}
-        lkls73_arm/ ...
+          variants/left/{arm.urdf, arm.mjcf, arm.xrdf, meshes/*.STL}
+          variants/right/{arm.urdf, arm.mjcf, arm.xrdf, meshes/*.STL}
+        ar5_08/                # current AR5 (matches vendor "horizon-install")
+        a7_lite/
+        lkls73_arm/
       bases/
-        bench_table/  lkls73_torso/ ...
+        a7_lite_torso/  bench_table/  lkls73_torso/
       hands/
-        linkerhand_l6/ ...
+        linkerhand_l6/         # 6-DoF Linker Hand (legacy)
+        linkerhand_o6/         # current default 6-DoF
+        linkerhand_l25/        # higher-DoF Linker Hand
+        linkerhand_l30/
     workstations/
-      ar5_l6_bench_bimanual/
-        recipe.yaml          # authored
-        workstation.urdf     # generated, committed
-        manifest.yaml        # generated, committed
-      lkls73_i1_bimanual/
+      ar5_o6_bench_bimanual/   # default
+        recipe.yaml            # authored
+        workstation.urdf       # generated, committed
+        workstation.mjcf       # generated, committed
+        manifest.yaml          # generated, committed
+      ar5_08_o6_bench_bimanual/
+      ar5_l25_bench_bimanual/    ar5_08_l25_bench_bimanual/
+      ar5_l6_bench_bimanual/                                  # L6 legacy
+      lkls73_i1_o6_bimanual/   lkls73_i1_l25_bimanual/   lkls73_i1_bimanual/
+      a7_lite_o6_dc/           a7_lite_l25_dc/           a7_lite_dc/
   composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
   validate_workstation.py
   validate_component_mjcf.py
@@ -164,8 +174,7 @@ Pipeline:
    - optional world → base fixed joint
 5. **Hash** the serialized URDF; build the manifest.
 6. **Write if changed** (`workstation.urdf`, `manifest.yaml`, and
-   `workstation.mjcf` when all component MJCFs are present; MJCF
-   emission is stubbed pending PR #1b).
+   `workstation.mjcf` when every component ships an MJCF).
 
 Determinism is enforced by
 [linker_robot_assets/composer/determinism.py](../packages/linker-robot-assets/src/linker_robot_assets/composer/determinism.py) —
@@ -254,7 +263,7 @@ Three complementary gates:
 | Tool | What it checks |
 |---|---|
 | `python -m linker_robot_assets.composer.compose <ws>` | Compose cleanly; errors on schema problems, mesh resolution, unknown mount frames. |
-| `python -m linker_robot_assets.validate_workstation <ws>` | 8 checks: manifest hash self-consistency (recipe, components, URDF), joint-count vs URDF, EE/mount link resolution, mesh files on disk, single connected kinematic tree, drift ([linker_robot_assets/validate_workstation.py:78-226](../packages/linker-robot-assets/src/linker_robot_assets/validate_workstation.py#L78-L226)). |
+| `python -m linker_robot_assets.validate_workstation <ws>` | 14 checks: manifest hash self-consistency (recipe, components, URDF), joint-count vs URDF, EE/mount link resolution, mesh files on disk, single connected kinematic tree, composer drift, plus four MJCF parity checks (loads, actuator order, no self-contact at qpos=0, URDF↔MJCF frame parity at 1e-5) ([linker_robot_assets/validate_workstation.py:382-411](../packages/linker-robot-assets/src/linker_robot_assets/validate_workstation.py#L382-L411)). |
 | `bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh` | Re-runs the composer in memory for every workstation; fails if any committed artifact diverges from fresh output. CI uses this. |
 
 Inspection: `python -m linker_sim.tools.registry_show <ws>` prints the loaded

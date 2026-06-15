@@ -183,8 +183,10 @@ python scripts/run.py robot=lkls73_i1_o6_bimanual max_steps=200 headless=true
 ```
 
 > The default workstation is `ar5_o6_bench_bimanual` (AR5 arms + Linker
-> O6 hands). Other shipped workstations: `lkls73_i1_o6_bimanual`,
-> `a7_lite_o6_dc`, plus the L6-hand variants (`ar5_l6_bench_bimanual`,
+> O6 hands). Other shipped workstations: `ar5_08_o6_bench_bimanual`,
+> `lkls73_i1_o6_bimanual`, `a7_lite_o6_dc`; `ar5_l25_bench_bimanual`,
+> `ar5_08_l25_bench_bimanual`, `lkls73_i1_l25_bimanual`, `a7_lite_l25_dc`;
+> plus the L6-hand variants (`ar5_l6_bench_bimanual`,
 > `lkls73_i1_bimanual`, `a7_lite_dc`) for backwards compatibility.
 
 Multi-env:
@@ -207,7 +209,7 @@ python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/
 # Recompose everything
 for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do python -m linker_robot_assets.composer.compose "$ws"; done
 
-# Validate (8 checks: manifest hashes, kinematic structure, mesh resolution, composer drift)
+# Validate (14 checks: manifest hashes, URDF kinematics, mesh resolution, composer drift, MJCF parity)
 python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/ar5_l6_bench_bimanual
 
 # List composed workstations

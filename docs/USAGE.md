@@ -31,10 +31,10 @@ CLI by setting `group=name` (config group) or `dotted.path=value`
 
 Config groups live under [linker_sim/configs/](../packages/linker-sim/src/linker_sim/configs/):
 
-- `backend/` — `isaac.yaml`, `mujoco.yaml`
+- `backend/` — `isaac.yaml`, `mujoco.yaml`, `viser.yaml` (replay-only, browser visualisation)
 - `robot/` — Hydra wrapper around a workstation name
 - `controller/` — `joint_pd_bimanual`, `osc_bimanual` (stub), `ik_pose_bimanual`
-- `task/` — `bimanual_reach`, `bimanual_reach_ikpose`
+- `task/` — `bimanual_reach_ikpose`
 - `recorder/` — `disabled`, `jsonl`, `lerobot`
 - `source/` — replay sources (e.g. `data_collection`)
 
@@ -43,7 +43,7 @@ Config groups live under [linker_sim/configs/](../packages/linker-sim/src/linker
 ## 2. Run a rollout in Isaac Sim
 
 Default: `backend=isaac`, `robot=ar5_o6_bench_bimanual`, `controller=joint_pd_bimanual`,
-`task=bimanual_reach`, `recorder=disabled`, `policy=zeros`.
+`task=bimanual_reach_ikpose`, `recorder=disabled`, `policy=zeros`.
 
 ```bash
 # Smoke: bimanual reach with joint PD, holding the default pose.
@@ -65,7 +65,9 @@ Close the window to exit.
 Shipped workstations (Hydra group `robot`):
 
 - O6 hand (default class): `ar5_o6_bench_bimanual` (default),
-  `lkls73_i1_o6_bimanual`, `a7_lite_o6_dc`.
+  `ar5_08_o6_bench_bimanual`, `lkls73_i1_o6_bimanual`, `a7_lite_o6_dc`.
+- L25 hand: `ar5_l25_bench_bimanual`, `ar5_08_l25_bench_bimanual`,
+  `lkls73_i1_l25_bimanual`, `a7_lite_l25_dc`.
 - L6 hand (legacy / parallel): `ar5_l6_bench_bimanual`,
   `lkls73_i1_bimanual`, `a7_lite_dc`.
 
@@ -93,13 +95,13 @@ The MuJoCo backend is CPU-only and does not support `rigid_bodies` (so
 ```bash
 # Bimanual reach + joint PD + zeros, viewport.
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
-    task=bimanual_reach policy=zeros max_steps=200
+    task=bimanual_reach_ikpose policy=zeros max_steps=200
 
 # Headless requires max_steps>0 (no viewport loop to terminate on).
 python scripts/run.py backend=mujoco headless=true max_steps=400 \
-    controller=joint_pd_bimanual task=bimanual_reach
+    controller=joint_pd_bimanual task=bimanual_reach_ikpose
 
-# IK absolute-pose control (matched task: bimanual_reach_ikpose).
+# IK absolute-pose control (controller=ik_pose_bimanual is the matched pair).
 python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
     task=bimanual_reach_ikpose recorder=jsonl
 ```
@@ -138,9 +140,21 @@ python scripts/replay.py robot=a7_lite_dc source=data_collection \
 # Same data through Isaac (GPU).
 python scripts/replay.py backend=isaac device=cuda:0 \
     robot=a7_lite_dc source=data_collection
+
+# Same data through the Viser browser visualiser (replay-only, no GPU
+# needed). Open the URL printed at startup, default http://127.0.0.1:8080.
+# Requires the [viser] install profile — see the Data-collection team
+# section in the README; not compatible with the env_isaaclab venv.
+python scripts/replay.py backend=viser robot=a7_lite_dc source=data_collection
 ```
 
 Hotkeys (MuJoCo windowed mode): press `Q` in the viewport to stop.
+
+> **Viser is replay-only.** `ViserSimBackend` animates a URDF in the
+> browser as joint targets stream in; `step()` is a no-op and dynamics
+> methods (Jacobian, mass matrix, ee_pose_b, set_joint_effort) raise
+> `NotImplementedError`. Use it for `scripts/replay.py` only — never
+> with `scripts/run.py`. Teleop is deferred.
 
 ### Adding a new recording
 
@@ -192,7 +206,7 @@ python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-asse
 python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/right
 python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/a7_lite_torso/variants/default
 
-# Workstation: 12 checks (manifest hashes, URDF kinematics, mesh
+# Workstation: 14 checks (manifest hashes, URDF kinematics, mesh
 # resolution, drift, MJCF parity at 1e-5 m / 1e-5 rad).
 python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
 ```
@@ -234,7 +248,7 @@ python -m linker_sim.tools.registry_show a7_lite_dc       # dump roles, joints, 
      role_name: robot
      rigid_bodies: {}
    ```
-5. Smoke: `python scripts/run.py robot=<name> backend=mujoco controller=joint_pd_bimanual task=bimanual_reach max_steps=200`.
+5. Smoke: `python scripts/run.py robot=<name> backend=mujoco controller=joint_pd_bimanual task=bimanual_reach_ikpose max_steps=200`.
 
 ---
 
@@ -318,11 +332,11 @@ current pose via the position actuators while you tweak gains.
 ```bash
 # MuJoCo — live tune, file at /tmp/dex_pd_gains.json (default)
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
-    task=bimanual_reach policy=hold +gain_tuner=true
+    task=bimanual_reach_ikpose policy=hold +gain_tuner=true
 
 # Custom path
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
-    task=bimanual_reach policy=hold +gain_tuner=true \
+    task=bimanual_reach_ikpose policy=hold +gain_tuner=true \
     +gain_tuner_path=/tmp/my_gains.json
 ```
 
@@ -378,9 +392,6 @@ Recordings land under `outputs/YYYY-MM-DD/HH-MM-SS/episodes/`.
 env -u PYTHONPATH -u AMENT_PREFIX_PATH pytest tests/ -v
 ```
 
-Full tiered pipeline (composer → registry → headless → reach → bimanual
-→ recorder) is documented in [TEST_PIPELINE.md](TEST_PIPELINE.md).
-
 ---
 
 ## 9. Cheatsheet
@@ -394,7 +405,7 @@ python scripts/run.py robot=lkls73_i1_bimanual recorder=jsonl max_steps=600
 
 # MuJoCo, joint PD smoke
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
-    task=bimanual_reach policy=zeros max_steps=200
+    task=bimanual_reach_ikpose policy=zeros max_steps=200
 
 # MuJoCo, IK absolute pose
 python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
@@ -417,5 +428,5 @@ python -m linker_sim.tools.registry_show a7_lite_dc
 
 # Live PD gain tuning (MuJoCo, edit /tmp/dex_pd_gains.json while running)
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
-    task=bimanual_reach policy=hold +gain_tuner=true
+    task=bimanual_reach_ikpose policy=hold +gain_tuner=true
 ```

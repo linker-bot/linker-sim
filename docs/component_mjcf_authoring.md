@@ -257,7 +257,7 @@ on OK/WARN, 1 on FAIL.
    like the L6 hand; 2 mrad still catches real instability.) Auto-skipped
    for components with no actuated joints.
 
-For each composed workstation (PR #1b — separate validator):
+For each composed workstation (run by `validate_workstation`):
 
 10. MuJoCo loads the composed `workstation.mjcf` without warnings.
 11. Joint order in compiled MuJoCo model matches the manifest's

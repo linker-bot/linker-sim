@@ -81,8 +81,7 @@ source, binaries, containers, or integrated products.
 - Upstream: [https://github.com/nerfstudio-project/viser](https://github.com/nerfstudio-project/viser)
 - License: Apache 2.0.
 - Notes: Optional runtime dependency, installed via the `[viser]` extra
-  once the planned Viser backend lands. See `docs/REFACTOR_PLAN.md`
-  Phase 3.
+  for the Viser browser-replay backend.
 
 ## UMI-Dex
 
@@ -91,8 +90,7 @@ source, binaries, containers, or integrated products.
 - License: Apache 2.0.
 - Notes: Used by the UMI bag → replay pipeline. Currently consumed via
   a path-based import pending PyPI publication of `umi-dex`. Will move
-  to a normal optional dependency under the `[umi-replay]` extra. See
-  `docs/REFACTOR_PLAN.md` Phase 5.
+  to a normal optional dependency under the `[umi-replay]` extra.
 
 ## Robot meshes
 
