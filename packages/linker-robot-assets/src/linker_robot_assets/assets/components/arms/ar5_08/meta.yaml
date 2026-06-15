@@ -42,10 +42,8 @@ actuated_joints:
   - "AR5_5_08{V}_W4C4A6_joint_6"
   - "AR5_5_08{V}_W4C4A6_joint_7"
 
-# Source URDF ships no inertials; per-link mass/COM/inertia tensors are
-# borrowed from the in-tree AR5 (07-class) component as a same-family
-# approximation. Documented in the URDF inertial blocks. Runtime gains
-# come from this manifest, not the URDF effort/velocity placeholders.
+# Runtime gains come from this manifest, not the URDF effort/velocity
+# placeholders.
 default_gains:
   stiffness: 1000.0
   damping: 4.0
