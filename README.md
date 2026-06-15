@@ -1,7 +1,10 @@
 # Workstation simulation
 
-Bimanual RL simulation workspace for AR5 + Linkerhand L6 / LKLS73 / a7_lite
-robots, with both Isaac Sim and MuJoCo backends.
+[English](README.md) · [中文](README.zh.md)
+
+Bimanual RL simulation workspace for AR5 / LKLS73 / A7-lite arms paired
+with Linkerhand L6 / O6 / L25 / L30, with Isaac Sim, MuJoCo, and Viser
+backends.
 
 ## What this repo contains
 
@@ -25,7 +28,7 @@ This repo is a `uv` workspace with two members under `packages/`:
   - `src/linker_robot_assets/composer/` — recipe → URDF/MJCF/manifest.
   - `src/linker_robot_assets/ci/check_drift.sh` — composer drift gate.
 - `packages/linker-sim/` — sim runtime (depends on `linker-robot-assets`).
-  - `src/linker_sim/backends/{isaac,mujoco}/` — backend implementations.
+  - `src/linker_sim/backends/{isaac,mujoco,viser}/` — backend implementations.
   - `src/linker_sim/controllers/` — `joint_pd`, `osc`, `ik`.
   - `src/linker_sim/tasks/` — task definitions.
   - `src/linker_sim/configs/` — Hydra configs (`pkg://linker_sim.configs`).
@@ -34,8 +37,7 @@ Top-level entry points and supporting trees:
 
 - `scripts/run.py` / `scripts/replay.py` — Hydra entrypoints.
 - `tests/` — pytest suite with synthetic fixtures.
-- `docs/` — installation, usage, asset and MJCF authoring guides,
-  test pipeline.
+- `docs/` — architecture, installation, usage, asset and MJCF authoring guides.
 
 ## Installation
 
@@ -83,7 +85,7 @@ python scripts/replay.py backend=viser source=data_collection robot=a7_lite_dc
 ```
 
 Open the URL printed at startup (default `http://127.0.0.1:8080`).
-Replay-only for now; teleop deferred (Phase 4+).
+Replay-only for now. TODO(linker-sim): wire up teleop on the Viser backend.
 
 See [docs/known_limitations.md](docs/known_limitations.md) for the
 hand-decoder linear-fit caveat and the UMI-Dex path-hack TODO.

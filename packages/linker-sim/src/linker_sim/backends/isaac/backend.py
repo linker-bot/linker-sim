@@ -173,6 +173,7 @@ def _pascal(name: str) -> str:
 def _rigid_body_cfg(name: str, spec: RigidBodySpec) -> RigidObjectCfg:
     """Build an `isaaclab.assets.RigidObjectCfg` from a `RigidBodySpec`."""
     if spec.shape != "box":
+        # TODO(linker-sim): support non-box rigid body shapes (sphere, cylinder, mesh).
         raise NotImplementedError(f"rigid body shape {spec.shape!r} not yet supported")
     prim_path = "{ENV_REGEX_NS}/" + _pascal(name)
     return RigidObjectCfg(

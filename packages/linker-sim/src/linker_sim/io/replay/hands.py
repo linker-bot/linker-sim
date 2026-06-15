@@ -17,7 +17,7 @@ even when the parameters match today, so per-hand calibration (per-finger
 direction flips, manufacturer curves) can land on one hand without
 touching the others.
 
-TODO(real-calibration): linear travel is a placeholder. The vendor's
+TODO(linker-sim): linear travel is a placeholder. The vendor's
 real per-finger response may be non-linear and may invert direction on
 a subset of joints. When manufacturer curves are available, swap the
 relevant row for a sibling decoder class (e.g. per-channel invert,

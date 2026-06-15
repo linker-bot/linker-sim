@@ -254,6 +254,7 @@ def compose_mjcf(
     `<freejoint/>` here).
     """
     if freeze_base_role is None:
+        # TODO(linker-robot-assets): support floating-base workstations (emit a top-level <freejoint/>).
         raise SchemaError(
             "MJCF composition currently requires freeze_base; floating "
             "workstations are not yet supported"

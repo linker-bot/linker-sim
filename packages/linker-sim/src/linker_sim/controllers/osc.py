@@ -1,7 +1,7 @@
 """OSC (operational-space control) controller — NOT IMPLEMENTED.
 
-TODO: Rewrite and test before use. The previous implementation was never
-validated end-to-end and has been gutted.
+TODO(linker-sim): Rewrite and test before use. The previous implementation
+was never validated end-to-end and has been gutted.
 """
 
 from __future__ import annotations
@@ -42,17 +42,17 @@ class OscController:
         self.role = self.cfg.role
 
     def attach(self, robot: Robot) -> None:
-        # TODO: implement OSC attach
+        # TODO(linker-sim): implement OSC attach
         raise NotImplementedError("OscController is not implemented")
 
     def set_command(self, command: torch.Tensor, robot: Robot) -> None:
-        # TODO: implement OSC set_command
+        # TODO(linker-sim): implement OSC set_command
         raise NotImplementedError("OscController is not implemented")
 
     def apply(self, robot: Robot) -> None:
-        # TODO: implement OSC apply
+        # TODO(linker-sim): implement OSC apply
         raise NotImplementedError("OscController is not implemented")
 
     def reset(self, env_ids: torch.Tensor | None = None) -> None:
-        # TODO: implement OSC reset
+        # TODO(linker-sim): implement OSC reset
         raise NotImplementedError("OscController is not implemented")

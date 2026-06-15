@@ -1,6 +1,6 @@
 """OSC gain tuner — NOT IMPLEMENTED.
 
-TODO: Rewrite and test. The previous implementation was never validated.
+TODO(linker-sim): Rewrite and test. The previous implementation was never validated.
 """
 
 raise NotImplementedError(

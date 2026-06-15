@@ -36,6 +36,9 @@ point:
 - Unify the `linker_sim.io.replay.hands` byte decoders with the new
   convention (single shared decoder).
 
+TODO(linker-sim): replace linear-fit hand decoder with vendor-curve / SDK convention.
+TODO(linker-robot-assets): replace linear-fit hand decoder with vendor-curve / SDK convention.
+
 ## UMI-Dex path hack
 
 [`scripts/umi_bag_to_ee_poses.py`](../scripts/umi_bag_to_ee_poses.py)
@@ -62,3 +65,5 @@ internal index. At that point:
   `packages/linker-sim/pyproject.toml`.
 - Document the install path under the data-collection-team section of
   the README.
+
+TODO(linker-sim): drop sys.path hack for umi_dex once umi-dex publishes; gate behind a `[umi-replay]` extra.

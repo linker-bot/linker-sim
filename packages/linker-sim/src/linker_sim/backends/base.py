@@ -142,8 +142,9 @@ class RigidBody(Protocol):
     """Sim-agnostic view of a single rigid body (e.g. task object).
 
     Minimal surface — tasks use it to read object pose/vel and to
-    teleport the body on reset. No contact or attachment hooks here;
-    those live on the backend when needed (stub for now).
+    teleport the body on reset. No contact or attachment hooks here.
+    TODO(linker-sim): expose contact / attachment hooks on the backend
+    when a task needs them.
     """
 
     name: str

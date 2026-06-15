@@ -9,8 +9,7 @@ Design points:
 
 - Tasks don't own the simulator. They ask the backend for state
   (`backend.robots[...]`) and for scene-level primitives when needed
-  (`backend.spawn_rigid(...)` — stub in PR #2b, fleshed out when
-  MuJoCo lands).
+  (`backend.spawn_rigid(...)`).
 - Obs shape is `(B, observation_dim)`. `observation_dim` must be
   knowable at construction time (before any physics step) so `BaseEnv`
   can validate against the policy's expected input size.

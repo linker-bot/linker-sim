@@ -12,7 +12,7 @@ Convention: all EE poses are in the workstation-base frame with (w, x, y, z)
 quaternion order (scalar-first). The workstation base is at world origin for
 fixed-base robots.
 
-TODO: add null-space joint-limit avoidance to the DLS solver to prevent
+TODO(linker-sim): add null-space joint-limit avoidance to the DLS solver to prevent
 elbow/wrist wandering in the redundant DOF during long trajectories.
 
 Usage:

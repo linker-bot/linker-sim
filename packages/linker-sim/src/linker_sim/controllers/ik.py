@@ -140,10 +140,10 @@ class IkController:
             dx = self._last_command                            # (B, 6)
 
         # DLS: dq = J^T (J J^T + λ² I)^{-1} dx
-        # TODO: add null-space joint-limit avoidance:
+        # TODO(linker-sim): add null-space joint-limit avoidance:
         #   dq += (I - J_pinv @ J) @ grad_h(q)
         # where grad_h pushes joints away from limits (see linkerbot kinetix).
-        # TODO: add solver fallbacks if DLS diverges (e.g. scipy dogbox/SLSQP).
+        # TODO(linker-sim): add solver fallbacks if DLS diverges (e.g. scipy dogbox/SLSQP).
         lam = self.cfg.damping
         JJt = J @ J.transpose(1, 2)                            # (B, 6, 6)
         eye = torch.eye(6, device=J.device).unsqueeze(0).expand_as(JJt)
