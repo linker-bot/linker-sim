@@ -22,9 +22,9 @@ are not yet available.
 What's right: the convention is consistent across the codebase. Today
 both [`linker_sim.io.replay.hands`](../packages/linker-sim/src/linker_sim/io/replay/hands.py)
 (byte-scale 0–255 for bag replay) and `linker_robot_assets.decoders.hand`
-(SDK-scale 0–100 for UMI conversion) use the same direction:
-`raw=0 → joint=lower limit`. Phase 4 fixed a sign inversion in the UMI
-path that was diverging from this convention.
+(SDK-scale 0–100 for UMI conversion) use the same direction, verified
+empirically against Linker Hand O6 telemetry: `raw=full-scale → joint=
+lower limit (rest / open)`, `raw=0 → joint=upper limit (full travel)`.
 
 When to revisit: the Linker SDK ships an angle convention. At that
 point:
