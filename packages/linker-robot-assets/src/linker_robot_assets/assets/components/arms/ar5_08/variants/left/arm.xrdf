@@ -67,31 +67,31 @@ geometry:
       AR5_5_08L_W4C4A6_link2:
         - center: [0.0, 0.0, 0.0]
           radius: 0.055
-        - center: [0.0, 0.0, -0.08]
+        - center: [0.0, 0.0, 0.08]
           radius: 0.05
-        - center: [0.0, 0.0, -0.16]
+        - center: [0.0, 0.0, 0.16]
           radius: 0.045
-        - center: [0.0, 0.0, -0.24]
+        - center: [0.0, 0.0, 0.24]
           radius: 0.045
-        - center: [0.0, 0.0, -0.32]
+        - center: [0.0, 0.0, 0.32]
           radius: 0.045
       AR5_5_08L_W4C4A6_link3:
         - center: [0.0, 0.0, 0.0]
           radius: 0.05
-        - center: [0.007, 0.0, -0.02]
+        - center: [0.007, 0.0, 0.02]
           radius: 0.05
-        - center: [0.0, 0.0, 0.04]
+        - center: [0.0, 0.0, -0.04]
           radius: 0.045
       AR5_5_08L_W4C4A6_link4:
         - center: [0.0, 0.0, 0.0]
           radius: 0.05
-        - center: [0.0, 0.0, -0.07]
+        - center: [0.0, 0.0, 0.07]
           radius: 0.045
-        - center: [0.0, 0.0, -0.14]
+        - center: [0.0, 0.0, 0.14]
           radius: 0.045
-        - center: [0.0, 0.0, -0.21]
+        - center: [0.0, 0.0, 0.21]
           radius: 0.04
-        - center: [0.0, 0.0, -0.27]
+        - center: [0.0, 0.0, 0.27]
           radius: 0.04
       AR5_5_08L_W4C4A6_link5:
         - center: [0.0, 0.0, 0.0]
@@ -108,7 +108,7 @@ geometry:
       AR5_5_08L_W4C4A6_link7:
         - center: [0.0, 0.0, 0.0]
           radius: 0.035
-        - center: [0.0, 0.0, -0.03]
+        - center: [0.0, 0.0, 0.03]
           radius: 0.035
-        - center: [0.0, 0.0, -0.06]
+        - center: [0.0, 0.0, 0.06]
           radius: 0.03

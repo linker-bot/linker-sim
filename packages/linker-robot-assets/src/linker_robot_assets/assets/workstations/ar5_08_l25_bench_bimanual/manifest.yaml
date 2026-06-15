@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/ar5_08
     variant: left
-    sha256: 411fdefa41886a18365e17cc9ae7430a80bf7875e25b8b0b036e3840afce13da
+    sha256: ca8d7a132d78d92b2496fa288775480155cc0223d8f20862ff178454bff3d7bc
   arm_right:
     name: arms/ar5_08
     variant: right
-    sha256: f5fde05fd2516704bca143c83ffab8da1b8895469f2e4ddb0b37a2f433d39de9
+    sha256: 52762f48848bb8d7c35b040ea1dc86ae4fe990edec0b332bcdbc8fe6dbdc1bc0
   hand_left:
     name: hands/linkerhand_l25
     variant: left
