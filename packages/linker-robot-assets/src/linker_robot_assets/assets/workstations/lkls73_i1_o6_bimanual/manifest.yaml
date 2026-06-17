@@ -18,16 +18,16 @@ components:
   hand_left:
     name: hands/linkerhand_o6
     variant: left
-    sha256: e2d3b4cc2fe846434fd0d6b6ed1225b9e8ff8df0931e32d16608642c5fd0407f
+    sha256: 7cabe7adf7ce77a1e843d0d9e26c33d68e3311e9639c90c94caa14fa545d81f6
   hand_right:
     name: hands/linkerhand_o6
     variant: right
-    sha256: aad4caba32c57d9b350040792eb367d94feeeac09f64dac5c7be34f57df2312e
+    sha256: 704caa9cf2820e26f5cf08d4d8a07afd0c5d9544a209017d97fe083061f5cdf2
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
-  urdf_sha256: 2cdbb17664b29fe989836b1ef0f9bf3ab038fe4ae21b427d0337284dd35707aa
-  mjcf_sha256: 325351e18c6f54fe6905c5bc0c32aeb71746b09ec836bf5c7d77ec79df433089
+  urdf_sha256: c1c7c0f71a4c9777e99c69d2d25d47592751433db7368c82e97369fbbacb3ecf
+  mjcf_sha256: 7558eda3f4bdac47d5866cf4768f8b857869f4d9a20931c9efc89961541563d5
 joints:
   base: []
   arm_left:

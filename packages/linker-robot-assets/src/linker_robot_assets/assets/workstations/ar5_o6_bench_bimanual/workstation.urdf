@@ -493,14 +493,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/hand_base_link.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_hand_base_link_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/hand_base_link.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_hand_base_link_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -513,14 +513,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/thumb_metacarpals_base2.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_thumb_metacarpals_base2_vis.glb" />
       </geometry>
       <material name="hand_left_BlackAccent" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/thumb_metacarpals_base2.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_thumb_metacarpals_base2_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -533,14 +533,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/thumb_metacarpals.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_thumb_metacarpals_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/thumb_metacarpals.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_thumb_metacarpals_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -553,14 +553,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/thumb_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_thumb_distal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/thumb_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_thumb_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -573,14 +573,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/index_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_index_proximal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/index_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_index_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -593,14 +593,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/index_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_index_distal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/index_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_index_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -613,14 +613,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/middle_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_middle_proximal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/middle_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_middle_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -633,14 +633,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/middle_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_middle_distal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/middle_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_middle_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -653,14 +653,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/ring_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_ring_proximal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/ring_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_ring_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -673,14 +673,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/ring_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_ring_distal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/ring_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_ring_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -693,14 +693,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/pinky_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_pinky_proximal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/pinky_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_pinky_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -713,14 +713,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/pinky_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/lh_pinky_distal_vis.glb" />
       </geometry>
       <material name="hand_left_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/left/meshes/pinky_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/lh_pinky_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -733,14 +733,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/hand_base_link.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_hand_base_link_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/hand_base_link.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_hand_base_link_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -753,14 +753,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/thumb_metacarpals_base2.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_thumb_metacarpals_base2_vis.glb" />
       </geometry>
       <material name="hand_right_BlackAccent" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/thumb_metacarpals_base2.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_thumb_metacarpals_base2_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -773,14 +773,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/thumb_metacarpals.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_thumb_metacarpals_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/thumb_metacarpals.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_thumb_metacarpals_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -793,14 +793,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/thumb_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_thumb_distal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/thumb_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_thumb_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -813,14 +813,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/index_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_index_proximal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/index_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_index_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -833,14 +833,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/index_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_index_distal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/index_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_index_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -853,14 +853,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/middle_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_middle_proximal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/middle_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_middle_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -873,14 +873,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/middle_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_middle_distal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/middle_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_middle_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -893,14 +893,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/ring_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_ring_proximal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/ring_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_ring_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -913,14 +913,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/ring_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_ring_distal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/ring_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_ring_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -933,14 +933,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/pinky_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_pinky_proximal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/pinky_proximal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_pinky_proximal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -953,14 +953,14 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/pinky_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/visual/rh_pinky_distal_vis.glb" />
       </geometry>
       <material name="hand_right_silver" />
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="../../components/hands/linkerhand_o6/variants/right/meshes/pinky_distal.STL" />
+        <mesh filename="../../components/hands/linkerhand_o6/meshes/collision/rh_pinky_distal_col.obj" />
       </geometry>
     </collision>
   </link>
@@ -1109,26 +1109,26 @@
     <origin rpy="0 0 0" xyz="0 0 0.097" />
   </joint>
   <joint name="hand_left_lh_thumb_cmc_yaw" type="revolute">
-    <origin xyz="0.011508 -0.022975 0.032794" rpy="0 0 0" />
+    <origin xyz="0.0115084536 -0.022975 0.030794" rpy="1.57079633 0 0" />
     <parent link="hand_left_lh_hand_base_link" />
     <child link="hand_left_lh_thumb_metacarpals_base2" />
-    <axis xyz="0 0 1" />
+    <axis xyz="0 1 0" />
     <limit lower="0" upper="1.3" effort="100" velocity="1" />
   </joint>
   <joint name="hand_left_lh_thumb_cmc_pitch" type="revolute">
-    <origin xyz="0.0061649 -0.010678 -0.004891" rpy="0 -1.1529 2.0944" />
+    <origin xyz="0.00915604684 -0.00603785696 0.0158587383" rpy="-0.575786024 -0.407073695 -1.31922273" />
     <parent link="hand_left_lh_thumb_metacarpals_base2" />
     <child link="hand_left_lh_thumb_metacarpals" />
-    <axis xyz="0 1 0" />
+    <axis xyz="0 -1 0" />
     <limit lower="0" upper="0.58" effort="100" velocity="1" />
   </joint>
   <joint name="hand_left_lh_thumb_ip" type="revolute">
-    <origin xyz="0.0037776 0 0.045368" rpy="0 0 0" />
+    <origin xyz="0 0 0.036812" rpy="0 0 0" />
     <parent link="hand_left_lh_thumb_metacarpals" />
     <child link="hand_left_lh_thumb_distal" />
-    <axis xyz="0 1 0" />
+    <axis xyz="0 -1 0" />
     <limit lower="0" upper="1.08" effort="100" velocity="1" />
-    <mimic joint="hand_left_lh_thumb_cmc_pitch" multiplier="2.29" offset="0" />
+    <mimic joint="hand_left_lh_thumb_cmc_pitch" multiplier="1.8788" offset="0" />
   </joint>
   <joint name="hand_left_lh_index_mcp_pitch" type="revolute">
     <origin xyz="0.0024758 -0.02419 0.098779" rpy="0.05236 0 0" />
@@ -1438,12 +1438,12 @@
     <child link="base_workstation_link" />
   </joint>
   <mujoco>
-    <compiler meshdir="meshes/" balanceinertia="true" discardvisual="false" />
+    <compiler meshdir="." balanceinertia="true" discardvisual="true" />
     <default>
       <joint armature="3.4707e-08" damping="5.0" frictionloss="0.5" />
     </default>
     <equality>
-      <joint name="hand_left_lh_couple_thumb" joint1="hand_left_lh_thumb_ip" joint2="hand_left_lh_thumb_cmc_pitch" polycoef="0 2.29 0 0 0 0" />
+      <joint name="hand_left_lh_couple_thumb" joint1="hand_left_lh_thumb_ip" joint2="hand_left_lh_thumb_cmc_pitch" polycoef="0 1.8788 0 0 0 0" />
       <joint name="hand_left_lh_couple_index" joint1="hand_left_lh_index_dip" joint2="hand_left_lh_index_mcp_pitch" polycoef="0 0.89 0 0 0 0" />
       <joint name="hand_left_lh_couple_middle" joint1="hand_left_lh_middle_dip" joint2="hand_left_lh_middle_mcp_pitch" polycoef="0 0.89 0 0 0 0" />
       <joint name="hand_left_lh_couple_ring" joint1="hand_left_lh_ring_dip" joint2="hand_left_lh_ring_mcp_pitch" polycoef="0 0.89 0 0 0 0" />

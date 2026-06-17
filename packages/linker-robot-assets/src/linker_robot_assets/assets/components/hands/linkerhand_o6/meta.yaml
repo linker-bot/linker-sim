@@ -9,14 +9,14 @@ drive: position
 variants:
   left:
     vars: {S: l}
-    urdf: variants/left/hand.urdf
-    mjcf: variants/left/hand.mjcf
-    meshdir: variants/left/meshes
+    urdf: linkerhand_o6_left.urdf
+    mjcf: linkerhand_o6_left.xml
+    meshdir: meshes
   right:
     vars: {S: r}
-    urdf: variants/right/hand.urdf
-    mjcf: variants/right/hand.mjcf
-    meshdir: variants/right/meshes
+    urdf: linkerhand_o6_right.urdf
+    mjcf: linkerhand_o6_right.xml
+    meshdir: meshes
 
 root_link: "{S}h_hand_base_link"
 
