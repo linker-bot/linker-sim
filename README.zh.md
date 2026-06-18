@@ -3,7 +3,14 @@
 [English](README.md) · [中文](README.zh.md)
 
 面向 AR5 / LKLS73 / A7-lite 机械臂搭配 Linkerhand L6 / O6 / L25 / L30
-的双臂强化学习仿真工作区，支持 Isaac Sim、MuJoCo 与 Viser 三种后端。
+的双臂强化学习仿真工作区，支持 Isaac Sim, MuJoCo 与 Viser 三种后端。
+
+<table>
+  <tr>
+    <td><img src="./docs/images/o6_urdf.png" alt="o6 URDF" width="250"/></td>
+    <td><img src="./docs/images/dc_replay.gif" alt="Second Image" width="400"/></td>
+  </tr>
+</table>
 
 ## 仓库内容
 

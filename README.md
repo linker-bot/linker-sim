@@ -6,6 +6,13 @@ Bimanual RL simulation workspace for AR5 / LKLS73 / A7-lite arms paired
 with Linkerhand L6 / O6 / L25 / L30, with Isaac Sim, MuJoCo, and Viser
 backends.
 
+<table>
+  <tr>
+    <td><img src="./docs/images/o6_urdf.png" alt="o6 URDF" width="250"/></td>
+    <td><img src="./docs/images/dc_replay.gif" alt="Second Image" width="400"/></td>
+  </tr>
+</table>
+
 ## What this repo contains
 
 - Composer-driven workstation assets (recipe → URDF + MJCF + manifest).
