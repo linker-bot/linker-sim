@@ -79,9 +79,9 @@ def _load_ee_poses(
                 )
             hand_targets[key] = arr.astype(np.float32)
         else:
-            raise ValueError(
-                f"ee_poses[{key!r}]: key must start with 'arm_' or 'hand_'"
-            )
+            # Skip metadata keys stamped by the preprocessor (e.g.
+            # "decoder_convention"). Only arm_*/hand_* drive the replay.
+            print(f"[replay_ik] note: ignoring non-arm/hand key {key!r}")
     if not arm_poses:
         raise ValueError(f"ee_poses {path}: no arm_* keys found")
     return arm_poses, hand_targets

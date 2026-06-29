@@ -30,6 +30,8 @@ from scipy.optimize import minimize
 from scipy.spatial.transform import Rotation
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 for _src in ("packages/linker-sim/src", "packages/linker-robot-assets/src"):
     _abs = str(REPO_ROOT / _src)
     if _abs not in sys.path:
