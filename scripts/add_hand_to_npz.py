@@ -17,7 +17,7 @@ Usage:
         --bag data/umi_episode_000007/ \\
         --arm-npz outputs/umi_replay/umi_ep7_searched_mirrored_palmdown_warm9.npz \\
         --out outputs/umi_replay/umi_ep7_with_hand.npz \\
-        --arm right --hz 30.0 --workstation a7_lite_dc
+        --arm right --hz 30.0 --workstation a7_lite_l6_dc
 """
 
 from __future__ import annotations
@@ -105,7 +105,7 @@ def main() -> None:
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--arm", choices=["left", "right"], default="right")
     p.add_argument("--hz", type=float, default=30.0)
-    p.add_argument("--workstation", default="a7_lite_dc")
+    p.add_argument("--workstation", default="a7_lite_l6_dc")
     args = p.parse_args()
 
     npz_in = np.load(args.arm_npz, allow_pickle=False)

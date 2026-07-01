@@ -273,7 +273,7 @@ def _parse_args() -> argparse.Namespace:
         "--remap-yaw", type=float, default=0.0,
         help="rotate tracker-delta axes (rad), intrinsic XYZ",
     )
-    p.add_argument("--workstation", default="a7_lite_dc")
+    p.add_argument("--workstation", default="a7_lite_l6_dc")
     p.add_argument(
         "--no-hand", action="store_true",
         help="skip /hand/usart_raw entirely; write only arm_<side>. Use "

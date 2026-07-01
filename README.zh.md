@@ -84,7 +84,7 @@ python scripts/run.py max_steps=200 headless=true
 ```bash
 python3 -m venv .venv-viser && source .venv-viser/bin/activate
 pip install -e packages/linker-robot-assets -e packages/linker-sim[viser]
-python scripts/replay.py backend=viser source=data_collection robot=a7_lite_dc
+python scripts/replay.py backend=viser source=data_collection robot=a7_lite_l6_dc
 ```
 
 启动后打开终端打印的 URL（默认 `http://127.0.0.1:8080`）。

@@ -11,7 +11,7 @@ Usage:
     python scripts/benchmark_tracking.py gains.arm_left.stiffness=800 gains.arm_left.damping=6
 
     # Different workstation / source
-    python scripts/benchmark_tracking.py robot=a7_lite_dc source=data_collection
+    python scripts/benchmark_tracking.py robot=a7_lite_l6_dc source=data_collection
 """
 
 from __future__ import annotations

@@ -24,8 +24,8 @@ The runtime profile is intentionally light so consumers (e.g. `linker-sim`'s reg
 from linker_robot_assets import asset_root, workstations, load_manifest
 
 asset_root()                  # PosixPath('.../linker_robot_assets/assets')
-workstations()                # ['a7_lite_dc', 'ar5_l6_bench_bimanual', ...]
-load_manifest('a7_lite_dc')   # {'name': '...', 'joints': {...}, ...}
+workstations()                # ['a7_lite_l6_dc', 'ar5_l6_bench_bimanual', ...]
+load_manifest('a7_lite_l6_dc')   # {'name': '...', 'joints': {...}, ...}
 ```
 
 CLI (with `[authoring]`):

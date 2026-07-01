@@ -41,7 +41,7 @@ pip install -e packages/linker-robot-assets -e packages/linker-sim[mujoco]
 ### Verify
 
 ```bash
-python scripts/replay.py robot=a7_lite_dc source=data_collection headless=true max_frames=50
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection headless=true max_frames=50
 ```
 
 ### Daily activation
@@ -187,7 +187,7 @@ python scripts/run.py robot=lkls73_i1_o6_bimanual max_steps=200 headless=true
 > `lkls73_i1_o6_bimanual`, `a7_lite_o6_dc`; `ar5_l25_bench_bimanual`,
 > `ar5_08_l25_bench_bimanual`, `lkls73_i1_l25_bimanual`, `a7_lite_l25_dc`;
 > plus the L6-hand variants (`ar5_l6_bench_bimanual`,
-> `lkls73_i1_bimanual`, `a7_lite_dc`) for backwards compatibility.
+> `lkls73_i1_bimanual`, `a7_lite_l6_dc`) for backwards compatibility.
 
 Multi-env:
 

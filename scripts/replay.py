@@ -7,12 +7,12 @@ backend (mujoco or isaac) and a robot, then runs `sim.runtime.replay`
 
 Usage:
 
-    # Replay the data_collection recording on the a7_lite_dc workstation
+    # Replay the data_collection recording on the a7_lite_l6_dc workstation
     # in the Mujoco viewer at 30 Hz wall-clock:
-    python scripts/replay.py robot=a7_lite_dc source=data_collection
+    python scripts/replay.py robot=a7_lite_l6_dc source=data_collection
 
     # Headless (no viewer):
-    python scripts/replay.py robot=a7_lite_dc source=data_collection \
+    python scripts/replay.py robot=a7_lite_l6_dc source=data_collection \
         headless=true realtime=false max_frames=200
 
 Config docs: `sim/configs/replay.yaml`. New recordings just need a

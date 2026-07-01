@@ -1,5 +1,5 @@
 schema_version: 1
-name: a7_lite_dc
+name: a7_lite_l6_dc
 description: >
   Bimanual a7_lite torso + two 7-DOF a7_lite arms + two Linkerhand L6
   hands, all welded into a single articulation via the composer. Source

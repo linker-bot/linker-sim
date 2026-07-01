@@ -127,7 +127,7 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("bag", type=Path)
     p.add_argument("--arm", choices=["left", "right"], default="right")
     p.add_argument("--hz", type=float, default=30.0)
-    p.add_argument("--workstation", default="a7_lite_dc")
+    p.add_argument("--workstation", default="a7_lite_l6_dc")
     p.add_argument("--maxiter", type=int, default=80)
     p.add_argument(
         "--init", type=float, nargs=6, default=(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),

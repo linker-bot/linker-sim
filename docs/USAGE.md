@@ -69,7 +69,7 @@ Shipped workstations (Hydra group `robot`):
 - L25 hand: `ar5_l25_bench_bimanual`, `ar5_08_l25_bench_bimanual`,
   `lkls73_i1_l25_bimanual`, `a7_lite_l25_dc`.
 - L6 hand (legacy / parallel): `ar5_l6_bench_bimanual`,
-  `lkls73_i1_bimanual`, `a7_lite_dc`.
+  `lkls73_i1_bimanual`, `a7_lite_l6_dc`.
 
 Common knobs (defined in [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)):
 
@@ -131,21 +131,21 @@ tasks, and `BaseEnv`. Hand columns are decoded via per-joint mappers
 # Real-robot recording at episode_000025/telemetry.npz, MuJoCo viewport,
 # paced to 30 Hz wall-clock. The recording is not tracked in this repo —
 # either drop it at the default path or override with `source.path=...`.
-python scripts/replay.py robot=a7_lite_dc source=data_collection
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection
 
 # Headless smoke: cap to 200 frames, no realtime pacing.
-python scripts/replay.py robot=a7_lite_dc source=data_collection \
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # Same data through Isaac (GPU).
 python scripts/replay.py backend=isaac device=cuda:0 \
-    robot=a7_lite_dc source=data_collection
+    robot=a7_lite_l6_dc source=data_collection
 
 # Same data through the Viser browser visualiser (replay-only, no GPU
 # needed). Open the URL printed at startup, default http://127.0.0.1:8080.
 # Requires the [viser] install profile — see the Data-collection team
 # section in the README; not compatible with the env_isaaclab venv.
-python scripts/replay.py backend=viser robot=a7_lite_dc source=data_collection
+python scripts/replay.py backend=viser robot=a7_lite_l6_dc source=data_collection
 ```
 
 Hotkeys (MuJoCo windowed mode): press `Q` in the viewport to stop.
@@ -187,7 +187,7 @@ components under [assets/components/](../packages/linker-robot-assets/src/linker
 
 ```bash
 # One workstation.
-python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_l6_dc
 
 # All of them.
 for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do
@@ -208,7 +208,7 @@ python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-asse
 
 # Workstation: 14 checks (manifest hashes, URDF kinematics, mesh
 # resolution, drift, MJCF parity at 1e-5 m / 1e-5 rad).
-python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_l6_dc
 ```
 
 ### Drift gate (CI)
@@ -220,7 +220,7 @@ Catches recipe/component edits that forgot to re-commit generated files:
 bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # Single workstation.
-bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh a7_lite_dc
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh a7_lite_l6_dc
 ```
 
 Exit 0 = clean, 1 = drift.
@@ -229,7 +229,7 @@ Exit 0 = clean, 1 = drift.
 
 ```bash
 python -m linker_sim.tools.registry_show                  # list workstations
-python -m linker_sim.tools.registry_show a7_lite_dc       # dump roles, joints, frames
+python -m linker_sim.tools.registry_show a7_lite_l6_dc       # dump roles, joints, frames
 ```
 
 ### Adding a new workstation
@@ -412,10 +412,10 @@ python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
     task=bimanual_reach_ikpose
 
 # Replay real-robot data (MuJoCo)
-python scripts/replay.py robot=a7_lite_dc source=data_collection
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection
 
 # Replay headless / clipped
-python scripts/replay.py robot=a7_lite_dc source=data_collection \
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # Compose + validate everything
@@ -424,7 +424,7 @@ for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstatio
 bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # Inspect a registry handle
-python -m linker_sim.tools.registry_show a7_lite_dc
+python -m linker_sim.tools.registry_show a7_lite_l6_dc
 
 # Live PD gain tuning (MuJoCo, edit /tmp/dex_pd_gains.json while running)
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

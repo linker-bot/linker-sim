@@ -59,7 +59,7 @@ packages/linker-robot-assets/src/linker_robot_assets/
       ar5_l25_bench_bimanual/    ar5_08_l25_bench_bimanual/
       ar5_l6_bench_bimanual/                                  # L6 legacy
       lkls73_i1_o6_bimanual/   lkls73_i1_l25_bimanual/   lkls73_i1_bimanual/
-      a7_lite_o6_dc/           a7_lite_l25_dc/           a7_lite_dc/
+      a7_lite_o6_dc/           a7_lite_l25_dc/           a7_lite_l6_dc/
   composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
   validate_workstation.py
   validate_component_mjcf.py

@@ -68,7 +68,7 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 - L25 手：`ar5_l25_bench_bimanual`、`ar5_08_l25_bench_bimanual`、
   `lkls73_i1_l25_bimanual`、`a7_lite_l25_dc`。
 - L6 手（沿用 / 并行）：`ar5_l6_bench_bimanual`、
-  `lkls73_i1_bimanual`、`a7_lite_dc`。
+  `lkls73_i1_bimanual`、`a7_lite_l6_dc`。
 
 常用参数（定义于 [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)）：
 
@@ -126,20 +126,20 @@ python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
 # 真机数据 episode_000025/telemetry.npz，MuJoCo 视口，30 Hz 实时回放。
 # 数据本身不纳入版本管理 —— 把它放到默认路径下，或用
 # `source.path=...` 覆盖。
-python scripts/replay.py robot=a7_lite_dc source=data_collection
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection
 
 # 无界面烟雾：限制 200 帧，关闭实时节流。
-python scripts/replay.py robot=a7_lite_dc source=data_collection \
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # 同一份数据用 Isaac（GPU）回放。
 python scripts/replay.py backend=isaac device=cuda:0 \
-    robot=a7_lite_dc source=data_collection
+    robot=a7_lite_l6_dc source=data_collection
 
 # 同一份数据用 Viser 浏览器可视化（仅回放，无需 GPU）。启动后打开
 # 终端打印的 URL，默认 http://127.0.0.1:8080。需安装 `[viser]` 扩展
 # （见 README 数据采集小节），与 env_isaaclab 环境不兼容。
-python scripts/replay.py backend=viser robot=a7_lite_dc source=data_collection
+python scripts/replay.py backend=viser robot=a7_lite_l6_dc source=data_collection
 ```
 
 热键（MuJoCo 窗口模式）：按 `Q` 停止。
@@ -179,7 +179,7 @@ Recipe 位于 [assets/workstations/](../packages/linker-robot-assets/src/linker_
 
 ```bash
 # 单个 workstation。
-python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
+python -m linker_robot_assets.composer.compose packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_l6_dc
 
 # 全量合成。
 for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/*/; do
@@ -200,7 +200,7 @@ python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-asse
 
 # Workstation 校验：14 项检查（manifest 哈希、URDF 运动学、网格路径、
 # drift、URDF↔MJCF 1e-5 m / 1e-5 rad 帧位姿一致性）。
-python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_dc
+python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_l6_dc
 ```
 
 ### Drift 守门（CI）
@@ -212,7 +212,7 @@ python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/
 bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # 单个 workstation。
-bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh a7_lite_dc
+bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh a7_lite_l6_dc
 ```
 
 退出码 0 = 干净，1 = 存在 drift。
@@ -221,7 +221,7 @@ bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh a7_l
 
 ```bash
 python -m linker_sim.tools.registry_show                 # 列出所有 workstation
-python -m linker_sim.tools.registry_show a7_lite_dc      # 打印 roles / joints / frames
+python -m linker_sim.tools.registry_show a7_lite_l6_dc      # 打印 roles / joints / frames
 ```
 
 ### 新增一个 workstation
@@ -402,10 +402,10 @@ python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
     task=bimanual_reach_ikpose
 
 # 回放真机数据（MuJoCo）
-python scripts/replay.py robot=a7_lite_dc source=data_collection
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection
 
 # 回放无界面 / 限帧
-python scripts/replay.py robot=a7_lite_dc source=data_collection \
+python scripts/replay.py robot=a7_lite_l6_dc source=data_collection \
     headless=true realtime=false max_frames=200
 
 # 全量合成 + 校验
@@ -414,7 +414,7 @@ for ws in packages/linker-robot-assets/src/linker_robot_assets/assets/workstatio
 bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 
 # 查看 registry handle
-python -m linker_sim.tools.registry_show a7_lite_dc
+python -m linker_sim.tools.registry_show a7_lite_l6_dc
 
 # 实时 PD 增益调参（MuJoCo，运行时编辑 /tmp/dex_pd_gains.json）
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

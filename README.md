@@ -88,7 +88,7 @@ pins):
 ```bash
 python3 -m venv .venv-viser && source .venv-viser/bin/activate
 pip install -e packages/linker-robot-assets -e packages/linker-sim[viser]
-python scripts/replay.py backend=viser source=data_collection robot=a7_lite_dc
+python scripts/replay.py backend=viser source=data_collection robot=a7_lite_l6_dc
 ```
 
 Open the URL printed at startup (default `http://127.0.0.1:8080`).
