@@ -1,0 +1,224 @@
+<mujoco model="linkerhand_l20lite_left">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="hand_linkerhand_l20lite_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="hand_linkerhand_l20lite_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+    <default class="hand_linkerhand_l20lite_joint">
+      <joint armature="3.4707e-08" damping="4.0" frictionloss="0.5"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="hand_base_link" file="hand_base_link.STL"/>
+    <mesh name="thumb_metacarpals_base1" file="thumb_metacarpals_base1.STL"/>
+    <mesh name="thumb_metacarpals_base2" file="thumb_metacarpals_base2.STL"/>
+    <mesh name="thumb_metacarpals" file="thumb_metacarpals.STL"/>
+    <mesh name="thumb_proximal" file="thumb_proximal.STL"/>
+    <mesh name="thumb_distal" file="thumb_distal.STL"/>
+    <mesh name="index_metacarpals" file="index_metacarpals.STL"/>
+    <mesh name="index_proximal" file="index_proximal.STL"/>
+    <mesh name="index_middle" file="index_middle.STL"/>
+    <mesh name="index_distal" file="index_distal.STL"/>
+    <mesh name="middle_proximal" file="middle_proximal.STL"/>
+    <mesh name="middle_middle" file="middle_middle.STL"/>
+    <mesh name="middle_distal" file="middle_distal.STL"/>
+    <mesh name="ring_metacarpals" file="ring_metacarpals.STL"/>
+    <mesh name="ring_proximal" file="ring_proximal.STL"/>
+    <mesh name="ring_middle" file="ring_middle.STL"/>
+    <mesh name="ring_distal" file="ring_distal.STL"/>
+    <mesh name="pinky_metacarpals" file="pinky_metacarpals.STL"/>
+    <mesh name="pinky_proximal" file="pinky_proximal.STL"/>
+    <mesh name="pinky_middle" file="pinky_middle.STL"/>
+    <mesh name="pinky_distal" file="pinky_distal.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="lh_hand_base_link" pos="0 0 0">
+      <inertial pos="-0.00378861347432373 0.000820204450131895 0.0805686615689543" mass="0.103652479414672" fullinertia="0.000193076183440551 0.000129262885172737 7.7154522927273e-05 1.28622350247875e-06 -2.06064564153793e-07 -2.33887125894354e-06"/>
+      <geom class="hand_linkerhand_l20lite_visual" mesh="hand_base_link"/>
+      <geom class="hand_linkerhand_l20lite_collision" mesh="hand_base_link"/>
+      <site name="wrist_mount" pos="0 0 0"/>
+      <body name="lh_thumb_metacarpals_base1" pos="-0.013419 -0.012551 0.060602">
+        <inertial pos="0.0284841419451473 0.0032328053117659 1.27102541975441e-05" mass="0.00840514828448049" fullinertia="1.40225690783513e-06 9.92532738625187e-07 7.25924523731736e-07 1.196162690714e-07 7.34629714950971e-09 -4.63982709938509e-08"/>
+        <joint name="lh_thumb_cmc_roll" class="hand_linkerhand_l20lite_joint" type="hinge" axis="-0.99996 0 -0.0087265" range="0 1.03"/>
+        <geom class="hand_linkerhand_l20lite_visual" mesh="thumb_metacarpals_base1"/>
+        <geom class="hand_linkerhand_l20lite_collision" mesh="thumb_metacarpals_base1"/>
+        <body name="lh_thumb_metacarpals_base2" pos="0.035797 0.00065879 0.00045944" euler="0.13232 -0.0087266 0">
+          <inertial pos="0.00149333647480262 -0.00615813217507052 -0.000273768129351912" mass="0.00244725656099355" fullinertia="1.15757169903916e-07 9.88121769947347e-08 6.88506418885536e-08 -4.50060051446398e-09 -9.19744539328016e-10 3.81969206030993e-09"/>
+          <joint name="lh_thumb_cmc_yaw" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 0.087156 0.99619" range="0 1.4"/>
+          <geom class="hand_linkerhand_l20lite_visual" mesh="thumb_metacarpals_base2"/>
+          <geom class="hand_linkerhand_l20lite_collision" mesh="thumb_metacarpals_base2"/>
+          <body name="lh_thumb_metacarpals" pos="0.0036974 -0.015398 -0.0019891" euler="0 -0.9163 1.8064">
+            <inertial pos="0.00183663729904029 3.46162460989133e-06 0.026990412201572" mass="0.0152011788694593" fullinertia="2.95369587925714e-06 3.84770419198789e-06 1.32008560539723e-06 4.74536745194236e-11 -1.58087239939667e-07 4.13672896569864e-10"/>
+            <joint name="lh_thumb_cmc_pitch" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 0.52"/>
+            <geom class="hand_linkerhand_l20lite_visual" mesh="thumb_metacarpals"/>
+            <geom class="hand_linkerhand_l20lite_collision" mesh="thumb_metacarpals"/>
+            <body name="lh_thumb_proximal" pos="0.0061722 0 0.047968">
+              <inertial pos="0.00159260267405223 4.28988976902342e-06 0.0151572309111939" mass="0.00662225085289633" fullinertia="1.01526328949763e-06 9.10425089721739e-07 4.47462917464685e-07 -7.87460584199835e-12 -4.4224308859969e-08 2.81833762972893e-11"/>
+              <joint name="lh_thumb_mcp" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 0.72"/>
+              <geom class="hand_linkerhand_l20lite_visual" mesh="thumb_proximal"/>
+              <geom class="hand_linkerhand_l20lite_collision" mesh="thumb_proximal"/>
+              <body name="lh_thumb_distal" pos="-0.00017064 0 0.038665">
+                <inertial pos="-0.00138833978915306 -1.92768110708619e-06 0.0115764513296314" mass="0.00512798334000111" fullinertia="3.30808161248092e-07 3.2363078244428e-07 2.48875198442135e-07 -3.43833611720834e-10 -1.04696624534012e-07 -1.18697138701936e-10"/>
+                <joint name="lh_thumb_ip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 0.78"/>
+                <geom class="hand_linkerhand_l20lite_visual" mesh="thumb_distal"/>
+                <geom class="hand_linkerhand_l20lite_collision" mesh="thumb_distal"/>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="lh_index_metacarpals" pos="-0.0021643 -0.026654 0.13253" euler="0.027927 -0.0087198 -0.00024358">
+        <inertial pos="-0.00143091454702933 2.56878017135254e-07 0.0107040528609869" mass="0.0038877126435198" fullinertia="1.87149599832498e-07 2.75278147668716e-07 2.06866317113344e-07 3.67335498441413e-11 1.3415127653338e-08 2.44762951204078e-11"/>
+        <joint name="lh_index_mcp_roll" class="hand_linkerhand_l20lite_joint" type="hinge" axis="1 0.00024367 0" range="0 0.19"/>
+        <geom class="hand_linkerhand_l20lite_visual" mesh="index_metacarpals"/>
+        <geom class="hand_linkerhand_l20lite_collision" mesh="index_metacarpals"/>
+        <body name="lh_index_proximal" pos="0.0022097 0 0.015275" euler="0 0 0.00024367">
+          <inertial pos="-0.00122347616770057 -2.04121170566118e-06 0.0182409893195748" mass="0.00316246584579941" fullinertia="3.57135128024094e-07 3.51905870436209e-07 1.40872561400322e-07 1.42036124901073e-11 -4.14209968733606e-08 -1.08557233942923e-10"/>
+          <joint name="lh_index_mcp_pitch" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.36"/>
+          <geom class="hand_linkerhand_l20lite_visual" mesh="index_proximal"/>
+          <geom class="hand_linkerhand_l20lite_collision" mesh="index_proximal"/>
+          <body name="lh_index_middle" pos="-0.0010697 0 0.035634">
+            <inertial pos="-0.00250309203564306 2.18945385091485e-06 0.0110397390913486" mass="0.00283043921422803" fullinertia="2.61037133593912e-07 2.33077518995487e-07 1.26543797445814e-07 5.76197451786318e-11 -4.0011060525121e-08 -2.86979503467821e-11"/>
+            <joint name="lh_index_pip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.78"/>
+            <geom class="hand_linkerhand_l20lite_visual" mesh="index_middle"/>
+            <geom class="hand_linkerhand_l20lite_collision" mesh="index_middle"/>
+            <body name="lh_index_distal" pos="-0.0052444 0 0.025711">
+              <inertial pos="-0.000604509916724614 -4.77400032578013e-06 0.0121511111849248" mass="0.0031445375098231" fullinertia="1.64070673729839e-07 1.48362830813358e-07 9.7804088657243e-08 1.88963511473794e-11 -4.27776869144244e-08 -1.9734013143508e-10"/>
+              <joint name="lh_index_dip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 0.62"/>
+              <geom class="hand_linkerhand_l20lite_visual" mesh="index_distal"/>
+              <geom class="hand_linkerhand_l20lite_collision" mesh="index_distal"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="lh_middle_proximal" pos="-0.0021316 -0.0076542 0.15281" euler="0 -0.0087266 0">
+        <inertial pos="-0.00123185150819907 -2.04476498746886e-06 0.0182404193627525" mass="0.00316246719662224" fullinertia="3.57097075648345e-07 3.51905920397223e-07 1.4091067749978e-07 1.43002807788619e-11 -4.15201646947523e-08 -1.08488557665733e-10"/>
+        <joint name="lh_middle_mcp_pitch" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.36"/>
+        <geom class="hand_linkerhand_l20lite_visual" mesh="middle_proximal"/>
+        <geom class="hand_linkerhand_l20lite_collision" mesh="middle_proximal"/>
+        <body name="lh_middle_middle" pos="-0.0010861 0 0.035634">
+          <inertial pos="-0.00252079729924576 2.18964489481777e-06 0.0110357094277332" mass="0.00283043921858529" fullinertia="2.60908423355366e-07 2.33077520740401e-07 1.26672514044425e-07 5.76720293661014e-11 -4.02265908644236e-08 -2.86057758459882e-11"/>
+          <joint name="lh_middle_pip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.78"/>
+          <geom class="hand_linkerhand_l20lite_visual" mesh="middle_middle"/>
+          <geom class="hand_linkerhand_l20lite_collision" mesh="middle_middle"/>
+          <body name="lh_middle_distal" pos="-0.0052857 0 0.025703">
+            <inertial pos="-0.000622397825955366 -4.75569749899818e-06 0.012150171418504" mass="0.00314452092964384" fullinertia="1.63942838563309e-07 1.48361296215111e-07 9.7929884595885e-08 1.9526841627913e-11 -4.28753645610842e-08 -1.96949597957508e-10"/>
+            <joint name="lh_middle_dip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 0.62"/>
+            <geom class="hand_linkerhand_l20lite_visual" mesh="middle_distal"/>
+            <geom class="hand_linkerhand_l20lite_collision" mesh="middle_distal"/>
+          </body>
+        </body>
+      </body>
+      <body name="lh_ring_metacarpals" pos="-0.0021643 0.011346 0.13253" euler="-0.024435 -0.0087266 0">
+        <inertial pos="-0.00143091448892014 6.05495226457808e-07 0.0107040523320813" mass="0.00388771255966599" fullinertia="1.87149578481638e-07 2.75278155094349e-07 2.06866318930306e-07 1.52642675041227e-11 1.34151349601248e-08 2.12062463357117e-11"/>
+        <joint name="lh_ring_mcp_roll" class="hand_linkerhand_l20lite_joint" type="hinge" axis="-1 0 0" range="0 0.2"/>
+        <geom class="hand_linkerhand_l20lite_visual" mesh="ring_metacarpals"/>
+        <geom class="hand_linkerhand_l20lite_collision" mesh="ring_metacarpals"/>
+        <body name="lh_ring_proximal" pos="0.0022097 0 0.015275">
+          <inertial pos="-0.00122347652312429 -2.0423407393888e-06 0.0182409875332818" mass="0.00316246660225829" fullinertia="3.5713512847731e-07 3.51905881089114e-07 1.40872582931496e-07 1.42130904393983e-11 -4.14209983311065e-08 -1.08576103054512e-10"/>
+          <joint name="lh_ring_mcp_pitch" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.36"/>
+          <geom class="hand_linkerhand_l20lite_visual" mesh="ring_proximal"/>
+          <geom class="hand_linkerhand_l20lite_collision" mesh="ring_proximal"/>
+          <body name="lh_ring_middle" pos="-0.0010697 0 0.035634">
+            <inertial pos="-0.00250309189885196 2.18959036171751e-06 0.0110397385966097" mass="0.00283043920090097" fullinertia="2.61037130501287e-07 2.33077521207674e-07 1.26543807918808e-07 5.76216047828233e-11 -4.00110582573436e-08 -2.86985395311388e-11"/>
+            <joint name="lh_ring_pip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.78"/>
+            <geom class="hand_linkerhand_l20lite_visual" mesh="ring_middle"/>
+            <geom class="hand_linkerhand_l20lite_collision" mesh="ring_middle"/>
+            <body name="lh_ring_distal" pos="-0.0052444 0 0.025711">
+              <inertial pos="-0.000604497650389674 -4.73100652065295e-06 0.012151126431567" mass="0.00314454943731604" fullinertia="1.64071049652571e-07 1.48363091013624e-07 9.78042601257212e-08 1.94791513771428e-11 -4.27777374237679e-08 -1.96468435398403e-10"/>
+              <joint name="lh_ring_dip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 0.62"/>
+              <geom class="hand_linkerhand_l20lite_visual" mesh="ring_distal"/>
+              <geom class="hand_linkerhand_l20lite_collision" mesh="ring_distal"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <body name="lh_pinky_metacarpals" pos="-0.00012074 0.030346 0.12755" euler="-0.057596 -0.0087266 0">
+        <inertial pos="-0.00143091630673887 6.05311374107798e-07 0.010704049929046" mass="0.00388771229554929" fullinertia="1.87149536268889e-07 2.75278106047772e-07 2.06866328803883e-07 1.52679681737727e-11 1.34151204706615e-08 2.11967245454867e-11"/>
+        <joint name="lh_pinky_mcp_roll" class="hand_linkerhand_l20lite_joint" type="hinge" axis="-1 0 0" range="0 0.3"/>
+        <geom class="hand_linkerhand_l20lite_visual" mesh="pinky_metacarpals"/>
+        <geom class="hand_linkerhand_l20lite_collision" mesh="pinky_metacarpals"/>
+        <body name="lh_pinky_proximal" pos="0.0022097 0 0.015275">
+          <inertial pos="-0.00122347805395697 -2.04329569369888e-06 0.0182409919418033" mass="0.00316246781629033" fullinertia="3.57135263144139e-07 3.5190602349514e-07 1.40872647811026e-07 1.42286998987323e-11 -4.14209901998364e-08 -1.08636442666922e-10"/>
+          <joint name="lh_pinky_mcp_pitch" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.36"/>
+          <geom class="hand_linkerhand_l20lite_visual" mesh="pinky_proximal"/>
+          <geom class="hand_linkerhand_l20lite_collision" mesh="pinky_proximal"/>
+          <body name="lh_pinky_middle" pos="-0.0010697 0 0.035634">
+            <inertial pos="-0.00250309214140259 2.1894783039933e-06 0.0110397383273556" mass="0.00283043906989622" fullinertia="2.61037124783617e-07 2.33077513229909e-07 1.2654380297458e-07 5.7617222079153e-11 -4.00110565109454e-08 -2.86988443315275e-11"/>
+            <joint name="lh_pinky_pip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 1.78"/>
+            <geom class="hand_linkerhand_l20lite_visual" mesh="pinky_middle"/>
+            <geom class="hand_linkerhand_l20lite_collision" mesh="pinky_middle"/>
+            <body name="lh_pinky_distal" pos="-0.0052444 0 0.025711">
+              <inertial pos="-0.000604492895887754 -4.75263680191351e-06 0.0121511379180032" mass="0.00314455887032079" fullinertia="1.64071496633017e-07 1.48363675410427e-07 9.78043717695209e-08 1.95563986835622e-11 -4.27779200959899e-08 -1.9679860568024e-10"/>
+              <joint name="lh_pinky_dip" class="hand_linkerhand_l20lite_joint" type="hinge" axis="0 1 0" range="0 0.62"/>
+              <geom class="hand_linkerhand_l20lite_visual" mesh="pinky_distal"/>
+              <geom class="hand_linkerhand_l20lite_collision" mesh="pinky_distal"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="lh_thumb_cmc_roll_act" joint="lh_thumb_cmc_roll" kp="200" kv="0" ctrlrange="0 1.03"/>
+    <position name="lh_thumb_cmc_yaw_act" joint="lh_thumb_cmc_yaw" kp="200" kv="0" ctrlrange="0 1.4"/>
+    <position name="lh_thumb_cmc_pitch_act" joint="lh_thumb_cmc_pitch" kp="200" kv="0" ctrlrange="0 0.52"/>
+    <position name="lh_index_mcp_roll_act" joint="lh_index_mcp_roll" kp="200" kv="0" ctrlrange="0 0.19"/>
+    <position name="lh_index_mcp_pitch_act" joint="lh_index_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.36"/>
+    <position name="lh_middle_mcp_pitch_act" joint="lh_middle_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.36"/>
+    <position name="lh_ring_mcp_roll_act" joint="lh_ring_mcp_roll" kp="200" kv="0" ctrlrange="0 0.2"/>
+    <position name="lh_ring_mcp_pitch_act" joint="lh_ring_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.36"/>
+    <position name="lh_pinky_mcp_roll_act" joint="lh_pinky_mcp_roll" kp="200" kv="0" ctrlrange="0 0.3"/>
+    <position name="lh_pinky_mcp_pitch_act" joint="lh_pinky_mcp_pitch" kp="200" kv="0" ctrlrange="0 1.36"/>
+  </actuator>
+
+  <equality>
+    <joint name="lh_couple_thumb_mcp" joint1="lh_thumb_mcp" joint2="lh_thumb_cmc_pitch" polycoef="0 1.38 0 0 0"/>
+    <joint name="lh_couple_thumb_ip" joint1="lh_thumb_ip" joint2="lh_thumb_cmc_pitch" polycoef="0 1.49 0 0 0"/>
+    <joint name="lh_couple_index_pip" joint1="lh_index_pip" joint2="lh_index_mcp_pitch" polycoef="0 1.3 0 0 0"/>
+    <joint name="lh_couple_index_dip" joint1="lh_index_dip" joint2="lh_index_mcp_pitch" polycoef="0 0.46 0 0 0"/>
+    <joint name="lh_couple_middle_pip" joint1="lh_middle_pip" joint2="lh_middle_mcp_pitch" polycoef="0 1.3 0 0 0"/>
+    <joint name="lh_couple_middle_dip" joint1="lh_middle_dip" joint2="lh_middle_mcp_pitch" polycoef="0 0.46 0 0 0"/>
+    <joint name="lh_couple_ring_pip" joint1="lh_ring_pip" joint2="lh_ring_mcp_pitch" polycoef="0 1.3 0 0 0"/>
+    <joint name="lh_couple_ring_dip" joint1="lh_ring_dip" joint2="lh_ring_mcp_pitch" polycoef="0 0.46 0 0 0"/>
+    <joint name="lh_couple_pinky_pip" joint1="lh_pinky_pip" joint2="lh_pinky_mcp_pitch" polycoef="0 1.3 0 0 0"/>
+    <joint name="lh_couple_pinky_dip" joint1="lh_pinky_dip" joint2="lh_pinky_mcp_pitch" polycoef="0 0.46 0 0 0"/>
+  </equality>
+
+  <contact>
+    <exclude body1="lh_hand_base_link" body2="lh_thumb_metacarpals_base1"/>
+    <exclude body1="lh_thumb_metacarpals_base1" body2="lh_thumb_metacarpals_base2"/>
+    <exclude body1="lh_thumb_metacarpals_base2" body2="lh_thumb_metacarpals"/>
+    <exclude body1="lh_thumb_metacarpals" body2="lh_thumb_proximal"/>
+    <exclude body1="lh_thumb_proximal" body2="lh_thumb_distal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_index_metacarpals"/>
+    <exclude body1="lh_index_metacarpals" body2="lh_index_proximal"/>
+    <exclude body1="lh_index_proximal" body2="lh_index_middle"/>
+    <exclude body1="lh_index_middle" body2="lh_index_distal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_middle_proximal"/>
+    <exclude body1="lh_middle_proximal" body2="lh_middle_middle"/>
+    <exclude body1="lh_middle_middle" body2="lh_middle_distal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_ring_metacarpals"/>
+    <exclude body1="lh_ring_metacarpals" body2="lh_ring_proximal"/>
+    <exclude body1="lh_ring_proximal" body2="lh_ring_middle"/>
+    <exclude body1="lh_ring_middle" body2="lh_ring_distal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_pinky_metacarpals"/>
+    <exclude body1="lh_pinky_metacarpals" body2="lh_pinky_proximal"/>
+    <exclude body1="lh_pinky_proximal" body2="lh_pinky_middle"/>
+    <exclude body1="lh_pinky_middle" body2="lh_pinky_distal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_index_proximal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_ring_proximal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_pinky_proximal"/>
+    <exclude body1="lh_hand_base_link" body2="lh_thumb_metacarpals_base2"/>
+    <exclude body1="lh_hand_base_link" body2="lh_thumb_metacarpals"/>
+    <exclude body1="lh_thumb_metacarpals" body2="lh_thumb_metacarpals_base1"/>
+  </contact>
+</mujoco>

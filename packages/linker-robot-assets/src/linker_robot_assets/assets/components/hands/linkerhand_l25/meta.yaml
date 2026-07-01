@@ -26,9 +26,9 @@ mount_frames:
 
 # 16 independently-driven joints + 5 mimic joints. The thumb has 4 active
 # DoF (cmc_roll, cmc_yaw, cmc_pitch, mcp); each finger has 3 (mcp_roll,
-# mcp_pitch, pip). The distal-interphalangeal joints (thumb_ip and the
-# four *_dip) are coupled to their proximal joint via URDF <mimic> tags;
-# MuJoCo-side the composed model carries an <equality polycoef> block.
+# mcp_pitch, pip). The distal joints (thumb_dip and the four *_dip) are
+# coupled to their proximal joint via URDF <mimic> tags; MuJoCo-side the
+# composed model carries an <equality polycoef> block.
 actuated_joints:
   - "{S}h_thumb_cmc_roll"
   - "{S}h_thumb_cmc_yaw"
@@ -48,7 +48,7 @@ actuated_joints:
   - "{S}h_pinky_pip"
 
 mimic_joints:
-  - "{S}h_thumb_ip"
+  - "{S}h_thumb_dip"
   - "{S}h_index_dip"
   - "{S}h_middle_dip"
   - "{S}h_ring_dip"

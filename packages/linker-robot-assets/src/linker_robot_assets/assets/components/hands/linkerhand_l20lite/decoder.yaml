@@ -1,0 +1,19 @@
+schema_version: 1
+convention: linear-fit-v0
+
+# SDK channel index -> templated actuated-joint name. L20 Lite has 10
+# active DoF (thumb 3, index/ring/pinky 2 each, middle 1). {S} expands
+# to `l` or `r` per side; matches meta.yaml:actuated_joints exactly.
+channels:
+  - "{S}h_thumb_cmc_roll"
+  - "{S}h_thumb_cmc_yaw"
+  - "{S}h_thumb_cmc_pitch"
+  - "{S}h_index_mcp_roll"
+  - "{S}h_index_mcp_pitch"
+  - "{S}h_middle_mcp_pitch"
+  - "{S}h_ring_mcp_roll"
+  - "{S}h_ring_mcp_pitch"
+  - "{S}h_pinky_mcp_roll"
+  - "{S}h_pinky_mcp_pitch"
+
+clip_overrides: {}

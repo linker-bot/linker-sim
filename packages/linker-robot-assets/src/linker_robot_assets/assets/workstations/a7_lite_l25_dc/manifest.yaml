@@ -18,16 +18,16 @@ components:
   hand_left:
     name: hands/linkerhand_l25
     variant: left
-    sha256: 59cd943a031bc35924192894c3a02bfd05c72b0ada7c081c76b66eb3a8046afb
+    sha256: 8984b5731931e1b0e1b216f0e33b87a8b1994babe89af3f659739475c17da2a1
   hand_right:
     name: hands/linkerhand_l25
     variant: right
-    sha256: 02702633c6930075c133c27bf8d60641c5fbcfb89a14e81cc2de7b52b46f4a34
+    sha256: c7ec157295e833ba1f586fc142ff504d3012fa14943fc2c6f875f98b0bd56ed8
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
-  urdf_sha256: 9d7f097a15d402c2037b378e59050b26b89c05d44fd29f723bc0f87f12275e2c
-  mjcf_sha256: f27a4e55f490a5aae2bdf557adb63b195cb00ca77d4ba48902ec246690f76cf3
+  urdf_sha256: 49340e9683d3d7129665e09ff22a4da1cd57bc21bffebe622b631dd347398ab6
+  mjcf_sha256: d9b1dc5112f34fca4e5de3c611140ece2f8b75ce8a0bcd46a01815d3dff2beb3
 joints:
   base: []
   arm_left:
@@ -85,13 +85,13 @@ mimic_joints:
   arm_left: []
   arm_right: []
   hand_left:
-  - hand_left_lh_thumb_ip
+  - hand_left_lh_thumb_dip
   - hand_left_lh_index_dip
   - hand_left_lh_middle_dip
   - hand_left_lh_ring_dip
   - hand_left_lh_pinky_dip
   hand_right:
-  - hand_right_rh_thumb_ip
+  - hand_right_rh_thumb_dip
   - hand_right_rh_index_dip
   - hand_right_rh_middle_dip
   - hand_right_rh_ring_dip
