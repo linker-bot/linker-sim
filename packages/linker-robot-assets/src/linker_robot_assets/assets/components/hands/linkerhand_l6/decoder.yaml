@@ -2,14 +2,15 @@ schema_version: 1
 convention: linear-fit-v0
 
 # SDK channel index -> templated actuated-joint name. {S} expands to
-# `l` (left) or `r` (right) per side; matches meta.yaml's convention.
-# Mirrors meta.yaml:actuated_joints exactly — keep in sync if either
-# changes. See packages/linker-robot-assets/src/linker_robot_assets/decoders/hand.py
-# for the linear-interp math and docs/known_limitations.md for the
-# placeholder caveat.
+# `l` (left) or `r` (right) per side. L6 hardware packs the two thumb
+# DoFs as (cmc_pitch, cmc_roll) — the opposite of the URDF <joint>
+# declaration order that drives manifest.yaml. `TelemetryNpzSource`
+# permutes raw columns into manifest order using this list, so the
+# two files are decoupled: URDF stays the physical description, this
+# file stays the SDK data protocol.
 channels:
-  - "{S}h_thumb_cmc_roll"
   - "{S}h_thumb_cmc_pitch"
+  - "{S}h_thumb_cmc_roll"
   - "{S}h_index_mcp_pitch"
   - "{S}h_middle_mcp_pitch"
   - "{S}h_ring_mcp_pitch"
