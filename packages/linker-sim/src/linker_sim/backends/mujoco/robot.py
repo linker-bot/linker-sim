@@ -335,6 +335,15 @@ class MujocoRobot:
         for i, col in enumerate(range(self._n_joints)):
             self._data.qpos[self._qpos_adr[col]] = float(jp[col])
             self._data.qvel[self._dof_adr[col]] = float(jv[col])
+        # Mimic joints in `jp` come from callers that only know about actuated
+        # targets (see `runtime.replay._teleport`), so they'd otherwise stay
+        # at `qpos0` while their actuated partners jump to the first frame.
+        # Snap them here so the kinematic tree is consistent from the very
+        # first viewer frame. The backend installs `_mimic_snap` on this
+        # robot at construction; it's a no-op when there are no couplings.
+        snap = getattr(self, "_mimic_snap", None)
+        if snap is not None:
+            snap()
         mujoco.mj_forward(self._model, self._data)
 
     def write_root_state(
