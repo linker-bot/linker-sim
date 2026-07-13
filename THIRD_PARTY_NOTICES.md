@@ -102,7 +102,7 @@ manufacturer CAD released as open-source by their original authors:
 - Linkerhand meshes (L6, O6, L25, glove) — Linkerbot, released under
   their open-source terms.
 - A7 lite arm meshes (A7 family) — Linkerbot.
-- LKLS73 arm meshes — Linkerbot.
+- P7 arm meshes — Linkerbot.
 
 Each mesh is included in this repository in good faith based on the
 upstream open-source release. Redistributors should retain the upstream

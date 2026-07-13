@@ -30,7 +30,7 @@ freeze_base: base
 
 # Arm mount offsets are identity: the torso's mount-pad links already
 # sit at the source URDF's joint l2 / r2 origins (the offset was
-# absorbed into the torso). Hand mounts mirror lkls73_i1_bimanual's
+# absorbed into the torso). Hand mounts mirror p7_i1_bimanual's
 # quarter-turn so palms face inward.
 mounts:
   - child: arm_left:base_mount

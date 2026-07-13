@@ -28,7 +28,7 @@ components:
 
 freeze_base: base
 
-# Arm mount offsets are identity. Hand mounts mirror lkls73_i1_o6_bimanual's
+# Arm mount offsets are identity. Hand mounts mirror p7_i1_o6_bimanual's
 # quarter-turn so palms face inward.
 mounts:
   - child: arm_left:base_mount

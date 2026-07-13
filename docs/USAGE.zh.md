@@ -50,7 +50,7 @@ cd /path/to/linker-sim
 python scripts/run.py
 
 # 切换 workstation，并用随机游走激发双臂。
-python scripts/run.py robot=lkls73_i1_o6_bimanual policy=random_walk
+python scripts/run.py robot=p7_i1_o6_bimanual policy=random_walk
 
 # 无界面 + 限步运行，常用于 CI / 烟雾测试。
 python scripts/run.py headless=true max_steps=500
@@ -64,11 +64,11 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 仓库内的 workstation（Hydra 配置组 `robot`）：
 
 - O6 手（当前默认）：`ar5_o6_bench_bimanual`（默认）、
-  `ar5_08_o6_bench_bimanual`、`lkls73_i1_o6_bimanual`、`a7_lite_o6_dc`。
+  `ar5_08_o6_bench_bimanual`、`p7_i1_o6_bimanual`、`a7_lite_o6_dc`。
 - L25 手：`ar5_l25_bench_bimanual`、`ar5_08_l25_bench_bimanual`、
-  `lkls73_i1_l25_bimanual`、`a7_lite_l25_dc`。
+  `p7_i1_l25_bimanual`、`a7_lite_l25_dc`。
 - L6 手（沿用 / 并行）：`ar5_l6_bench_bimanual`、
-  `lkls73_i1_bimanual`、`a7_lite_l6_dc`。
+  `p7_i1_bimanual`、`a7_lite_l6_dc`。
 
 常用参数（定义于 [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)）：
 
@@ -255,7 +255,7 @@ python -m linker_sim.tools.registry_show a7_lite_l6_dc      # 打印 roles / joi
 ### a) 组件默认值（按 role / 按臂 — 影响所有引用它的 workstation）
 
 每个组件的
-[meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/lkls73_arm/meta.yaml)：
+[meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/p7/meta.yaml)：
 
 ```yaml
 default_gains:
@@ -391,7 +391,7 @@ env -u PYTHONPATH -u AMENT_PREFIX_PATH pytest tests/ -v
 python scripts/run.py
 
 # Isaac，双臂抵达 + JSONL 录制
-python scripts/run.py robot=lkls73_i1_bimanual recorder=jsonl max_steps=600
+python scripts/run.py robot=p7_i1_bimanual recorder=jsonl max_steps=600
 
 # MuJoCo，关节 PD 烟雾测试
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

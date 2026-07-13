@@ -179,15 +179,15 @@ python scripts/run.py max_steps=200 headless=true
 Explicit workstation selection:
 
 ```bash
-python scripts/run.py robot=lkls73_i1_o6_bimanual max_steps=200 headless=true
+python scripts/run.py robot=p7_i1_o6_bimanual max_steps=200 headless=true
 ```
 
 > The default workstation is `ar5_o6_bench_bimanual` (AR5 arms + Linker
 > O6 hands). Other shipped workstations: `ar5_08_o6_bench_bimanual`,
-> `lkls73_i1_o6_bimanual`, `a7_lite_o6_dc`; `ar5_l25_bench_bimanual`,
-> `ar5_08_l25_bench_bimanual`, `lkls73_i1_l25_bimanual`, `a7_lite_l25_dc`;
+> `p7_i1_o6_bimanual`, `a7_lite_o6_dc`; `ar5_l25_bench_bimanual`,
+> `ar5_08_l25_bench_bimanual`, `p7_i1_l25_bimanual`, `a7_lite_l25_dc`;
 > plus the L6-hand variants (`ar5_l6_bench_bimanual`,
-> `lkls73_i1_bimanual`, `a7_lite_l6_dc`) for backwards compatibility.
+> `p7_i1_bimanual`, `a7_lite_l6_dc`) for backwards compatibility.
 
 Multi-env:
 

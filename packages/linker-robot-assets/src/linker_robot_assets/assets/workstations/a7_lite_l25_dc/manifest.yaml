@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/a7_lite
     variant: left
-    sha256: dc2fa3ac055e2f3309ba000e5107bb791ffc82f414ae921d2c41c62b7485ac1a
+    sha256: 0e0873d3347ca85c9b18cb30bde5107501ba3ab099b8ab830269e32b144bb40a
   arm_right:
     name: arms/a7_lite
     variant: right
-    sha256: 3417f61791b2f349d9ace060e29fa2d855962d09297d7c021c7204079cac3460
+    sha256: 52a7538683ae24fbd410dd0818d53bbca40ac11226c89ea877e234808c41d896
   hand_left:
     name: hands/linkerhand_l25
     variant: left
