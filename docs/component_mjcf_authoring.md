@@ -199,7 +199,7 @@ authors write them with raw (unprefixed) source-names.
   decision, not a component decision.
 - **Adjacent-link `<exclude>` pairs are required, not optional, when
   using full-mesh colliders.** With shared visual+collision meshes (the
-  current AR5 / lkls73 / L6 components), adjacent links interpenetrate at
+  current AR5 / p7 / L6 components), adjacent links interpenetrate at
   the joint axis at qpos=0, and the contact friction directly clamps the
   joint — the actuator can't drive it. Symptom: joint slider moves the
   joint visually but the actuator can't track its target. Cure: add

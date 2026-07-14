@@ -50,7 +50,7 @@ Default: `backend=isaac`, `robot=ar5_o6_bench_bimanual`, `controller=joint_pd_bi
 python scripts/run.py
 
 # Choose another workstation and exercise both arms with random walk.
-python scripts/run.py robot=lkls73_i1_o6_bimanual policy=random_walk
+python scripts/run.py robot=p7_i1_o6_bimanual policy=random_walk
 
 # Headless, capped run — useful in CI / smoke tests.
 python scripts/run.py headless=true max_steps=500
@@ -65,11 +65,11 @@ Close the window to exit.
 Shipped workstations (Hydra group `robot`):
 
 - O6 hand (default class): `ar5_o6_bench_bimanual` (default),
-  `ar5_08_o6_bench_bimanual`, `lkls73_i1_o6_bimanual`, `a7_lite_o6_dc`.
+  `ar5_08_o6_bench_bimanual`, `p7_i1_o6_bimanual`, `a7_lite_o6_dc`.
 - L25 hand: `ar5_l25_bench_bimanual`, `ar5_08_l25_bench_bimanual`,
-  `lkls73_i1_l25_bimanual`, `a7_lite_l25_dc`.
+  `p7_i1_l25_bimanual`, `a7_lite_l25_dc`.
 - L6 hand (legacy / parallel): `ar5_l6_bench_bimanual`,
-  `lkls73_i1_bimanual`, `a7_lite_l6_dc`.
+  `p7_i1_bimanual`, `a7_lite_l6_dc`.
 
 Common knobs (defined in [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)):
 
@@ -258,7 +258,7 @@ Three places gains live. Edit the right one for what you want to change.
 
 ### a) Component defaults (per role, per arm — affects every workstation that uses it)
 
-[meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/lkls73_arm/meta.yaml) per
+[meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/p7/meta.yaml) per
 component:
 
 ```yaml
@@ -401,7 +401,7 @@ env -u PYTHONPATH -u AMENT_PREFIX_PATH pytest tests/ -v
 python scripts/run.py
 
 # Isaac, bimanual reach + recorded episodes
-python scripts/run.py robot=lkls73_i1_bimanual recorder=jsonl max_steps=600
+python scripts/run.py robot=p7_i1_bimanual recorder=jsonl max_steps=600
 
 # MuJoCo, joint PD smoke
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

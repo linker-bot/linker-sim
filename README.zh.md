@@ -2,7 +2,7 @@
 
 [English](README.md) · [中文](README.zh.md)
 
-面向 AR5 / LKLS73 / A7-lite 机械臂搭配 Linkerhand L6 / O6 / L25 / L30
+面向 AR5 / P7 / A7-lite 机械臂搭配 Linkerhand L6 / O6 / L25 / L30
 的双臂强化学习仿真工作区，支持 Isaac Sim, MuJoCo 与 Viser 三种后端。
 
 <table>

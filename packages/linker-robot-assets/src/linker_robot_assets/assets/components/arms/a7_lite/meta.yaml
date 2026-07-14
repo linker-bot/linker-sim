@@ -52,7 +52,7 @@ actuated_joints:
   - "{V}6_Joint"
   - "{V}7_Joint"
 
-# Mirror lkls73_arm's two-profile setup (source URDF effort/velocity
+# Mirror p7's two-profile setup (source URDF effort/velocity
 # limits are zeros; this tier matches an arm of comparable size and
 # inertia).
 default_gains:

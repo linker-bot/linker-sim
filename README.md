@@ -2,7 +2,7 @@
 
 [English](README.md) · [中文](README.zh.md)
 
-Bimanual RL simulation workspace for AR5 / LKLS73 / A7-lite arms paired
+Bimanual RL simulation workspace for AR5 / P7 / A7-lite arms paired
 with Linkerhand L6 / O6 / L25 / L30, with Isaac Sim, MuJoCo, and Viser
 backends.
 

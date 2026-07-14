@@ -41,9 +41,9 @@ packages/linker-robot-assets/src/linker_robot_assets/
           variants/right/{arm.urdf, arm.mjcf, arm.xrdf, meshes/*.STL}
         ar5_08/                # current AR5 (matches vendor "horizon-install")
         a7_lite/
-        lkls73_arm/
+        p7/
       bases/
-        a7_lite_torso/  bench_table/  lkls73_torso/
+        a7_lite_torso/  bench_table/  p7_torso/
       hands/
         linkerhand_l6/         # 6-DoF Linker Hand (legacy)
         linkerhand_o6/         # current default 6-DoF
@@ -58,7 +58,7 @@ packages/linker-robot-assets/src/linker_robot_assets/
       ar5_08_o6_bench_bimanual/
       ar5_l25_bench_bimanual/    ar5_08_l25_bench_bimanual/
       ar5_l6_bench_bimanual/                                  # L6 legacy
-      lkls73_i1_o6_bimanual/   lkls73_i1_l25_bimanual/   lkls73_i1_bimanual/
+      p7_i1_o6_bimanual/   p7_i1_l25_bimanual/   p7_i1_bimanual/
       a7_lite_o6_dc/           a7_lite_l25_dc/           a7_lite_l6_dc/
   composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
   validate_workstation.py
@@ -107,8 +107,8 @@ The composition spec. Schema at
 ```yaml
 components:
   base:       { component: bases/bench_table,    variant: default }
-  arm_left:   { component: arms/lkls73_arm,      variant: left    }
-  arm_right:  { component: arms/lkls73_arm,      variant: right   }
+  arm_left:   { component: arms/p7,      variant: left    }
+  arm_right:  { component: arms/p7,      variant: right   }
   hand_left:  { component: hands/linkerhand_l6,  variant: left    }
   hand_right: { component: hands/linkerhand_l6,  variant: right   }
 freeze_base: base
@@ -190,8 +190,8 @@ One file: [linker_sim/registry.py](../packages/linker-sim/src/linker_sim/registr
 ```python
 from linker_sim.registry import discover, load
 
-names = discover()                  # ["ar5_l6_bench_bimanual", "lkls73_i1_bimanual"]
-handle = load("lkls73_i1_bimanual")
+names = discover()                  # ["ar5_l6_bench_bimanual", "p7_i1_bimanual"]
+handle = load("p7_i1_bimanual")
 
 handle.urdf_path                    # absolute Path, ready for Isaac
 handle.joints["arm_left"]           # 7 prefixed joint names
@@ -225,19 +225,19 @@ component's URDF — you can't lift it into the recipe.
 Two patterns handle this:
 - **Real base link exists in the source** (AR5): the arm URDF is
   already rooted at its own stationary "base" link; joint_1 is internal.
-- **No intermediate link in the source** (lkls73): the arm variant URDF
+- **No intermediate link in the source** (p7): the arm variant URDF
   carries a zero-mass virtual root (`L_arm_root` / `R_arm_root`); the
   first revolute (`L1_Joint`) hangs from it with identity origin. The
   positional offset the source URDF had on `L1_Joint` is absorbed into
   the parent base's mount-pad link instead. See
-  [lkls73_torso/base.urdf:42-54](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/lkls73_torso/variants/default/base.urdf#L42-L54)
-  and [lkls73_arm/variants/left/arm.urdf](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/lkls73_arm/variants/left/arm.urdf).
+  [p7_torso/base.urdf:42-54](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/p7_torso/variants/default/base.urdf#L42-L54)
+  and [p7/variants/left/arm.urdf](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/p7/variants/left/arm.urdf).
 
 ### `{V}` expansion applies to meta fields only
 
 `root_link`, `mount_frames.parent`, and `actuated_joints` may contain
 `{V}`. The *component URDF body* is NOT substituted — variant URDFs
-ship with literal `L…`/`R…` names. This is why the AR5 and lkls73 arms
+ship with literal `L…`/`R…` names. This is why the AR5 and p7 arms
 each have two separate URDFs per hand.
 
 ### Meshes are referenced, not copied
@@ -329,4 +329,4 @@ git add packages/linker-robot-assets/src/linker_robot_assets/assets/workstations
 - Runtime registry: [linker_sim/registry.py](../packages/linker-sim/src/linker_sim/registry.py)
 - Inspection CLI: [linker_sim/tools/registry_show.py](../packages/linker-sim/src/linker_sim/tools/registry_show.py)
 - Example component (arm): [assets/components/arms/ar5/meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/ar5/meta.yaml)
-- Example workstation (bimanual humanoid): [assets/workstations/lkls73_i1_bimanual/recipe.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/lkls73_i1_bimanual/recipe.yaml)
+- Example workstation (bimanual humanoid): [assets/workstations/p7_i1_bimanual/recipe.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/p7_i1_bimanual/recipe.yaml)
