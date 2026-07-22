@@ -7,7 +7,7 @@ is the composer's job; the registry is read-only and sim-agnostic.
 Typical use (from a sim backend):
 
     from linker_sim.registry import discover, load
-    names = discover()                   # ["ar5_l6_bench_bimanual", "p7_i1_bimanual"]
+    names = discover()                   # ["ar5_l6_bench_bimanual", "p7_i1_l6_bimanual"]
     handle = load("ar5_l6_bench_bimanual")
     isaac_cfg = to_articulation_cfg(handle)   # backend-specific, see sim/backends/isaac
 

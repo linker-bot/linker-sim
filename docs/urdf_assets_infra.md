@@ -58,7 +58,7 @@ packages/linker-robot-assets/src/linker_robot_assets/
       ar5_08_o6_bench_bimanual/
       ar5_l25_bench_bimanual/    ar5_08_l25_bench_bimanual/
       ar5_l6_bench_bimanual/                                  # L6 legacy
-      p7_i1_o6_bimanual/   p7_i1_l25_bimanual/   p7_i1_bimanual/
+      p7_i1_o6_bimanual/   p7_i1_l25_bimanual/   p7_i1_l6_bimanual/
       a7_lite_o6_dc/           a7_lite_l25_dc/           a7_lite_l6_dc/
   composer/{compose.py, urdf_ops.py, schemas.py, determinism.py, mjcf_ops.py}
   validate_workstation.py
@@ -190,8 +190,8 @@ One file: [linker_sim/registry.py](../packages/linker-sim/src/linker_sim/registr
 ```python
 from linker_sim.registry import discover, load
 
-names = discover()                  # ["ar5_l6_bench_bimanual", "p7_i1_bimanual"]
-handle = load("p7_i1_bimanual")
+names = discover()                  # ["ar5_l6_bench_bimanual", "p7_i1_l6_bimanual"]
+handle = load("p7_i1_l6_bimanual")
 
 handle.urdf_path                    # absolute Path, ready for Isaac
 handle.joints["arm_left"]           # 7 prefixed joint names
@@ -329,4 +329,4 @@ git add packages/linker-robot-assets/src/linker_robot_assets/assets/workstations
 - Runtime registry: [linker_sim/registry.py](../packages/linker-sim/src/linker_sim/registry.py)
 - Inspection CLI: [linker_sim/tools/registry_show.py](../packages/linker-sim/src/linker_sim/tools/registry_show.py)
 - Example component (arm): [assets/components/arms/ar5/meta.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/ar5/meta.yaml)
-- Example workstation (bimanual humanoid): [assets/workstations/p7_i1_bimanual/recipe.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/p7_i1_bimanual/recipe.yaml)
+- Example workstation (bimanual humanoid): [assets/workstations/p7_i1_l6_bimanual/recipe.yaml](../packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/p7_i1_l6_bimanual/recipe.yaml)

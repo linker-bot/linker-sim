@@ -1,5 +1,5 @@
 # @package _global_
 robot:
-  workstation_name: p7_i1_bimanual
+  workstation_name: p7_i1_l6_bimanual
   role_name: robot
   rigid_bodies: {}

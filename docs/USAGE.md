@@ -69,7 +69,7 @@ Shipped workstations (Hydra group `robot`):
 - L25 hand: `ar5_l25_bench_bimanual`, `ar5_08_l25_bench_bimanual`,
   `p7_i1_l25_bimanual`, `a7_lite_l25_dc`.
 - L6 hand (legacy / parallel): `ar5_l6_bench_bimanual`,
-  `p7_i1_bimanual`, `a7_lite_l6_dc`.
+  `p7_i1_l6_bimanual`, `a7_lite_l6_dc`.
 
 Common knobs (defined in [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)):
 
@@ -401,7 +401,7 @@ env -u PYTHONPATH -u AMENT_PREFIX_PATH pytest tests/ -v
 python scripts/run.py
 
 # Isaac, bimanual reach + recorded episodes
-python scripts/run.py robot=p7_i1_bimanual recorder=jsonl max_steps=600
+python scripts/run.py robot=p7_i1_l6_bimanual recorder=jsonl max_steps=600
 
 # MuJoCo, joint PD smoke
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

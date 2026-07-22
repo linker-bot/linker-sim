@@ -68,7 +68,7 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
 - L25 手：`ar5_l25_bench_bimanual`、`ar5_08_l25_bench_bimanual`、
   `p7_i1_l25_bimanual`、`a7_lite_l25_dc`。
 - L6 手（沿用 / 并行）：`ar5_l6_bench_bimanual`、
-  `p7_i1_bimanual`、`a7_lite_l6_dc`。
+  `p7_i1_l6_bimanual`、`a7_lite_l6_dc`。
 
 常用参数（定义于 [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)）：
 
@@ -391,7 +391,7 @@ env -u PYTHONPATH -u AMENT_PREFIX_PATH pytest tests/ -v
 python scripts/run.py
 
 # Isaac，双臂抵达 + JSONL 录制
-python scripts/run.py robot=p7_i1_bimanual recorder=jsonl max_steps=600
+python scripts/run.py robot=p7_i1_l6_bimanual recorder=jsonl max_steps=600
 
 # MuJoCo，关节 PD 烟雾测试
 python scripts/run.py backend=mujoco controller=joint_pd_bimanual \

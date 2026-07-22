@@ -28,7 +28,7 @@ freeze_base: base
 
 # Arm mount offsets are identity: the torso's mount-pad links already sit
 # at the shoulder-joint origins ([0, 0.164, 0] and [3.32e-5, -0.164, 0]).
-# Hand mounts mirror p7_i1_bimanual's quarter-turn so palms face inward.
+# Hand mounts mirror p7_i1_l6_bimanual's quarter-turn so palms face inward.
 mounts:
   - child: arm_left:base_mount
     parent: base:arm_left_mount
