@@ -101,6 +101,24 @@ def _read_urdf_limits(
     return lo, hi
 
 
+def _urdf_actuated_order(urdf_path: Path) -> list[str]:
+    """Actuated (non-fixed, non-mimic) joint names, in URDF document order.
+
+    Mirrors ``composer.urdf_ops.collect_joint_names`` so the decoder's output
+    column order lines up with ``handle.joints[role]`` — the order the replay
+    pipeline feeds hand columns against positionally.
+    """
+    root = ET.parse(urdf_path).getroot()
+    names: list[str] = []
+    for j in root.findall("joint"):
+        if j.get("type") == "fixed" or j.find("mimic") is not None:
+            continue
+        name = j.get("name")
+        if name:
+            names.append(name)
+    return names
+
+
 def decode_hand(
     name: str,
     side: str,
@@ -115,10 +133,13 @@ def decode_hand(
         side: ``"left"`` or ``"right"``.
         sdk_0_100: per-channel SDK values, shape ``(n_channels,)`` or
             ``(T, n_channels)``. Float; values outside [0, 100] are clipped.
+            Columns are in ``decoder.yaml::channels`` (SDK) order.
         component_root: override the asset-tree component root (test-only).
 
     Returns:
-        Same shape as ``sdk_0_100``, dtype float32, in radians.
+        Same shape as ``sdk_0_100``, dtype float32, in radians, reordered
+        from SDK channel order into the URDF actuated-joint document order
+        (== ``handle.joints[role]``, which replay feeds positionally).
 
     Raises:
         FileNotFoundError: component dir or ``decoder.yaml`` missing.
@@ -158,4 +179,16 @@ def decode_hand(
 
     sdk_clipped = np.clip(sdk, 0.0, 100.0)
     out = lo.astype(np.float32) + ((100.0 - sdk_clipped) / 100.0) * (hi - lo).astype(np.float32)
-    return out.astype(np.float32)
+
+    # `channels` is in SDK/hardware order; the sim feeds hand columns
+    # positionally against the URDF's actuated-joint document order
+    # (== handle.joints[role]). Reorder so returned columns line up with it.
+    manifest = _urdf_actuated_order(urdf_path)
+    if sorted(manifest) != sorted(joint_names):
+        raise ValueError(
+            f"{name}/{side}: decoder.yaml channels {joint_names} do not match "
+            f"the URDF's actuated joints {manifest} ({urdf_path})"
+        )
+    channel_idx = {jn: i for i, jn in enumerate(joint_names)}
+    perm = [channel_idx[m] for m in manifest]
+    return out[..., perm].astype(np.float32)

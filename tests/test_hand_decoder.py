@@ -22,30 +22,25 @@ def test_convention_constant():
 
 def _urdf_limits(name, side, n):
     """Pull (lo, hi) URDF limits via xml.etree directly — avoid trusting
-    the decoder's lookup as ground truth."""
-    import xml.etree.ElementTree as ET
-    from pathlib import Path
+    the decoder's lookup as ground truth.
 
-    import yaml
+    Returns limits in the URDF's actuated-joint document order (non-fixed,
+    non-mimic), which is the order decode_hand emits and the sim feeds
+    positionally (== handle.joints[role])."""
+    import xml.etree.ElementTree as ET
 
     from linker_robot_assets import asset_root
 
     cdir = asset_root() / "components" / "hands" / name
-    with (cdir / "decoder.yaml").open() as f:
-        spec = yaml.safe_load(f)
-    prefix = "l" if side == "left" else "r"
-    joint_names = [c.replace("{S}", prefix) for c in spec["channels"]]
     tree = ET.parse(cdir / "variants" / side / "hand.urdf")
-    by_name = {j.get("name"): j for j in tree.getroot().findall("joint")}
-    lo = np.array(
-        [float(by_name[j].find("limit").get("lower")) for j in joint_names],
-        dtype=np.float32,
-    )
-    hi = np.array(
-        [float(by_name[j].find("limit").get("upper")) for j in joint_names],
-        dtype=np.float32,
-    )
-    return lo, hi
+    lo, hi = [], []
+    for j in tree.getroot().findall("joint"):
+        if j.get("type") == "fixed" or j.find("mimic") is not None:
+            continue
+        limit = j.find("limit")
+        lo.append(float(limit.get("lower")))
+        hi.append(float(limit.get("upper")))
+    return np.array(lo, dtype=np.float32), np.array(hi, dtype=np.float32)
 
 
 @pytest.mark.parametrize(
@@ -55,6 +50,8 @@ def _urdf_limits(name, side, n):
         ("linkerhand_l6", "left", 6),
         ("linkerhand_o6", "right", 6),
         ("linkerhand_o6", "left", 6),
+        ("linkerhand_l20lite", "right", 10),
+        ("linkerhand_l20lite", "left", 10),
         ("linkerhand_l25", "right", 16),
         ("linkerhand_l25", "left", 16),
     ],
@@ -75,6 +72,8 @@ def test_full_returns_lower_limit(name, side, n):
         ("linkerhand_l6", "left", 6),
         ("linkerhand_o6", "right", 6),
         ("linkerhand_o6", "left", 6),
+        ("linkerhand_l20lite", "right", 10),
+        ("linkerhand_l20lite", "left", 10),
         ("linkerhand_l25", "right", 16),
         ("linkerhand_l25", "left", 16),
     ],

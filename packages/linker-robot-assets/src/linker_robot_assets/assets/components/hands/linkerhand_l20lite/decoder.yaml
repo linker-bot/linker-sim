@@ -1,19 +1,24 @@
 schema_version: 1
 convention: linear-fit-v0
 
-# SDK channel index -> templated actuated-joint name. L20 Lite has 10
-# active DoF (thumb 3, index/ring/pinky 2 each, middle 1). {S} expands
-# to `l` or `r` per side; matches meta.yaml:actuated_joints exactly.
+# SDK channel index -> templated actuated-joint name, in LinkerHand SDK
+# order (the 10-DoF "L10" protocol layout used by L20 Lite). The SDK groups
+# by DoF type — thumb base, thumb side-swing, the four finger bases, the
+# three finger side-swings (no middle roll on L20 Lite), then thumb rotation
+# — NOT per-finger, so this differs from meta.yaml:actuated_joints order.
+# The decoder reorders these to URDF/manifest order on output.
+# {S} expands to `l`/`r`. Ref: linkerhand-ros2-sdk Topic-Reference.md
+# (L10灵巧手关节顺序); thumb axis binding confirmed against hardware.
 channels:
-  - "{S}h_thumb_cmc_roll"
-  - "{S}h_thumb_cmc_yaw"
-  - "{S}h_thumb_cmc_pitch"
-  - "{S}h_index_mcp_roll"
-  - "{S}h_index_mcp_pitch"
-  - "{S}h_middle_mcp_pitch"
-  - "{S}h_ring_mcp_roll"
-  - "{S}h_ring_mcp_pitch"
-  - "{S}h_pinky_mcp_roll"
-  - "{S}h_pinky_mcp_pitch"
+  - "{S}h_thumb_cmc_pitch"   # 0  拇指根部   thumb base
+  - "{S}h_thumb_cmc_yaw"     # 1  拇指侧摆   thumb side-swing
+  - "{S}h_index_mcp_pitch"   # 2  食指根部   index base
+  - "{S}h_middle_mcp_pitch"  # 3  中指根部   middle base
+  - "{S}h_ring_mcp_pitch"    # 4  无名指根部  ring base
+  - "{S}h_pinky_mcp_pitch"   # 5  小指根部   pinky base
+  - "{S}h_index_mcp_roll"    # 6  食指侧摆   index side-swing
+  - "{S}h_ring_mcp_roll"     # 7  无名指侧摆  ring side-swing
+  - "{S}h_pinky_mcp_roll"    # 8  小指侧摆   pinky side-swing
+  - "{S}h_thumb_cmc_roll"    # 9  拇指旋转   thumb rotation
 
 clip_overrides: {}

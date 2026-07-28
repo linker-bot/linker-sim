@@ -1,25 +1,33 @@
 schema_version: 1
 convention: linear-fit-v0
 
-# SDK channel index -> templated actuated-joint name. L25 has 16 active
-# DoF (thumb 4, four fingers × 3). {S} expands to `l` or `r` per side;
-# matches meta.yaml:actuated_joints exactly.
+# SDK channel index -> templated actuated-joint name, in LinkerHand SDK
+# order (the 20-slot "L20" protocol layout used by L25). The SDK groups by
+# DoF type — the five bases, the five side-swings, thumb yaw, [SDK slots
+# 11-14 reserved], then the five tips — NOT per-finger, so this differs
+# from meta.yaml:actuated_joints order. The 4 reserved slots carry no
+# actuated joint and are omitted here, leaving 16 active channels;
+# recordings must strip them so hand columns are 16-wide. The decoder
+# reorders these to URDF/manifest order on output. {S} expands to `l`/`r`.
+# Ref: linkerhand-ros2-sdk Topic-Reference.md (L20灵巧手关节顺序);
+# thumb axis binding confirmed against hardware.
 channels:
-  - "{S}h_thumb_cmc_roll"
-  - "{S}h_thumb_cmc_yaw"
-  - "{S}h_thumb_cmc_pitch"
-  - "{S}h_thumb_mcp"
-  - "{S}h_index_mcp_roll"
-  - "{S}h_index_mcp_pitch"
-  - "{S}h_index_pip"
-  - "{S}h_middle_mcp_roll"
-  - "{S}h_middle_mcp_pitch"
-  - "{S}h_middle_pip"
-  - "{S}h_ring_mcp_roll"
-  - "{S}h_ring_mcp_pitch"
-  - "{S}h_ring_pip"
-  - "{S}h_pinky_mcp_roll"
-  - "{S}h_pinky_mcp_pitch"
-  - "{S}h_pinky_pip"
+  - "{S}h_thumb_cmc_pitch"   # 0   拇指根部   thumb base
+  - "{S}h_index_mcp_pitch"   # 1   食指根部   index base
+  - "{S}h_middle_mcp_pitch"  # 2   中指根部   middle base
+  - "{S}h_ring_mcp_pitch"    # 3   无名指根部  ring base
+  - "{S}h_pinky_mcp_pitch"   # 4   小指根部   pinky base
+  - "{S}h_thumb_cmc_roll"    # 5   拇指侧摆   thumb side-swing
+  - "{S}h_index_mcp_roll"    # 6   食指侧摆   index side-swing
+  - "{S}h_middle_mcp_roll"   # 7   中指侧摆   middle side-swing
+  - "{S}h_ring_mcp_roll"     # 8   无名指侧摆  ring side-swing
+  - "{S}h_pinky_mcp_roll"    # 9   小指侧摆   pinky side-swing
+  - "{S}h_thumb_cmc_yaw"     # 10  拇指横摆   thumb yaw
+  # SDK slots 11-14: 预留 / reserved — no actuated joint, dropped.
+  - "{S}h_thumb_mcp"         # 15  拇指尖部   thumb tip
+  - "{S}h_index_pip"         # 16  食指末端   index tip
+  - "{S}h_middle_pip"        # 17  中指末端   middle tip
+  - "{S}h_ring_pip"          # 18  无名指末端  ring tip
+  - "{S}h_pinky_pip"         # 19  小指末端   pinky tip
 
 clip_overrides: {}
