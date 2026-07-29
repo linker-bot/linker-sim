@@ -106,6 +106,13 @@ def main() -> None:
     p.add_argument("--arm", choices=["left", "right"], default="right")
     p.add_argument("--hz", type=float, default=30.0)
     p.add_argument("--workstation", default="a7_lite_l6_dc")
+    p.add_argument(
+        "--legacy", action="store_true",
+        help="decode with the legacy UMI-Dex SDK channel order "
+             "(decoder.yaml::legacy_channels). Use for early client devices "
+             "whose finger channels are wired in a different order (a bug on "
+             "that hardware). See hand_sdk_mapping_template.yaml umi-dex_legacy.",
+    )
     args = p.parse_args()
 
     npz_in = np.load(args.arm_npz, allow_pickle=False)
@@ -143,9 +150,11 @@ def main() -> None:
 
     component = _hand_component(args.workstation, args.arm)
     from linker_robot_assets.decoders import decode_hand, CONVENTION
-    hand_rad = decode_hand(component, args.arm, pct_rs)
+    hand_rad = decode_hand(component, args.arm, pct_rs, legacy=args.legacy)
+    mapping = "umi-dex_legacy" if args.legacy else "umi-dex"
     print(
-        f"[stitch] decoded via {component}/{args.arm} ({CONVENTION}): "
+        f"[stitch] decoded via {component}/{args.arm} ({CONVENTION}, "
+        f"mapping={mapping}): "
         f"hand shape={hand_rad.shape}, "
         f"rad range per ch: "
         + ", ".join(f"{hand_rad[:, i].min():+.2f}..{hand_rad[:, i].max():+.2f}"
@@ -156,6 +165,7 @@ def main() -> None:
     payload: dict[str, np.ndarray] = {arm_key: arm}
     payload[f"hand_{args.arm}"] = hand_rad.astype(np.float32)
     payload["decoder_convention"] = np.array(CONVENTION)
+    payload["channel_map"] = np.array(mapping)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     np.savez(args.out, **payload)

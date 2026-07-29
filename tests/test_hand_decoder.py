@@ -112,3 +112,45 @@ def test_channel_count_mismatch_raises():
     with pytest.raises(ValueError, match="channels"):
         decode_hand("linkerhand_l6", "right", np.zeros(7))  # l6 has 6
 
+
+def test_legacy_channel_order_permutes_thumb_index_middle_pinky():
+    """L6 legacy mapping differs from canonical only on the SDK channels
+    that feed thumb_pitch / index / middle / pinky (thumb_roll and ring
+    are shared). Output stays in manifest order either way.
+
+    Canonical vs legacy joint <- SDK channel (see decoder.yaml):
+        thumb_cmc_pitch : ch0 -> ch2
+        index_mcp_pitch : ch2 -> ch0
+        middle_mcp_pitch: ch3 -> ch5
+        pinky_mcp_pitch : ch5 -> ch3
+        thumb_cmc_roll  : ch1 (shared)
+        ring_mcp_pitch  : ch4 (shared)
+    """
+    # Distinctive per-SDK-channel input so we can trace routing.
+    sdk = np.arange(6, dtype=np.float32)[None, :] * 10.0
+    canon = decode_hand("linkerhand_l6", "right", sdk)[0]
+    legacy = decode_hand("linkerhand_l6", "right", sdk, legacy=True)[0]
+
+    # Manifest (output) order: thumb_roll, thumb_pitch, index, middle, ring, pinky.
+    # thumb_roll (idx 0, <-ch1) and ring (idx 4, <-ch4) unchanged.
+    np.testing.assert_allclose(canon[0], legacy[0], atol=1e-6)  # thumb_roll
+    np.testing.assert_allclose(canon[4], legacy[4], atol=1e-6)  # ring
+    # thumb_pitch/index/middle/pinky each pick a different SDK channel.
+    assert not np.isclose(canon[1], legacy[1])  # thumb_pitch: ch0 vs ch2
+    assert not np.isclose(canon[2], legacy[2])  # index:       ch2 vs ch0
+    assert not np.isclose(canon[3], legacy[3])  # middle:      ch3 vs ch5
+    assert not np.isclose(canon[5], legacy[5])  # pinky:       ch5 vs ch3
+
+    # Cross-check: legacy thumb_pitch == canonical value for SDK ch2 routed
+    # into thumb_pitch, i.e. legacy index==canonical index swap is consistent.
+    # thumb_pitch<-ch2 (legacy) equals index<-ch2 (canonical), same lo/hi? No —
+    # different joints/limits, so just assert the routing via a fresh decode
+    # where only ch2 is nonzero.
+    only_ch2 = np.zeros((1, 6), dtype=np.float32)
+    only_ch2[0, 2] = 100.0  # 100 -> lower limit for whichever joint ch2 feeds
+    lg = decode_hand("linkerhand_l6", "right", only_ch2, legacy=True)[0]
+    lo, _ = _urdf_limits("linkerhand_l6", "right", 6)
+    # legacy ch2 -> thumb_cmc_pitch (manifest idx 1) should sit at its lower limit.
+    np.testing.assert_allclose(lg[1], lo[1], atol=1e-5)
+
+

@@ -16,6 +16,22 @@ channels:
   - "{S}h_ring_mcp_pitch"
   - "{S}h_pinky_mcp_pitch"
 
+# Legacy UMI-Dex glove SDK channel order. Early client devices enumerate
+# the six finger channels in a different order than the current firmware
+# (a wiring bug, never corrected on that hardware). Same six joints as
+# `channels`, permuted; select with `decode_hand(..., legacy=True)`.
+# Finger identity per SDK index (from hand_sdk_mapping_template.yaml,
+# `umi-dex_legacy`): 0 index, 1 thumb-swing, 2 thumb, 3 pinky, 4 ring,
+# 5 middle. (The template's *_roll joints for middle/pinky are copy
+# noise — L6 has only *_pitch there.)
+legacy_channels:
+  - "{S}h_index_mcp_pitch"
+  - "{S}h_thumb_cmc_roll"
+  - "{S}h_thumb_cmc_pitch"
+  - "{S}h_pinky_mcp_pitch"
+  - "{S}h_ring_mcp_pitch"
+  - "{S}h_middle_mcp_pitch"
+
 # Optional: per-joint [lower, upper] clip override. Empty when URDF
 # limits are the SDK-trusted range.
 clip_overrides: {}

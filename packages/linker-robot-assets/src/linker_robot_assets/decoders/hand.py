@@ -124,6 +124,7 @@ def decode_hand(
     side: str,
     sdk_0_100: np.ndarray,
     *,
+    legacy: bool = False,
     component_root: Path | None = None,
 ) -> np.ndarray:
     """Linear interp from SDK [0, 100] to URDF [lower, upper] per joint.
@@ -133,7 +134,11 @@ def decode_hand(
         side: ``"left"`` or ``"right"``.
         sdk_0_100: per-channel SDK values, shape ``(n_channels,)`` or
             ``(T, n_channels)``. Float; values outside [0, 100] are clipped.
-            Columns are in ``decoder.yaml::channels`` (SDK) order.
+            Columns are in the selected channel list's (SDK) order.
+        legacy: use ``decoder.yaml::legacy_channels`` (an alternate SDK
+            channel order shipped by early/buggy client devices) instead of
+            the default ``channels``. Both list the same joints; only the
+            input column order differs.
         component_root: override the asset-tree component root (test-only).
 
     Returns:
@@ -144,7 +149,8 @@ def decode_hand(
     Raises:
         FileNotFoundError: component dir or ``decoder.yaml`` missing.
         ValueError: ``decoder.yaml`` convention mismatch, channel count
-            mismatch, or a joint without a ``<limit>`` element.
+            mismatch, missing ``legacy_channels`` when ``legacy=True``, or a
+            joint without a ``<limit>`` element.
         KeyError: a templated joint name not present in the variant URDF.
     """
     if side not in _VALID_SIDES:
@@ -152,7 +158,14 @@ def decode_hand(
 
     cdir = _resolve_component_dir(name, component_root)
     spec = _read_decoder_yaml(cdir)
-    joint_names = [_expand_template(c, side) for c in spec["channels"]]
+    key = "legacy_channels" if legacy else "channels"
+    chans = spec.get(key)
+    if not chans:
+        raise ValueError(
+            f"{cdir / 'decoder.yaml'}: no {key!r} list "
+            f"(required for legacy={legacy})"
+        )
+    joint_names = [_expand_template(c, side) for c in chans]
 
     sdk = np.asarray(sdk_0_100, dtype=np.float32)
     if sdk.shape[-1] != len(joint_names):
