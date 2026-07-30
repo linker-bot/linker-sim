@@ -58,11 +58,15 @@ def _build_arm_pose(
     *,
     recenter: bool = True,
     R_world: np.ndarray | None = None,
+    translate: np.ndarray | None = None,
 ) -> np.ndarray:
     """Apply 6D anchor (translation + RPY) on top of rebased trajectory.
 
     If ``R_world`` is given, additionally rotate every pose's wrist
     orientation by R_world in workstation frame (positions untouched).
+    If ``translate`` is given, rigidly shift every position by it (in
+    workstation frame) as the final step — a fixed manual offset, applied
+    AFTER recenter so it is not undone by the centroid alignment.
     """
     dx, dy, dz, ar, ap, ay = x6
     R_anchor = Rotation.from_euler("xyz", [ar, ap, ay]).as_matrix()
@@ -83,6 +87,8 @@ def _build_arm_pose(
         q_new_xyzw = rots_new.as_quat()
         arm[:, 3] = q_new_xyzw[:, 3].astype(np.float32)
         arm[:, 4:7] = q_new_xyzw[:, :3].astype(np.float32)
+    if translate is not None:
+        arm[:, :3] += np.asarray(translate, dtype=np.float32)
     return arm
 
 
@@ -164,6 +170,15 @@ def _parse_args() -> argparse.Namespace:
              "XYZ) in workstation frame; positions unchanged. Use to redirect "
              "the palm. Example: palm +y → -z is `-1.5707 0 0` (−90° "
              "about workstation X). Re-run the search after toggling.",
+    )
+    p.add_argument(
+        "--world-translate", type=float, nargs=3, default=None,
+        metavar=("DX", "DY", "DZ"),
+        help="rigidly shift the whole trajectory by (dx, dy, dz) metres in "
+             "workstation frame, applied AFTER the search (not optimised — a "
+             "fixed manual offset). Use e.g. `0 0 0.05` to raise the whole "
+             "motion 5 cm. Tracking is re-evaluated at the shifted placement "
+             "and reported; expect it to change since reachability changes.",
     )
     p.add_argument("--save-npz", type=Path, default=None)
     return p.parse_args()
@@ -295,7 +310,26 @@ def main() -> None:
     print(f"  ori RMS at best: {np.degrees(best[2]):.2f} deg")
 
     if args.save_npz is not None:
-        arm_pose = _build_arm_pose(rebased, T_ws_tool0, np.asarray(bx), recenter=True, R_world=R_world)
+        translate = (
+            np.asarray(args.world_translate, dtype=np.float32)
+            if args.world_translate is not None else None
+        )
+        arm_pose = _build_arm_pose(
+            rebased, T_ws_tool0, np.asarray(bx),
+            recenter=True, R_world=R_world, translate=translate,
+        )
+        if translate is not None:
+            shifted_pos, shifted_ori = _eval_rms(
+                backend, robot, ik, arm_role, arm_pose, sub_steps,
+                warmup_steps=args.warmup,
+            )
+            print(
+                f"  --world-translate [{translate[0]:+.3f}, {translate[1]:+.3f}, "
+                f"{translate[2]:+.3f}] m applied post-search; "
+                f"tracking at shifted placement: "
+                f"pos RMS {shifted_pos*1000:.2f} mm, ori RMS "
+                f"{np.degrees(shifted_ori):.2f} deg"
+            )
         args.save_npz.parent.mkdir(parents=True, exist_ok=True)
         np.savez(args.save_npz, **{f"arm_{args.arm}": arm_pose})
         print(f"  saved best trajectory: {args.save_npz}  shape={arm_pose.shape}")
