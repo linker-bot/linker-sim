@@ -187,7 +187,9 @@ python scripts/run.py robot=p7_i1_o6_bimanual max_steps=200 headless=true
 > `p7_i1_o6_bimanual`, `a7_lite_o6_dc`; `ar5_l25_bench_bimanual`,
 > `ar5_08_l25_bench_bimanual`, `p7_i1_l25_bimanual`, `a7_lite_l25_dc`;
 > plus the L6-hand variants (`ar5_l6_bench_bimanual`,
-> `p7_i1_l6_bimanual`, `a7_lite_l6_dc`) for backwards compatibility.
+> `p7_i1_l6_bimanual`, `a7_lite_l6_dc`) for backwards compatibility;
+> and the L20 Lite variants (`p7_i1_l20lite_bimanual`,
+> `a7_lite_l20lite_dc`).
 
 Multi-env:
 

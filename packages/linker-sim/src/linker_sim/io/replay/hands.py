@@ -63,9 +63,10 @@ class LinearByteDecoder:
 # calibration diverges (e.g. a manufacturer curve, per-channel flips),
 # only that row changes.
 _DECODERS: dict[str, HandDecoder] = {
-    "linker_l6":  LinearByteDecoder(scale=255.0, inverted=True),
-    "linker_o6":  LinearByteDecoder(scale=255.0, inverted=True),
-    "linker_l25": LinearByteDecoder(scale=255.0, inverted=True),
+    "linker_l6":      LinearByteDecoder(scale=255.0, inverted=True),
+    "linker_o6":      LinearByteDecoder(scale=255.0, inverted=True),
+    "linker_l25":     LinearByteDecoder(scale=255.0, inverted=True),
+    "linker_l20lite": LinearByteDecoder(scale=255.0, inverted=True),
 }
 
 

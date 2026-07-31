@@ -23,7 +23,7 @@ LO = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float32)
 HI = np.array([1.36, 0.58, 1.60, 1.60, 1.60, 1.60], dtype=np.float32)
 
 
-@pytest.mark.parametrize("name", ["linker_l6", "linker_o6", "linker_l25"])
+@pytest.mark.parametrize("name", ["linker_l6", "linker_o6", "linker_l25", "linker_l20lite"])
 def test_full_scale_byte_returns_lower_limit(name):
     """raw=255 -> joint at lo (rest / open hand)."""
     decoder = get(name)
@@ -32,7 +32,7 @@ def test_full_scale_byte_returns_lower_limit(name):
     np.testing.assert_allclose(out, LO, atol=1e-5)
 
 
-@pytest.mark.parametrize("name", ["linker_l6", "linker_o6", "linker_l25"])
+@pytest.mark.parametrize("name", ["linker_l6", "linker_o6", "linker_l25", "linker_l20lite"])
 def test_zero_byte_returns_upper_limit(name):
     """raw=0 -> joint at hi (full travel / closed hand)."""
     decoder = get(name)

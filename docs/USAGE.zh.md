@@ -69,6 +69,7 @@ python scripts/run.py num_envs=16 max_steps=200 headless=true
   `p7_i1_l25_bimanual`、`a7_lite_l25_dc`。
 - L6 手（沿用 / 并行）：`ar5_l6_bench_bimanual`、
   `p7_i1_l6_bimanual`、`a7_lite_l6_dc`。
+- L20 Lite 手：`p7_i1_l20lite_bimanual`、`a7_lite_l20lite_dc`。
 
 常用参数（定义于 [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)）：
 

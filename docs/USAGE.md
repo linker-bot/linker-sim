@@ -70,6 +70,7 @@ Shipped workstations (Hydra group `robot`):
   `p7_i1_l25_bimanual`, `a7_lite_l25_dc`.
 - L6 hand (legacy / parallel): `ar5_l6_bench_bimanual`,
   `p7_i1_l6_bimanual`, `a7_lite_l6_dc`.
+- L20 Lite hand: `p7_i1_l20lite_bimanual`, `a7_lite_l20lite_dc`.
 
 Common knobs (defined in [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)):
 
