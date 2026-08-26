@@ -2,30 +2,43 @@
 <robot name="a7_lite_torso">
 
   <!-- Stand: zero-mass link welded to world by the composer. base_link
-       hangs from it via a fixed joint that lifts the shoulder level up
-       to ~1.2 m so the arms (which extend ~0.6 m downward from the
-       shoulders in the default pose) don't penetrate the ground plane.
-       Tune this offset if the robot needs to sit higher/lower. -->
+       hangs from it via a fixed joint. The offset places the robot in
+       world so that (a) the torso base plates rest on z=0, and (b) the
+       shoulders sit symmetric about y=0 at ±0.1505.
+         z = 1.301489  = -min_z of the A7_Lite0812 base_link mesh, so the
+                         feet touch the ground plane.
+         y = 0.01438   = -(shoulder-mid), cancelling the mesh's asymmetric
+                         shoulder offsets (joint l2 y=+0.13612, joint r2
+                         y=-0.16488; mid=-0.01438) so the arms land at
+                         world y=±0.1505.
+         x = 0         the mesh is symmetric about x=0.
+       The A7_Lite0812 mesh includes the head and chest; earlier torso
+       meshes were a bare column, so these values differ from the prior
+       (0,0,1.2) stand + (…,-0.022706) mount pads. -->
   <link name="torso_root" />
   <joint name="torso_stand" type="fixed">
-    <origin xyz="0 0 1.2" rpy="0 0 0" />
+    <origin xyz="0 0.01438 1.301489" rpy="0 0 0" />
     <parent link="torso_root" />
     <child link="base_link" />
   </joint>
 
   <link name="base_link">
     <inertial>
-      <origin xyz="0.0044493 9.5996E-07 -0.58827" rpy="0 0 0" />
-      <mass value="8.6616" />
+      <origin xyz="-0.00041953 -0.01434 -0.54345" rpy="0 0 0" />
+      <mass value="11.244" />
       <inertia
-        ixx="0.19297" ixy="1.6977E-06" ixz="0.00086704"
-        iyy="0.19297" iyz="4.1272E-08"
-        izz="0.072594" />
+        ixx="0.25093" ixy="-3.0431E-06" ixz="0.0012232"
+        iyy="0.24021" iyz="5.8365E-06"
+        izz="0.12911" />
     </inertial>
+    <!-- Visual uses the full-resolution 527k-face vendor mesh; collision uses
+         the 100k decimation. MuJoCo's MJCF caps STL at 200k faces, so base.mjcf
+         references the decimated mesh for both; yourdfpy/Viser and Isaac read
+         this URDF's full-res <visual>. See base_link_visual.STL. -->
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="meshes/base_link.STL" />
+        <mesh filename="meshes/base_link_visual.STL" />
       </geometry>
       <material name="a7_lite_torso_gray">
         <color rgba="0.75294 0.75294 0.75294 1" />
@@ -39,22 +52,21 @@
     </collision>
   </link>
 
-  <!-- Mount-pad offsets carry the LZARMzongzhuang.urdf shoulder absorption.
-       The per-side a7_lite__{left,right}.urdf files use a different
-       base_link STL (with shoulder geometry baked in) and place the
-       arms at (0, ±0.1435, 0); we ship a different torso mesh, so the
-       (0.0062932, ±0.1505, -0.022706) values below are correct for our
-       base_link. -->
+  <!-- Mount pads sit at the shoulder-joint origins of the A7_Lite0812
+       combined URDF (joint l2 / joint r2 relative to base_link). Arms
+       attach their zero-mass {V}_arm_root here with identity xyz/rpy;
+       the arm URDF's first revolute (L1/R1) then sits at xyz=0 and
+       recovers the vendor kinematics exactly. -->
   <link name="arm_left_mount" />
   <joint name="weld_arm_left_mount" type="fixed">
-    <origin xyz="0.0062932 0.1505 -0.022706" rpy="0 0 0" />
+    <origin xyz="0 0.13612 0" rpy="0 0 0" />
     <parent link="base_link" />
     <child link="arm_left_mount" />
   </joint>
 
   <link name="arm_right_mount" />
   <joint name="weld_arm_right_mount" type="fixed">
-    <origin xyz="0.0062926 -0.1505 -0.022706" rpy="0 0 0" />
+    <origin xyz="0 -0.16488 0" rpy="0 0 0" />
     <parent link="base_link" />
     <child link="arm_right_mount" />
   </joint>

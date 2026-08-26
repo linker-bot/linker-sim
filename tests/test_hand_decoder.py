@@ -32,7 +32,13 @@ def _urdf_limits(name, side, n):
     from linker_robot_assets import asset_root
 
     cdir = asset_root() / "components" / "hands" / name
-    tree = ET.parse(cdir / "variants" / side / "hand.urdf")
+    # Tolerate both component layouts: variants/<side>/hand.urdf (l6/l25/
+    # l20lite) and the flat <name>_<side>.urdf (o6). Mirrors
+    # decoders.hand._resolve_hand_urdf.
+    urdf = cdir / "variants" / side / "hand.urdf"
+    if not urdf.is_file():
+        urdf = cdir / f"{name}_{side}.urdf"
+    tree = ET.parse(urdf)
     lo, hi = [], []
     for j in tree.getroot().findall("joint"):
         if j.get("type") == "fixed" or j.find("mimic") is not None:

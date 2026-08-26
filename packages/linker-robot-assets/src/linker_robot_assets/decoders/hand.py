@@ -119,6 +119,26 @@ def _urdf_actuated_order(urdf_path: Path) -> list[str]:
     return names
 
 
+def _resolve_hand_urdf(cdir: Path, name: str, side: str) -> Path:
+    """Locate a hand's per-side URDF, tolerating both component layouts.
+
+    Most hands (l6/l25/l20lite/l30) use ``variants/<side>/hand.urdf``; o6 ships
+    a flat ``<name>_<side>.urdf`` at the component root. Try the variants path
+    first, then fall back to the flat one.
+    """
+    candidates = (
+        cdir / "variants" / side / "hand.urdf",
+        cdir / f"{name}_{side}.urdf",
+    )
+    for c in candidates:
+        if c.is_file():
+            return c
+    raise FileNotFoundError(
+        f"{name}/{side}: no hand URDF found "
+        f"(tried {[str(c) for c in candidates]})"
+    )
+
+
 def decode_hand(
     name: str,
     side: str,
@@ -175,7 +195,7 @@ def decode_hand(
             f"{len(joint_names)})"
         )
 
-    urdf_path = cdir / "variants" / side / "hand.urdf"
+    urdf_path = _resolve_hand_urdf(cdir, name, side)
     lo, hi = _read_urdf_limits(urdf_path, joint_names)
 
     # Optional per-joint clip overrides (joint name -> [lo, hi]).

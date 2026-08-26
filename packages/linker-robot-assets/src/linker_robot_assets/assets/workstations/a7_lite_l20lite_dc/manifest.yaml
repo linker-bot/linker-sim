@@ -1,12 +1,12 @@
 schema_version: 1
 name: a7_lite_l20lite_dc
 composer_version: 0.1.0
-recipe_sha256: 20d6c79abaefa963c01c961b9b7b879762da657f8e1bda6956e7199befc812b5
+recipe_sha256: 969d53375540c5c56d379b3f47e513a13192051007eccd5ad1c8c60983145460
 components:
   base:
     name: bases/a7_lite_torso
     variant: default
-    sha256: 1643db8e5636a9b4ef60b89994b5713cf505fef7a9cb33b5a0660dc7ec960620
+    sha256: b4e579ad75e96a887a52109f6fa1fd4c6619fbb7d8529d981fb400b37d467f83
   arm_left:
     name: arms/a7_lite
     variant: left
@@ -26,8 +26,8 @@ components:
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
-  urdf_sha256: 8423bc4e569f2a05b4444f43bc19fc32befbdca532fbd6e2dfa00017c1fb49ce
-  mjcf_sha256: 0342510d4b13cc0d0158fe1541efd327b849beb69ebb226dc8157c6722e07d48
+  urdf_sha256: 94cc41a880e25fb852e5832b0725e92fe048ba4f044b089e4f22757c7a0312f7
+  mjcf_sha256: c02afb29c85c687520bae52e155c08013baa38a1f040c487523689641119c977
 joints:
   base: []
   arm_left:
