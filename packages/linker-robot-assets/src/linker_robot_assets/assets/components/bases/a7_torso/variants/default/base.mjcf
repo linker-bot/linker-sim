@@ -1,0 +1,36 @@
+<mujoco model="a7_torso_default">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="base_a7_torso_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="base_a7_torso_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="torso_base_link" file="base_link.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="torso_root" pos="0 0 0">
+      <body name="base_link" pos="0 0 1.2">
+        <inertial pos="0.0080125 0.00020032 -0.58441" mass="10.594"
+                  fullinertia="0.49361 0.48657 0.19284 -1.5105E-06 0.0010058 1.6802E-05"/>
+        <geom class="base_a7_torso_visual" mesh="torso_base_link"/>
+        <geom class="base_a7_torso_collision" mesh="torso_base_link"/>
+
+        <body name="arm_left_mount" pos="0 0.147 0">
+          <site name="arm_left_mount" pos="0 0 0"/>
+        </body>
+
+        <body name="arm_right_mount" pos="0 -0.147 0">
+          <site name="arm_right_mount" pos="0 0 0"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

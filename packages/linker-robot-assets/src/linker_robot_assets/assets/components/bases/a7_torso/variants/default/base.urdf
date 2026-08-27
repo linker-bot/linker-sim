@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- A7 data-collection torso (source: 数采方案1.SLDASM base_link). torso_root is
+     welded to world by the composer; base_link hangs from it via a fixed joint
+     that lifts the shoulder level to ~1.2 m so the arms don't hit the ground.
+     Mount pads sit at the source base_link -> joint_l1 / joint_r1 origins; the
+     arm's {V}_arm_root attaches there with identity xyz/rpy and its first
+     revolute recovers the original kinematics exactly. -->
+<robot name="a7_torso">
+
+  <link name="torso_root" />
+  <joint name="torso_stand" type="fixed">
+    <origin xyz="0 0 1.2" rpy="0 0 0" />
+    <parent link="torso_root" />
+    <child link="base_link" />
+  </joint>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.0080125 0.00020032 -0.58441" rpy="0 0 0" />
+      <mass value="10.594" />
+      <inertia
+        ixx="0.49361" ixy="-1.5105E-06" ixz="0.0010058"
+        iyy="0.48657" iyz="1.6802E-05"
+        izz="0.19284" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/base_link.STL" />
+      </geometry>
+      <material name="a7_torso_gray">
+        <color rgba="0.75294 0.75294 0.75294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="arm_left_mount" />
+  <joint name="weld_arm_left_mount" type="fixed">
+    <origin xyz="0 0.147 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="arm_left_mount" />
+  </joint>
+
+  <link name="arm_right_mount" />
+  <joint name="weld_arm_right_mount" type="fixed">
+    <origin xyz="0 -0.147 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="arm_right_mount" />
+  </joint>
+</robot>

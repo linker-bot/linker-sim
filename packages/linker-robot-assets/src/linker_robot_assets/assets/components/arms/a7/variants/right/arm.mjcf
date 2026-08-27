@@ -1,0 +1,106 @@
+<mujoco model="a7_right">
+  <compiler meshdir="meshes" discardvisual="false" autolimits="true" angle="radian" eulerseq="XYZ"/>
+  <option/>
+
+  <default>
+    <default class="arm_a7_visual">
+      <geom type="mesh" contype="0" conaffinity="0" group="1"/>
+    </default>
+    <default class="arm_a7_collision">
+      <geom type="mesh" contype="1" conaffinity="1" group="3"/>
+    </default>
+  </default>
+
+  <asset>
+    <mesh name="R1" file="R1_Link.STL"/>
+    <mesh name="R2" file="R2_Link.STL"/>
+    <mesh name="R3" file="R3_Link.STL"/>
+    <mesh name="R4" file="R4_Link.STL"/>
+    <mesh name="R5" file="R5_Link.STL"/>
+    <mesh name="R6" file="R6_Link.STL"/>
+    <mesh name="R7" file="R7_Link.STL"/>
+  </asset>
+
+  <worldbody>
+    <body name="R_arm_root" pos="0 0 0">
+      <site name="base_mount" pos="0 0 0"/>
+
+      <body name="R1_Link" pos="0 0 0">
+        <inertial pos="0.002708 -0.063352 -7.9383E-05" mass="0.33055"
+                  fullinertia="0.0004215 0.0001625 0.00035691 1.5467E-05 6.104E-08 2.0807E-06"/>
+        <joint name="R1_Joint" type="hinge" axis="0 -1 0"
+               range="-1.05 2.97" damping="20" frictionloss="0.0" armature="0.01"/>
+        <geom class="arm_a7_visual" mesh="R1"/>
+        <geom class="arm_a7_collision" mesh="R1"/>
+        <body name="R2_Link" pos="0.0328 -0.075 0">
+          <inertial pos="-0.031959 5.0041E-06 -0.068645" mass="0.27885"
+                    fullinertia="0.00052682 0.00044111 0.00018578 6.678E-09 1.3195E-06 -1.7357E-08"/>
+          <joint name="R2_Joint" type="hinge" axis="1 0 0"
+                 range="-3.49 0.35" damping="20" frictionloss="0.0" armature="0.01"/>
+          <geom class="arm_a7_visual" mesh="R2"/>
+          <geom class="arm_a7_collision" mesh="R2"/>
+          <body name="R3_Link" pos="-0.0328 0 -0.12">
+            <inertial pos="0.0040768 -0.00046081 -0.10122" mass="0.29571"
+                      fullinertia="0.00068049 0.00063555 0.00015786 5.4932E-08 4.8841E-05 -1.3613E-07"/>
+            <joint name="R3_Joint" type="hinge" axis="0 0 -1"
+                   range="-2.79 2.79" damping="20" frictionloss="0.0" armature="0.01"/>
+            <geom class="arm_a7_visual" mesh="R3"/>
+            <geom class="arm_a7_collision" mesh="R3"/>
+            <body name="R4_Link" pos="0.0095 0.0325 -0.15">
+              <inertial pos="-0.0095862 -0.031592 -0.070292" mass="0.25138"
+                        fullinertia="0.00028685 0.00034007 0.00015409 -3.2093E-07 -6.4912E-06 -1.1689E-06"/>
+              <joint name="R4_Joint" type="hinge" axis="0 -1 0"
+                     range="-0.21 2.355" damping="20" frictionloss="0.0" armature="0.01"/>
+              <geom class="arm_a7_visual" mesh="R4"/>
+              <geom class="arm_a7_collision" mesh="R4"/>
+              <body name="R5_Link" pos="-0.0095 -0.0325 -0.11">
+                <inertial pos="5.5132E-05 -0.0078207 -0.05531" mass="0.13958"
+                          fullinertia="5.9203E-05 7.6816E-05 4.7942E-05 8.2373E-08 1.2818E-08 8.9324E-06"/>
+                <joint name="R5_Joint" type="hinge" axis="0 0 -1"
+                       range="-2.79 2.79" damping="20" frictionloss="0.0" armature="0.01"/>
+                <geom class="arm_a7_visual" mesh="R5"/>
+                <geom class="arm_a7_collision" mesh="R5"/>
+                <body name="R6_Link" pos="0 0.022 -0.06">
+                  <inertial pos="-0.0053865 -0.017496 -0.057544" mass="0.16212"
+                            fullinertia="0.0001356 9.7781E-05 6.6953E-05 3.8677E-06 3.0459E-06 -1.7636E-05"/>
+                  <joint name="R6_Joint" type="hinge" axis="0 1 0"
+                         range="-1.57 1.57" damping="20" frictionloss="0.0" armature="0.01"/>
+                  <geom class="arm_a7_visual" mesh="R6"/>
+                  <geom class="arm_a7_collision" mesh="R6"/>
+                  <body name="R7_Link" pos="0.0225 -0.022 -0.064">
+                    <inertial pos="-0.086955 0.027834 -0.032643" mass="0.30286"
+                              fullinertia="0.00038963 0.0003878 0.00060212 0.00016057 9.5278E-05 -6.63E-05"/>
+                    <joint name="R7_Joint" type="hinge" axis="1 0 0"
+                           range="-1.57 1.57" damping="20" frictionloss="0.0" armature="0.01"/>
+                    <geom class="arm_a7_visual" mesh="R7"/>
+                    <geom class="arm_a7_collision" mesh="R7"/>
+                    <site name="tool0" pos="0 0 0"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="R1_Joint_act" joint="R1_Joint" kp="2000" kv="0" ctrlrange="-1.05 2.97"/>
+    <position name="R2_Joint_act" joint="R2_Joint" kp="2000" kv="0" ctrlrange="-3.49 0.35"/>
+    <position name="R3_Joint_act" joint="R3_Joint" kp="2000" kv="0" ctrlrange="-2.79 2.79"/>
+    <position name="R4_Joint_act" joint="R4_Joint" kp="2000" kv="0" ctrlrange="-0.21 2.355"/>
+    <position name="R5_Joint_act" joint="R5_Joint" kp="2000" kv="0" ctrlrange="-2.79 2.79"/>
+    <position name="R6_Joint_act" joint="R6_Joint" kp="2000" kv="0" ctrlrange="-1.57 1.57"/>
+    <position name="R7_Joint_act" joint="R7_Joint" kp="2000" kv="0" ctrlrange="-1.57 1.57"/>
+  </actuator>
+
+  <contact>
+    <exclude body1="R1_Link" body2="R2_Link"/>
+    <exclude body1="R2_Link" body2="R3_Link"/>
+    <exclude body1="R3_Link" body2="R4_Link"/>
+    <exclude body1="R4_Link" body2="R5_Link"/>
+    <exclude body1="R5_Link" body2="R6_Link"/>
+    <exclude body1="R6_Link" body2="R7_Link"/>
+  </contact>
+</mujoco>

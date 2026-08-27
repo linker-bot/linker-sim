@@ -1,0 +1,67 @@
+schema_version: 1
+kind: arm
+name: a7
+drive: position
+
+# Two mirrored variants of the full-size A7 arm. Kinematics (axes, limits,
+# joint origins, effort/velocity) come from the SDK per-side URDFs
+# a7__left.urdf / a7__right.urdf — the URDFs the real robot/recorder uses.
+# The combined data-collection source (数采方案1.SLDASM) has flipped sign
+# conventions on several joints and CAD-nominal limits, so only its
+# inertials + STL meshes are kept (they match the meshes this component
+# ships). Source links Link_l1..l7 / Link_r1..r7 are renamed L1..L7 /
+# R1..R7; the shared base_link lives in a7_torso. {V} expands to L / R.
+variants:
+  left:
+    vars: {V: L}
+    urdf: variants/left/arm.urdf
+    mjcf: variants/left/arm.mjcf
+    meshdir: variants/left/meshes
+  right:
+    vars: {V: R}
+    urdf: variants/right/arm.urdf
+    mjcf: variants/right/arm.mjcf
+    meshdir: variants/right/meshes
+
+# Zero-mass virtual link authored in each variant URDF. Recipe mounts are
+# fixed, so the first revolute joint (L1/R1) must live inside the arm
+# component; the virtual root hosts that joint at xyz=0 and is welded to
+# the torso's mount-pad link by a fixed mount joint emitted by the
+# composer. The torso's arm_{side}_mount link absorbs the source URDF's
+# base_link -> joint_{l,r}1 origin offset.
+root_link: "{V}_arm_root"
+
+# Mount frames this component exposes.
+#   base_mount — the arm's virtual root; welded to torso.arm_{side}_mount.
+#   tool0      — the wrist-tip frame ({V}7_Link, source Link_{l,r}7).
+#                Hands attach here.
+mount_frames:
+  base_mount:
+    parent: "{V}_arm_root"
+  tool0:
+    parent: "{V}7_Link"
+
+ee_frame: tool0
+
+actuated_joints:
+  - "{V}1_Joint"
+  - "{V}2_Joint"
+  - "{V}3_Joint"
+  - "{V}4_Joint"
+  - "{V}5_Joint"
+  - "{V}6_Joint"
+  - "{V}7_Joint"
+
+# Mirror a7_lite's two-profile setup (position-drive PD in joint mode,
+# softer gains for OSC task-space control).
+default_gains:
+  stiffness: 2000.0
+  damping: 20.0
+
+gain_profiles:
+  joint:
+    stiffness: 2000.0
+    damping: 20.0
+  osc:
+    stiffness: 150.0
+    damping: 8.0

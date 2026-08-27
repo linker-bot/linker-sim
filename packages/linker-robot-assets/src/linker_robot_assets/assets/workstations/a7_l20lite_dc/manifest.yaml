@@ -1,0 +1,158 @@
+schema_version: 1
+name: a7_l20lite_dc
+composer_version: 0.1.0
+recipe_sha256: a5f82eb2d0b5a93e0d6e8a1e444039f9098b32ba69e15c93a2cedc495be83062
+components:
+  base:
+    name: bases/a7_torso
+    variant: default
+    sha256: 68431d544cf2d2ac7b41f86084c7adac148364a40233301ed144942fd6936051
+  arm_left:
+    name: arms/a7
+    variant: left
+    sha256: 10863d05ac7ee423965356051d7b14e510b17b2d103513554aa0993301bb3795
+  arm_right:
+    name: arms/a7
+    variant: right
+    sha256: 8daedc38e258b4b594631f5d70b18600c3e14450c675bc826a4874a2f79ed60c
+  hand_left:
+    name: hands/linkerhand_l20lite
+    variant: left
+    sha256: d88053136804ee356c810531ae18a9451509da469e332cef9c525aca6a89d6c5
+  hand_right:
+    name: hands/linkerhand_l20lite
+    variant: right
+    sha256: fa36c92775b496a5c5b2c014fdf5cb3a3261ac33206185e420bf920c7c263997
+artifacts:
+  urdf: workstation.urdf
+  mjcf: workstation.mjcf
+  urdf_sha256: 797c431aa98497d19c4c472b8be488e51525781ad17d2d6cf67dfd62ce415fc1
+  mjcf_sha256: 9609d2ad5afde6556a2a13142adc84ac176dd8a8534219b80b0a5b0e4fb49e4c
+joints:
+  base: []
+  arm_left:
+  - arm_left_L1_Joint
+  - arm_left_L2_Joint
+  - arm_left_L3_Joint
+  - arm_left_L4_Joint
+  - arm_left_L5_Joint
+  - arm_left_L6_Joint
+  - arm_left_L7_Joint
+  arm_right:
+  - arm_right_R1_Joint
+  - arm_right_R2_Joint
+  - arm_right_R3_Joint
+  - arm_right_R4_Joint
+  - arm_right_R5_Joint
+  - arm_right_R6_Joint
+  - arm_right_R7_Joint
+  hand_left:
+  - hand_left_lh_thumb_cmc_roll
+  - hand_left_lh_thumb_cmc_yaw
+  - hand_left_lh_thumb_cmc_pitch
+  - hand_left_lh_index_mcp_roll
+  - hand_left_lh_index_mcp_pitch
+  - hand_left_lh_middle_mcp_pitch
+  - hand_left_lh_ring_mcp_roll
+  - hand_left_lh_ring_mcp_pitch
+  - hand_left_lh_pinky_mcp_roll
+  - hand_left_lh_pinky_mcp_pitch
+  hand_right:
+  - hand_right_rh_thumb_cmc_roll
+  - hand_right_rh_thumb_cmc_yaw
+  - hand_right_rh_thumb_cmc_pitch
+  - hand_right_rh_index_mcp_roll
+  - hand_right_rh_index_mcp_pitch
+  - hand_right_rh_middle_mcp_pitch
+  - hand_right_rh_ring_mcp_roll
+  - hand_right_rh_ring_mcp_pitch
+  - hand_right_rh_pinky_mcp_roll
+  - hand_right_rh_pinky_mcp_pitch
+mimic_joints:
+  base: []
+  arm_left: []
+  arm_right: []
+  hand_left:
+  - hand_left_lh_thumb_mcp
+  - hand_left_lh_thumb_ip
+  - hand_left_lh_index_pip
+  - hand_left_lh_index_dip
+  - hand_left_lh_middle_pip
+  - hand_left_lh_middle_dip
+  - hand_left_lh_ring_pip
+  - hand_left_lh_ring_dip
+  - hand_left_lh_pinky_pip
+  - hand_left_lh_pinky_dip
+  hand_right:
+  - hand_right_rh_thumb_mcp
+  - hand_right_rh_thumb_ip
+  - hand_right_rh_index_pip
+  - hand_right_rh_index_dip
+  - hand_right_rh_middle_pip
+  - hand_right_rh_middle_dip
+  - hand_right_rh_ring_pip
+  - hand_right_rh_ring_dip
+  - hand_right_rh_pinky_pip
+  - hand_right_rh_pinky_dip
+frames:
+  base:arm_left_mount: base_arm_left_mount
+  base:arm_right_mount: base_arm_right_mount
+  arm_left:base_mount: arm_left_L_arm_root
+  arm_left:tool0: arm_left_L7_Link
+  arm_right:base_mount: arm_right_R_arm_root
+  arm_right:tool0: arm_right_R7_Link
+  hand_left:wrist_mount: hand_left_lh_hand_base_link
+  hand_right:wrist_mount: hand_right_rh_hand_base_link
+ee_link: arm_left_L7_Link
+ee_links:
+  arm_left: arm_left_L7_Link
+  arm_right: arm_right_R7_Link
+base_link: base_torso_root
+default_gains:
+  arm_left:
+    stiffness: 2000.0
+    damping: 20.0
+  arm_right:
+    stiffness: 2000.0
+    damping: 20.0
+  hand_left:
+    stiffness: 200.0
+    damping: 4.0
+  hand_right:
+    stiffness: 200.0
+    damping: 4.0
+gain_profiles:
+  arm_left:
+    default:
+      stiffness: 2000.0
+      damping: 20.0
+    joint:
+      stiffness: 2000.0
+      damping: 20.0
+    osc:
+      stiffness: 150.0
+      damping: 8.0
+  arm_right:
+    default:
+      stiffness: 2000.0
+      damping: 20.0
+    joint:
+      stiffness: 2000.0
+      damping: 20.0
+    osc:
+      stiffness: 150.0
+      damping: 8.0
+  hand_left:
+    default:
+      stiffness: 200.0
+      damping: 4.0
+    joint:
+      stiffness: 200.0
+      damping: 4.0
+  hand_right:
+    default:
+      stiffness: 200.0
+      damping: 4.0
+    joint:
+      stiffness: 200.0
+      damping: 4.0

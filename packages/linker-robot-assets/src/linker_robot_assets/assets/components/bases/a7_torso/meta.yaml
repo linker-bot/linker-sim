@@ -1,0 +1,29 @@
+schema_version: 1
+kind: base
+name: a7_torso
+
+# Single variant — the A7 data-collection torso ships one mesh set
+# (数采方案1.SLDASM base_link) with fixed mount pads for both arms baked at
+# the joint_l1 / joint_r1 origins from the source URDF.
+variants:
+  default:
+    vars: {}
+    urdf: variants/default/base.urdf
+    mjcf: variants/default/base.mjcf
+    meshdir: variants/default/meshes
+
+root_link: torso_root
+
+# Mount pads placed at the shoulder-joint origins in the source URDF:
+#   arm_left_mount  -> joint_l1 origin: (0,  0.147, 0)
+#   arm_right_mount -> joint_r1 origin: (0, -0.147, 0)
+# Arms attach their zero-mass {V}_arm_root with identity xyz/rpy; the arm
+# URDF's first revolute (L1_Joint / R1_Joint) then sits at xyz=0 and
+# recovers the original kinematics exactly.
+mount_frames:
+  arm_left_mount:
+    parent: arm_left_mount
+  arm_right_mount:
+    parent: arm_right_mount
+
+# No actuated joints — the torso is static.
