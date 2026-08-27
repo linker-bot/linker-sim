@@ -4,10 +4,10 @@
 
 ## 前置：命令前缀
 
-所有 Python 命令都用这个前缀（IsaacLab 虚拟环境 + UMI-Dex 的 `PYTHONPATH`）：
+所有 Python 命令都用这个前缀（MuJoCo 虚拟环境 + UMI-Dex 的 `PYTHONPATH`）：
 
 ```bash
-PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python
+PYTHONPATH=~/codes/UMI-Dex/src python
 ```
 
 ## 1. 解压
@@ -20,7 +20,7 @@ unzip -o ep_0007_01045e2b.zip -d data/client_ep_0007
 ## 2. Anchor search（求解手臂锚点，输出 arm_right 轨迹）
 
 ```bash
-PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python \
+PYTHONPATH=~/codes/UMI-Dex/src python \
     scripts/anchor_search.py <bag 目录> \
     --arm right --hz 30.0 --maxiter 100 \
     --mirror-x --world-rotate-rpy -1.5707 -1.5707 1.5708 \
@@ -40,7 +40,7 @@ PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python \
 ## 3. 拼接手部数据（读 /hand/joint_states，解码成弧度）
 
 ```bash
-PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python \
+PYTHONPATH=~/codes/UMI-Dex/src python \
     scripts/add_hand_to_npz.py \
     --bag <bag 目录> \
     --arm-npz outputs/umi_replay/ep_arm.npz \
@@ -54,7 +54,7 @@ PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python \
 ## 4. 回放 / 可视化
 
 ```bash
-PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python \
+PYTHONPATH=~/codes/UMI-Dex/src python \
     scripts/replay_ik.py robot=a7_lite_l6_dc source=data_collection \
     ee_poses=outputs/umi_replay/ep_with_hand.npz \
     headless=false realtime=true

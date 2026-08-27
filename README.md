@@ -3,8 +3,8 @@
 [English](README.md) · [中文](README.zh.md)
 
 Bimanual RL simulation workspace for AR5 / P7 / A7-lite arms paired
-with Linkerhand L6 / O6 / L25 / L30, with Isaac Sim, MuJoCo, and Viser
-backends.
+with Linkerhand L6 / O6 / L25 / L30, running in a MuJoCo simulation
+environment with real-robot telemetry replay.
 
 <table>
   <tr>
@@ -17,7 +17,7 @@ backends.
 
 - Composer-driven workstation assets (recipe → URDF + MJCF + manifest).
 - A runtime backbone (`scripts/run.py`) that runs any composed
-  workstation under either backend with selectable controllers, tasks,
+  workstation under MuJoCo with selectable controllers, tasks,
   and recorders.
 - A real-robot telemetry replayer (`scripts/replay.py`).
 - Validators, registry tools, and a CI drift gate for the asset
@@ -35,7 +35,7 @@ This repo is a `uv` workspace with two members under `packages/`:
   - `src/linker_robot_assets/composer/` — recipe → URDF/MJCF/manifest.
   - `src/linker_robot_assets/ci/check_drift.sh` — composer drift gate.
 - `packages/linker-sim/` — sim runtime (depends on `linker-robot-assets`).
-  - `src/linker_sim/backends/{isaac,mujoco,viser}/` — backend implementations.
+  - `src/linker_sim/backends/mujoco/` — MuJoCo backend implementation.
   - `src/linker_sim/controllers/` — `joint_pd`, `osc`, `ik`.
   - `src/linker_sim/tasks/` — task definitions.
   - `src/linker_sim/configs/` — Hydra configs (`pkg://linker_sim.configs`).
@@ -48,12 +48,11 @@ Top-level entry points and supporting trees:
 
 ## Installation
 
-See [docs/installation.md](docs/installation.md). Two profiles are available:
+See [docs/installation.md](docs/installation.md). MuJoCo-only
+(Python 3.11 or 3.12, no GPU needed) — for replay, RL, and data
+collection workflows.
 
-- **MuJoCo-only** (Python 3.11 or 3.12, no GPU needed) — for replay and data collection workflows.
-- **Full** (Python 3.11 + NVIDIA GPU) — for Isaac Sim RL training.
-
-Quick MuJoCo-only setup:
+Quick setup:
 
 ```bash
 python3 -m venv .venv-mujoco && source .venv-mujoco/bin/activate
@@ -77,22 +76,12 @@ For everything else (MuJoCo, replay, gain tuning, composing new
 workstations, recording episodes), see [docs/USAGE.md](docs/USAGE.md)
 ([中文](docs/USAGE.zh.md)).
 
-### Data collection team — browser visualization
+### Browser-based replay visualization
 
-For visualizing bag replays in a browser without Isaac Sim or a GPU,
-use the `[viser]` profile. Install both workspace members into a
-Python 3.11 or 3.12 venv (this profile is incompatible with the
-`env_isaaclab` env — viser pulls a newer `websockets` than Isaac Sim
-pins):
-
-```bash
-python3 -m venv .venv-viser && source .venv-viser/bin/activate
-pip install -e packages/linker-robot-assets -e packages/linker-sim[viser]
-python scripts/replay.py backend=viser source=data_collection robot=a7_lite_l6_dc
-```
-
-Open the URL printed at startup (default `http://127.0.0.1:8080`).
-Replay-only for now. TODO(linker-sim): wire up teleop on the Viser backend.
+Browser-based replay visualization (WebGL, no GPU required) now lives
+in the separate [`linker-sim-viser`](https://gitea.linkerhub.work/LinkerOS/linker-sim-viser)
+repository, which consumes this repo's `linker-robot-assets` package as
+its single source of truth for robot assets.
 
 See [docs/known_limitations.md](docs/known_limitations.md) for the
 hand-decoder linear-fit caveat and the UMI-Dex path-hack TODO.
@@ -103,5 +92,3 @@ hand-decoder linear-fit caveat and the UMI-Dex path-hack TODO.
   logs); composed workstation files (`workstation.urdf`,
   `workstation.mjcf`, `manifest.yaml`) **are** committed.
 - Put feature work on dedicated branches and commit before switching.
-- IsaacLab lives outside this repo (e.g. `~/opt/IsaacLab/`) and is
-  shared across projects; see [docs/installation.md](docs/installation.md).

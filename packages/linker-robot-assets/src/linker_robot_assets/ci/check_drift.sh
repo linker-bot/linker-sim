@@ -4,11 +4,6 @@
 # fresh compose. Any mismatch means someone edited a recipe or component
 # source without re-running the composer.
 #
-# XRDF coverage: the composer's component-level hash already includes any
-# variant XRDF (see compose.py `_hash_component`). An XRDF edit changes
-# the manifest's component hash → manifest text changes → drift caught
-# transitively. So this script does not need a separate XRDF arm.
-#
 # Usage (run from anywhere — paths resolve relative to this script):
 #   bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh              # check all workstations
 #   bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh <ws_name>    # check one workstation

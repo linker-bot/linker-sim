@@ -1,9 +1,9 @@
 """Tests for `sim.tasks.bimanual_reach.BimanualReachTask`.
 
-No Isaac: uses an inline fake backend with a bimanual handle and an
+Uses an inline fake backend with a bimanual handle and an
 ee_pose_b that returns different values per arm frame. Focus is on
 dim-matching + reward-summing semantics — the actual kinematics come
-from the Isaac backend at runtime.
+from the sim backend at runtime.
 """
 
 from __future__ import annotations
@@ -39,7 +39,6 @@ def _bimanual_handle() -> WorkstationHandle:
         default_gains=gains,
         gain_profiles={},
         components={"arm_left": ComponentRef("arms/ar5", "left", "x")},
-        xrdf_paths={},
         raw_manifest={},
     )
 

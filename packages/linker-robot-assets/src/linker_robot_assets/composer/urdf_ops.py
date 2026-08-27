@@ -197,7 +197,7 @@ def make_fixed_joint(
 def make_world_link() -> ET.Element:
     """The conventional `world` link used for freezing the base to world."""
     link = ET.Element("link", {"name": "world"})
-    # No geometry; Isaac + MuJoCo both accept an empty link as the fixed root.
+    # No geometry; MuJoCo accepts an empty link as the fixed root.
     return link
 
 

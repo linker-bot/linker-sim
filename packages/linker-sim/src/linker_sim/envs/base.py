@@ -1,9 +1,8 @@
 """`BaseEnv` — gym-style env over `SimBackend` + `Controller`s + `Task`.
 
 Owns the control loop, decimation, reset bookkeeping, and episode-length
-tracking. Does NOT inherit from IsaacLab's `DirectRLEnv` or
-`ManagerBasedRLEnv` (D9): the backend composes `SimulationContext` +
-`Articulation` directly; this env just drives it.
+tracking. A plain gym-style loop, not tied to any external RL-env
+framework: the backend owns sim state; this env just drives it.
 
 Step loop::
 
@@ -45,7 +44,7 @@ class BaseEnv:
     Parameters
     ----------
     backend:
-        A running `SimBackend` (Isaac today; MuJoCo when PR #1b lands).
+        A running `SimBackend` (MuJoCo).
     controllers:
         Ordered list of controllers driving the env's single robot.
         Actions are sliced in this order: `action[:, :c0.command_dim]`

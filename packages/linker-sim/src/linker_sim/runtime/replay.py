@@ -5,8 +5,8 @@ controller / task pipeline entirely. The MJCF/URDF position actuators
 already implement joint PD with workstation-manifest gains, so we just
 write target qpos and step physics.
 
-Designed to work with both Mujoco and Isaac backends — the only
-backend-touching call is `backend.step()`. Viewer integration is the
+Designed against the `SimBackend` protocol — the only backend-touching
+call is `backend.step()`. Viewer integration is the
 caller's job; pass `viewer` if you want `viewer.sync()` after each
 replay frame and `viewer.is_running()` honored as a stop condition.
 """

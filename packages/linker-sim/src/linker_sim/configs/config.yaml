@@ -1,7 +1,7 @@
 # Top-level config for `scripts/run.py`. Composed by hydra from the
 # groups under sim/configs/<group>/<name>.yaml.
 defaults:
-  - backend: isaac
+  - backend: mujoco
   - robot: ar5_o6_bench_bimanual
   - controller: joint_pd_bimanual
   - task: bimanual_reach_ikpose
@@ -10,17 +10,16 @@ defaults:
 
 # Env-level knobs (BaseEnvCfg fields).
 num_envs: 1
-env_spacing: 2.5
 decimation: 4
 episode_length_s: 8.0
 reset_joint_noise_scale: 0.02
 
-# Rollout knobs. `max_steps: 0` means "run until the user closes the Isaac
-# window"; BaseEnv resets done envs in-place so episodes roll over cleanly.
+# Rollout knobs. `max_steps: 0` means "run until the viewer window is
+# closed"; BaseEnv resets done envs in-place so episodes roll over cleanly.
 max_steps: 0
 seed: 0
 headless: false
-device: cuda:0
+device: cpu
 
 # Action policy for the rollout. "zeros" holds the robot at its default
 # pose through the implicit PD; "random_walk" uniformly samples a delta

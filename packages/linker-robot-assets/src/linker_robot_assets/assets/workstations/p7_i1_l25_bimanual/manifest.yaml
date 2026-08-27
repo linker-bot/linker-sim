@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/p7
     variant: left
-    sha256: ad3cb26790ca9ffd67d8e1299b6e9e371c7660d6987fd703d28ca40289440916
+    sha256: c3cadd40a8ccde60710f66c389095ee82a811850ca79ef03a00a60ffc218af09
   arm_right:
     name: arms/p7
     variant: right
-    sha256: e5f5a6a27fdc64ffe0c0eca4eb76c365af551a74bdbd3e5521740b1d8fcf77c1
+    sha256: 143148c48411011dd9deb6c322d20e620b670a3d2cbc8abd3b0c70c66133a01d
   hand_left:
     name: hands/linkerhand_l25
     variant: left

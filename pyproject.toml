@@ -7,17 +7,6 @@
 [tool.uv.workspace]
 members = ["packages/*"]
 
-# NVIDIA's pypi hosts the isaacsim wheels. uv resolves isaacsim from this
-# index when [isaac] is active on the linker-sim package; other packages
-# continue to resolve from the default index.
-[[tool.uv.index]]
-name = "nvidia"
-url = "https://pypi.nvidia.com"
-explicit = true
-
-[tool.uv.sources]
-isaacsim = { index = "nvidia" }
-
 # pytest needs to import linker_sim and linker_robot_assets without a
 # wheel install (CI may run straight from a fresh clone). Adding both
 # package src/ dirs to pythonpath makes `from linker_sim.X import Y` and

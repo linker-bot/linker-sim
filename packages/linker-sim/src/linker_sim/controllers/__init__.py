@@ -1,7 +1,7 @@
 """Sim-agnostic controllers. See `base.py` for the Protocol.
 
-Concrete controllers are not imported at package load time — they pull
-in Isaac (OSC) or other backend-specific deps. Import them directly
+Concrete controllers are not imported at package load time — they may
+pull in optional or backend-specific deps. Import them directly
 when needed:
 
     from linker_sim.controllers.osc import OscController, OscControllerCfg

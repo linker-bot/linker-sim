@@ -14,7 +14,7 @@ models that *load* but have wrong inertias (they run `balanceinertia`
 which silently invents mass distributions), wrong collision primitives
 (full visual meshes used as colliders), missing sites, and no contact
 filtering. A hand-authored MJCF is the single thing that decides whether
-MuJoCo sim matches Isaac sim matches real — it has to be curated.
+MuJoCo sim matches real — it has to be curated.
 
 ---
 

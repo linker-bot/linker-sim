@@ -12,7 +12,7 @@ uniformly at ``--hz`` starting from ``t_pose_ns[0]`` (the first
 up that origin, then synthesizes the same grid.
 
 Usage:
-    PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python \\
+    PYTHONPATH=~/codes/UMI-Dex/src python \\
         scripts/add_hand_to_npz.py \\
         --bag data/umi_episode_000007/ \\
         --arm-npz outputs/umi_replay/umi_ep7_searched_mirrored_palmdown_warm9.npz \\

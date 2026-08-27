@@ -2,4 +2,3 @@
 robot:
   workstation_name: p7_i1_o6_bimanual
   role_name: robot
-  rigid_bodies: {}

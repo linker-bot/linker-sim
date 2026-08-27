@@ -3,8 +3,8 @@
 Pure-Python: loads the composed `ar5_l6_bench_bimanual` manifest
 through `sim.registry.load` and checks the shape (role set, joint
 counts per role, per-role ee_links, gain_profiles per role). Does
-not import Isaac — these assertions guard the composer + registry
-contract, not any simulator.
+not import any simulator — these assertions guard the composer +
+registry contract, not any simulator.
 
 Expected to be kept green by re-running the composer whenever a
 component meta or the bimanual recipe changes.

@@ -1,7 +1,7 @@
 schema_version: 1
 name: ar5_l25_bench_bimanual
 composer_version: 0.1.0
-recipe_sha256: 4efed38a679f1ace49ebc4efe9685f0cb63c580dd622199cb6f1d84a8b9cfc37
+recipe_sha256: b6ebe512441f457cdff32df8c53a9b40f5c8eda3e01419f8c8adb65ef3140f0d
 components:
   base:
     name: bases/bench_table
@@ -26,8 +26,8 @@ components:
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
-  urdf_sha256: 395e7885b94310f631c6bd2c35eaf103e1f90db52f80aafb378af222c6900010
-  mjcf_sha256: 7a3a16e2a2b82564b23846345f9247d5728dd4159c619a50d01b150b2de72998
+  urdf_sha256: b34cea27484cf50b786c2c333e5d138f6104f2df8eda16855cee7ce806411601
+  mjcf_sha256: 145a2856072de234e0323e55f512b9ea08aa851811df233f196657b871f436e3
 joints:
   base: []
   arm_left:

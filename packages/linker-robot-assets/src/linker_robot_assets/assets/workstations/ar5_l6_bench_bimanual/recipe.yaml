@@ -3,7 +3,7 @@ name: ar5_l6_bench_bimanual
 description: >
   Bimanual AR5 + Linkerhand L6 workstation. Two AR5 arms mounted to the
   bench's left/right pads, each carrying its own Linkerhand L6 (mirrored
-  meshes). Single composed URDF -> single articulation in Isaac; roles
+  meshes). Single composed URDF -> single articulation; roles
   arm_left / arm_right / hand_left / hand_right are addressable through
   `Robot.joint_ids_of(role)` and the manifest's per-role ee_links.
 

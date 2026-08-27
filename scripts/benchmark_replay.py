@@ -8,7 +8,7 @@ frame. Reports RMS error per joint, per role, and overall (arms only).
 Usage:
 
     python scripts/benchmark_replay.py robot=ar5_o6_bench_bimanual \
-        source=data_json backend=isaac
+        source=data_json
 
 Honors the same hydra config as replay.py (`sim/configs/replay.yaml`).
 Forces `headless=true`, `realtime=false`, `loop=false`.
@@ -16,7 +16,6 @@ Forces `headless=true`, `realtime=false`, `loop=false`.
 
 from __future__ import annotations
 
-import argparse
 import sys
 from pathlib import Path
 
@@ -41,10 +40,11 @@ ARM_ROLES = ("arm_left", "arm_right")
 def main(cfg: DictConfig) -> None:
     print("[benchmark] resolved cfg:\n" + OmegaConf.to_yaml(cfg), flush=True)
 
-    if cfg.backend.name == "mujoco":
-        _benchmark_mujoco(cfg)
-    else:
-        _benchmark_isaac(cfg)
+    if cfg.backend.name != "mujoco":
+        raise SystemExit(
+            f"error: unknown backend {cfg.backend.name!r} (only 'mujoco' is supported)."
+        )
+    _benchmark_mujoco(cfg)
 
 
 def _benchmark_mujoco(cfg: DictConfig) -> None:
@@ -59,47 +59,6 @@ def _benchmark_mujoco(cfg: DictConfig) -> None:
     ))
     robot = backend.robots[cfg.robot.role_name]
     _run_and_report(backend, robot, source, cfg)
-
-
-def _benchmark_isaac(cfg: DictConfig) -> None:
-    from isaaclab.app import AppLauncher
-
-    parser = argparse.ArgumentParser(add_help=False)
-    AppLauncher.add_app_launcher_args(parser)
-    launch_args = parser.parse_args([])
-    launch_args.headless = True
-    launch_args.device = str(cfg.device)
-    app_launcher = AppLauncher(launch_args)
-    simulation_app = app_launcher.app
-
-    import traceback
-    try:
-        from linker_sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
-
-        rigid_bodies = {}
-        if getattr(cfg.robot, "rigid_bodies", None):
-            for name, spec in cfg.robot.rigid_bodies.items():
-                rigid_bodies[name] = instantiate(spec)
-
-        source = instantiate(cfg.source)
-        backend = IsaacSimBackend(IsaacBackendCfg(
-            workstations={cfg.robot.role_name: cfg.robot.workstation_name},
-            rigid_bodies=rigid_bodies,
-            num_envs=int(cfg.num_envs),
-            env_spacing=float(cfg.get("env_spacing", 2.5)),
-            dt=float(cfg.backend.dt),
-            render_interval=int(cfg.backend.render_interval),
-            device=str(cfg.device),
-            ground=bool(cfg.backend.ground),
-            dome_light=bool(cfg.backend.dome_light),
-        ))
-        robot = backend.robots[cfg.robot.role_name]
-        _run_and_report(backend, robot, source, cfg)
-    except BaseException:
-        traceback.print_exc()
-        raise
-    finally:
-        simulation_app.close()
 
 
 def _run_and_report(backend, robot, source, cfg: DictConfig) -> None:

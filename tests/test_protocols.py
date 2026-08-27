@@ -1,6 +1,6 @@
 """Protocol conformance + MuJoCo stub tests.
 
-No Isaac / MuJoCo required — these tests cover the pure-Python contract
+No simulator required — these tests cover the pure-Python contract
 of `sim.backends.base` and the stubs under `sim.backends.mujoco`.
 """
 

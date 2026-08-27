@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a problem with linker-sim (multi-robot, multi-sim simulation backbone)
+about: Report a problem with linker-sim (multi-robot MuJoCo simulation backbone)
 title: "[Bug] "
 labels:
   - bug
@@ -29,9 +29,8 @@ assignees: []
 
 - **OS** (e.g. Ubuntu 22.04):
 - **Python version**:
-- **Backend** (mujoco / isaac / viser):
 - **Workstation** (e.g. ar5_l6_bench, a7_lite_l6_dc):
-- **Install profile** (`mujoco` / `isaac` / `lerobot` extras):
+- **Install profile** (`mujoco` / `lerobot` extras):
 
 ## Logs
 

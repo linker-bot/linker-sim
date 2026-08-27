@@ -9,7 +9,7 @@ Typical use (from a sim backend):
     from linker_sim.registry import discover, load
     names = discover()                   # ["ar5_l6_bench_bimanual", "p7_i1_l6_bimanual"]
     handle = load("ar5_l6_bench_bimanual")
-    isaac_cfg = to_articulation_cfg(handle)   # backend-specific, see sim/backends/isaac
+    model = mujoco.MjModel.from_xml_path(str(handle.mjcf_path))
 
 A `WorkstationHandle` carries everything a backend needs to construct its
 native asset (URDF path, MJCF path, joint lists, frames, gains) without
@@ -67,10 +67,6 @@ class WorkstationHandle:
     # Merged component + recipe overrides.
     default_gains: dict[str, Gains]    # role -> gains
     gain_profiles: dict[str, dict[str, Gains]]  # role -> profile_name -> gains
-
-    # Per-role XRDF paths for cuMotion collision spheres. Empty dict when
-    # no component ships an XRDF.
-    xrdf_paths: dict[str, Path]        # role -> absolute path to .xrdf
 
     # Provenance — useful for debugging which component/variant produced
     # which prefix.
@@ -168,8 +164,7 @@ def load(name: str, root: Path | None = None) -> WorkstationHandle:
         if candidate.is_file():
             mjcf_path = candidate
         # If the manifest declares an MJCF but the file is missing, we
-        # treat it as "MJCF not available" rather than an error so that
-        # Isaac-only workflows can proceed while PR #1b is pending.
+        # treat it as "MJCF not available" rather than an error.
 
     return WorkstationHandle(
         name=m.get("name", name),
@@ -200,11 +195,6 @@ def load(name: str, root: Path | None = None) -> WorkstationHandle:
                 for pname, g in profiles.items()
             }
             for role, profiles in (m.get("gain_profiles") or {}).items()
-        },
-        xrdf_paths={
-            str(role): (ws_dir / rel).resolve()
-            for role, rel in (m.get("xrdf_paths") or {}).items()
-            if (ws_dir / rel).resolve().is_file()
         },
         components={
             role: ComponentRef(

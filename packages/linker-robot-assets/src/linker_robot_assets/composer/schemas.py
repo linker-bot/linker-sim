@@ -80,7 +80,6 @@ class Variant:
     vars: dict[str, str]
     urdf: str
     mjcf: str | None
-    xrdf: str | None
     meshdir: str
 
     @staticmethod
@@ -93,7 +92,6 @@ class Variant:
             vars={str(k): str(v) for k, v in vars_.items()},
             urdf=str(_require(d, "urdf", where)),
             mjcf=(str(d["mjcf"]) if d.get("mjcf") else None),
-            xrdf=(str(d["xrdf"]) if d.get("xrdf") else None),
             meshdir=str(_require(d, "meshdir", where)),
         )
 
@@ -390,7 +388,6 @@ class Manifest:
     base_link: str
     default_gains: dict[str, DefaultGains]  # role -> merged gains
     gain_profiles: dict[str, dict[str, DefaultGains]]  # role -> profile_name -> gains
-    xrdf_paths: dict[str, str]  # role -> relative path to component XRDF
 
     def to_dict(self) -> dict:
         return {
@@ -429,7 +426,6 @@ class Manifest:
                 }
                 for role, profiles in self.gain_profiles.items()
             },
-            **({"xrdf_paths": dict(self.xrdf_paths)} if self.xrdf_paths else {}),
         }
 
 

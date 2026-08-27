@@ -18,7 +18,7 @@ position target — PhysX's implicit PD does the tracking, so the arm's
 the effective stiffness.
 
 Backend-agnostic: requires ``robot.jacobian`` / ``robot.ee_pose_b`` /
-``robot.joint_pos`` which both Isaac and MuJoCo backends implement.
+``robot.joint_pos`` which any `Robot` backend implements.
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ from linker_sim.backends.base import Robot
 
 
 # ---------------------------------------------------------------------------
-# Quaternion helpers (replaces isaaclab.utils.math dependency)
+# Quaternion helpers (local quaternion math; no external sim dependency)
 # Convention: (w, x, y, z)
 # ---------------------------------------------------------------------------
 
