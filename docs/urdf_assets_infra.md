@@ -9,7 +9,7 @@ MJCF authoring is a separate workstream (see
 
 ## 1. What problem this solves
 
-A "workstation" is the full kinematic thing we spawn in Isaac: base +
+A "workstation" is the full kinematic thing we spawn in the simulator: base +
 one or more arms + one or more hands, sometimes with sensors, welded
 into a single articulated URDF the simulator can load.
 
@@ -37,8 +37,8 @@ packages/linker-robot-assets/src/linker_robot_assets/
       arms/
         ar5/                   # original AR5 (legacy parametrization)
           meta.yaml
-          variants/left/{arm.urdf, arm.mjcf, arm.xrdf, meshes/*.STL}
-          variants/right/{arm.urdf, arm.mjcf, arm.xrdf, meshes/*.STL}
+          variants/left/{arm.urdf, arm.mjcf, meshes/*.STL}
+          variants/right/{arm.urdf, arm.mjcf, meshes/*.STL}
         ar5_08/                # current AR5 (matches vendor "horizon-install")
         a7_lite/
         p7/
@@ -193,7 +193,7 @@ from linker_sim.registry import discover, load
 names = discover()                  # ["ar5_l6_bench_bimanual", "p7_i1_l6_bimanual"]
 handle = load("p7_i1_l6_bimanual")
 
-handle.urdf_path                    # absolute Path, ready for Isaac
+handle.urdf_path                    # absolute Path, ready for the sim
 handle.joints["arm_left"]           # 7 prefixed joint names
 handle.ee_links["arm_right"]        # prefixed link name for OSC target
 handle.gain_profiles["arm_left"]["osc"]   # Gains(stiffness=150, damping=8)

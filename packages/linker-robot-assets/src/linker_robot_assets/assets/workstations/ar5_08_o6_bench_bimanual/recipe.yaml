@@ -4,7 +4,7 @@ description: >
   Bimanual AR5_08 + Linkerhand O6 workstation. Two AR5_08 arms (08-class
   W4C4A6 wrist) mounted to the bench's left/right pads, each carrying its
   own Linkerhand O6 (mirrored meshes). Single composed URDF -> single
-  articulation in Isaac; roles arm_left / arm_right / hand_left /
+  articulation; roles arm_left / arm_right / hand_left /
   hand_right are addressable through `Robot.joint_ids_of(role)` and the
   manifest's per-role ee_links. Mounts mirror ar5_o6_bench_bimanual.
 

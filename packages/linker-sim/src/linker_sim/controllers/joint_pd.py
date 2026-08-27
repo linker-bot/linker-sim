@@ -27,7 +27,7 @@ class JointPDControllerCfg:
 
 class JointPDController:
     """Position-target controller driving the role's actuated joints
-    (mimic joints inherit via Isaac's implicit actuator group)."""
+    (mimic joints inherit via the sim's implicit actuator group)."""
 
     command_dim: int  # set in attach based on joint count
 

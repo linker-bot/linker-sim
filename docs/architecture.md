@@ -13,13 +13,12 @@ which are not part of the public release.
    on drift between recipe and committed output.
 
 2. **Runtime layer** — `sim/`. A thin sim-agnostic registry
-   (`linker_sim/registry.py`) returns a `WorkstationHandle` that backends
-   (`sim/backends/{isaac,mujoco,viser}/`) consume. Controllers
+   (`linker_sim/registry.py`) returns a `WorkstationHandle` that the
+   backend (`sim/backends/mujoco/`) consumes. Controllers
    (`sim/controllers/{joint_pd,osc,ik}.py`) and tasks (`sim/tasks/`)
    are protocol-shaped and backend-agnostic. The manifest is the
-   runtime contract — joints, end-effector links, gain profiles. The
-   Viser backend is replay-only (browser visualisation, no physics);
-   `scripts/run.py` requires `isaac` or `mujoco`.
+   runtime contract — joints, end-effector links, gain profiles.
+   `scripts/run.py` runs on the MuJoCo backend.
 
 3. **Apps layer** — `scripts/`. Hydra entrypoints (`run.py`, `replay.py`,
    `replay_ik.py`) glue runtime + tasks + recorders + controllers into

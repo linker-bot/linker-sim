@@ -4,7 +4,7 @@ description: >
   Bimanual AR5_08 + Linkerhand L25 workstation. Two AR5_08 arms (08-class
   W4C4A6 wrist) mounted to the bench's left/right pads, each carrying its
   own Linkerhand L25 (16 actuated + 5 mimic, mirrored meshes). Single
-  composed URDF -> single articulation in Isaac; roles arm_left /
+  composed URDF -> single articulation; roles arm_left /
   arm_right / hand_left / hand_right are addressable through
   `Robot.joint_ids_of(role)`. Mounts mirror ar5_08_o6_bench_bimanual.
 

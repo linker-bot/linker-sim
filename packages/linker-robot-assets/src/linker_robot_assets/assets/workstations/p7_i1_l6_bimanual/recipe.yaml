@@ -29,7 +29,7 @@ freeze_base: base
 # Arm mount offsets are identity: the torso's mount-pad links already sit
 # at the shoulder-joint origins ([0, 0.164, 0] and [3.32e-5, -0.164, 0]).
 # Hand mounts start identity (zero xyz/rpy); if the Linkerhand palms face
-# the wrong direction in Isaac, set rpy: [0, 0, 1.5708] to match the
+# the wrong direction, set rpy: [0, 0, 1.5708] to match the
 # AR5 bimanual's quarter-turn (see docs).
 mounts:
   - child: arm_left:base_mount

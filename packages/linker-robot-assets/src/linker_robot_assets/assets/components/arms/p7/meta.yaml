@@ -54,7 +54,7 @@ actuated_joints:
 # box and the JointPD controller retains higher stiffness for tracking.
 # Effort limits in the source URDF (80/36/18 N·m) are comparable to
 # AR5, so these gains are a sensible starting point; revisit after
-# Isaac smoke tests if tracking is slack.
+# smoke tests if tracking is slack.
 default_gains:
   stiffness: 2000.0
   damping: 20.0

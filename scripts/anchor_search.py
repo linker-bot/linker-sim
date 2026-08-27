@@ -10,7 +10,7 @@ and reused across iterations; per-eval cost is one warm-up + the full
 frame loop with no plot/viewer.
 
 Usage:
-    PYTHONPATH=~/codes/UMI-Dex/src ~/opt/IsaacLab/env_isaaclab/bin/python \\
+    PYTHONPATH=~/codes/UMI-Dex/src python \\
         scripts/anchor_search.py \\
         data/umi_episode_000001/capture_2026-05-29-11-29-42_ep001.bag \\
         --arm right --hz 30.0 --maxiter 80 \\

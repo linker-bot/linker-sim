@@ -1,13 +1,13 @@
 """Sim-agnostic runtime protocols.
 
 Every controller, task, and env in this repo is written against the
-`Robot` and `SimBackend` protocols defined here. Concrete impls live
-under `sim/backends/isaac/` and `sim/backends/mujoco/`. Adding a new
+`Robot` and `SimBackend` protocols defined here. The concrete impl lives
+under `sim/backends/mujoco/`. Adding a new
 simulator means implementing these two protocols — nothing else.
 
 Design notes:
 
-- Tensors at the boundary (D10). Both backends expose torch `(B, ...)`
+- Tensors at the boundary (D10). The backend exposes torch `(B, ...)`
   tensors; the MuJoCo backend does numpy↔torch conversion internally.
 - Role-centric access. Controllers ask for `robot.joint_ids_of("arm")`
   / `mass_matrix("arm")` — never raw global indices. The handle
@@ -202,8 +202,7 @@ class SimBackend(Protocol):
 
     def write_data(self) -> None:
         """Flush any queued target/effort writes to the underlying sim
-        (Isaac's `scene.write_data_to_sim`; no-op on MuJoCo where writes
-        are immediate)."""
+        (no-op on MuJoCo where writes are immediate)."""
         ...
 
     def reset(self, env_ids: torch.Tensor | None = None) -> None:

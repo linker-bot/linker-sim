@@ -1,7 +1,3 @@
-# Safety net: catches an accidental IsaacLab clone at the repo root.
-# The documented location is outside the repo (see docs/installation.md).
-IsaacLab/
-
 # Python bytecode and caches.
 __pycache__/
 *.py[cod]
@@ -31,10 +27,6 @@ dist/
 .cursor/
 .claude/
 CLAUDE.md
-assets/usd_generated/
-*.usd
-*.usda
-*.usdc
 
 # Data
 outputs/

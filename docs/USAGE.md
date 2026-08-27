@@ -5,11 +5,11 @@ in this repo. For installation see [installation.md](installation.md);
 for the asset/composer model see [urdf_assets_infra.md](urdf_assets_infra.md);
 for MJCF authoring see [component_mjcf_authoring.md](component_mjcf_authoring.md).
 
-All commands assume the IsaacLab venv is active and you are at the repo
+All commands assume the MuJoCo venv is active and you are at the repo
 root:
 
 ```bash
-source ~/opt/IsaacLab/env_isaaclab/bin/activate
+source /path/to/linker-sim/.venv-mujoco/bin/activate
 cd /path/to/linker-sim
 ```
 
@@ -22,8 +22,8 @@ If ROS 2 is sourced in your shell rc, prefix Python commands with
 
 | Entrypoint                | Config root                | What it does                                       |
 |---------------------------|----------------------------|----------------------------------------------------|
-| [scripts/run.py](../scripts/run.py)         | [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)  | Backend + controller + task + (optional) recorder rollout. |
-| [scripts/replay.py](../scripts/replay.py)   | [linker_sim/configs/replay.yaml](../packages/linker-sim/src/linker_sim/configs/replay.yaml)  | Replay external real-robot telemetry through a backend. No controllers, no task, no `BaseEnv`. |
+| [scripts/run.py](../scripts/run.py)         | [linker_sim/configs/config.yaml](../packages/linker-sim/src/linker_sim/configs/config.yaml)  | Controller + task + (optional) recorder rollout. |
+| [scripts/replay.py](../scripts/replay.py)   | [linker_sim/configs/replay.yaml](../packages/linker-sim/src/linker_sim/configs/replay.yaml)  | Replay external real-robot telemetry through the sim. No controllers, no task, no `BaseEnv`. |
 
 Both are [Hydra](https://hydra.cc) entrypoints. Override anything on the
 CLI by setting `group=name` (config group) or `dotted.path=value`
@@ -31,7 +31,7 @@ CLI by setting `group=name` (config group) or `dotted.path=value`
 
 Config groups live under [linker_sim/configs/](../packages/linker-sim/src/linker_sim/configs/):
 
-- `backend/` — `isaac.yaml`, `mujoco.yaml`, `viser.yaml` (replay-only, browser visualisation)
+- `backend/` — `mujoco.yaml`
 - `robot/` — Hydra wrapper around a workstation name
 - `controller/` — `joint_pd_bimanual`, `osc_bimanual` (stub), `ik_pose_bimanual`
 - `task/` — `bimanual_reach_ikpose`
@@ -40,27 +40,29 @@ Config groups live under [linker_sim/configs/](../packages/linker-sim/src/linker
 
 ---
 
-## 2. Run a rollout in Isaac Sim
+## 2. Run a rollout
 
-Default: `backend=isaac`, `robot=ar5_o6_bench_bimanual`, `controller=joint_pd_bimanual`,
-`task=bimanual_reach_ikpose`, `recorder=disabled`, `policy=zeros`.
+Default: `backend=mujoco`, `robot=ar5_o6_bench_bimanual`, `controller=joint_pd_bimanual`,
+`task=bimanual_reach_ikpose`, `recorder=disabled`, `policy=zeros`. The
+MuJoCo backend is CPU-only.
 
 ```bash
-# Smoke: bimanual reach with joint PD, holding the default pose.
+# Smoke: bimanual reach with joint PD, holding the default pose, viewport.
 python scripts/run.py
 
 # Choose another workstation and exercise both arms with random walk.
 python scripts/run.py robot=p7_i1_o6_bimanual policy=random_walk
 
-# Headless, capped run — useful in CI / smoke tests.
+# Headless requires max_steps>0 (no viewport loop to terminate on).
 python scripts/run.py headless=true max_steps=500
 
-# Multi-env (vectorised).
-python scripts/run.py num_envs=16 max_steps=200 headless=true
+# IK absolute-pose control (controller=ik_pose_bimanual is the matched pair).
+python scripts/run.py controller=ik_pose_bimanual \
+    task=bimanual_reach_ikpose recorder=jsonl
 ```
 
-Hotkeys (windowed mode): press `R` in the viewport to reset all envs.
-Close the window to exit.
+Hotkeys (windowed mode): press `R` in the MuJoCo viewport to reset all
+envs. Close the window to exit.
 
 Shipped workstations (Hydra group `robot`):
 
@@ -77,41 +79,17 @@ Common knobs (defined in [linker_sim/configs/config.yaml](../packages/linker-sim
 | Key                       | Default | Meaning                                                |
 |---------------------------|---------|--------------------------------------------------------|
 | `num_envs`                | 1       | Parallel envs.                                         |
-| `env_spacing`             | 2.5     | Metres between envs (Isaac only).                      |
 | `decimation`              | 4       | Physics steps per `env.step`.                          |
 | `episode_length_s`        | 8.0     | Auto-truncate threshold.                               |
 | `reset_joint_noise_scale` | 0.02    | Per-joint noise on reset.                              |
 | `max_steps`               | 0       | `0` = run until the window closes.                     |
 | `headless`                | false   | No viewport.                                           |
-| `device`                  | cuda:0  | Torch device for tensors and Isaac sim.                |
+| `device`                  | cpu     | Torch device (MuJoCo is CPU-only).                     |
 | `policy`                  | zeros   | `zeros` (hold default), `random_walk` (smoke), or `hold` (no controller writes — for live gain tuning). |
 
 ---
 
-## 3. Run a rollout in MuJoCo
-
-The MuJoCo backend is CPU-only and does not support `rigid_bodies` (so
-`task=pick_place`-style scenes are Isaac-only). Everything else works:
-
-```bash
-# Bimanual reach + joint PD + zeros, viewport.
-python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
-    task=bimanual_reach_ikpose policy=zeros max_steps=200
-
-# Headless requires max_steps>0 (no viewport loop to terminate on).
-python scripts/run.py backend=mujoco headless=true max_steps=400 \
-    controller=joint_pd_bimanual task=bimanual_reach_ikpose
-
-# IK absolute-pose control (controller=ik_pose_bimanual is the matched pair).
-python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
-    task=bimanual_reach_ikpose recorder=jsonl
-```
-
-Hotkeys (windowed mode): press `R` in the MuJoCo viewport to reset.
-
----
-
-## 4. Replay real-robot telemetry through MuJoCo / Isaac
+## 3. Replay real-robot telemetry through MuJoCo
 
 Use [scripts/replay.py](../scripts/replay.py). It reads a
 `ReplaySource` (currently `TelemetryNpzSource`), drives the workstation
@@ -137,25 +115,14 @@ python scripts/replay.py robot=a7_lite_l6_dc source=data_collection
 # Headless smoke: cap to 200 frames, no realtime pacing.
 python scripts/replay.py robot=a7_lite_l6_dc source=data_collection \
     headless=true realtime=false max_frames=200
-
-# Same data through Isaac (GPU).
-python scripts/replay.py backend=isaac device=cuda:0 \
-    robot=a7_lite_l6_dc source=data_collection
-
-# Same data through the Viser browser visualiser (replay-only, no GPU
-# needed). Open the URL printed at startup, default http://127.0.0.1:8080.
-# Requires the [viser] install profile — see the Data-collection team
-# section in the README; not compatible with the env_isaaclab venv.
-python scripts/replay.py backend=viser robot=a7_lite_l6_dc source=data_collection
 ```
 
-Hotkeys (MuJoCo windowed mode): press `Q` in the viewport to stop.
+Hotkeys (MuJoCo windowed mode): press `Q` in the viewport to stop, `R`
+to restart.
 
-> **Viser is replay-only.** `ViserSimBackend` animates a URDF in the
-> browser as joint targets stream in; `step()` is a no-op and dynamics
-> methods (Jacobian, mass matrix, ee_pose_b, set_joint_effort) raise
-> `NotImplementedError`. Use it for `scripts/replay.py` only — never
-> with `scripts/run.py`. Teleop is deferred.
+> **Browser visualization** (WebGL, no GPU) lives in the separate
+> [`linker-sim-viser`](https://gitea.linkerhub.work/LinkerOS/linker-sim-viser)
+> repository, which consumes this repo's `linker-robot-assets` package.
 
 ### Adding a new recording
 
@@ -177,7 +144,7 @@ Replay knobs (in [linker_sim/configs/replay.yaml](../packages/linker-sim/src/lin
 
 ---
 
-## 5. Compose a workstation URDF / MJCF
+## 4. Compose a workstation URDF / MJCF
 
 A workstation is `recipe.yaml` → `workstation.urdf` + `workstation.mjcf`
 + `manifest.yaml` (manifest is the single source of truth the runtime
@@ -207,7 +174,7 @@ python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-asse
 python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/arms/a7_lite/variants/right
 python -m linker_robot_assets.validate_component_mjcf packages/linker-robot-assets/src/linker_robot_assets/assets/components/bases/a7_lite_torso/variants/default
 
-# Workstation: 14 checks (manifest hashes, URDF kinematics, mesh
+# Workstation checks (manifest hashes, URDF kinematics, mesh
 # resolution, drift, MJCF parity at 1e-5 m / 1e-5 rad).
 python -m linker_robot_assets.validate_workstation packages/linker-robot-assets/src/linker_robot_assets/assets/workstations/a7_lite_l6_dc
 ```
@@ -247,13 +214,12 @@ python -m linker_sim.tools.registry_show a7_lite_l6_dc       # dump roles, joint
    robot:
      workstation_name: <name>
      role_name: robot
-     rigid_bodies: {}
    ```
-5. Smoke: `python scripts/run.py robot=<name> backend=mujoco controller=joint_pd_bimanual task=bimanual_reach_ikpose max_steps=200`.
+5. Smoke: `python scripts/run.py robot=<name> controller=joint_pd_bimanual task=bimanual_reach_ikpose max_steps=200`.
 
 ---
 
-## 6. PD / OSC gain tuning
+## 5. PD / OSC gain tuning
 
 Three places gains live. Edit the right one for what you want to change.
 
@@ -323,7 +289,7 @@ Then per-component validate, recompose, validate, commit. Component
 gains here should match the manifest's `default_gains` to keep
 URDF↔MJCF behaviour consistent.
 
-### d) Live PD gain tuner (any backend)
+### d) Live PD gain tuner
 
 Use `policy=hold` + `+gain_tuner=true` to hot-reload joint PD gains
 from a JSON file while the sim runs. The `hold` policy returns no
@@ -331,12 +297,12 @@ actions so the controller never writes targets — the robot holds its
 current pose via the position actuators while you tweak gains.
 
 ```bash
-# MuJoCo — live tune, file at /tmp/dex_pd_gains.json (default)
-python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+# Live tune, file at /tmp/dex_pd_gains.json (default)
+python scripts/run.py controller=joint_pd_bimanual \
     task=bimanual_reach_ikpose policy=hold +gain_tuner=true
 
 # Custom path
-python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+python scripts/run.py controller=joint_pd_bimanual \
     task=bimanual_reach_ikpose policy=hold +gain_tuner=true \
     +gain_tuner_path=/tmp/my_gains.json
 ```
@@ -369,7 +335,7 @@ implementation was never validated. The Hydra config
 
 ---
 
-## 7. Recording episodes
+## 6. Recording episodes
 
 Add a recorder to `scripts/run.py`:
 
@@ -386,7 +352,7 @@ Recordings land under `outputs/YYYY-MM-DD/HH-MM-SS/episodes/`.
 
 ---
 
-## 8. Tests
+## 7. Tests
 
 ```bash
 # Pure-Python pytest gate (no GPU required).
@@ -395,24 +361,24 @@ env -u PYTHONPATH -u AMENT_PREFIX_PATH pytest tests/ -v
 
 ---
 
-## 9. Cheatsheet
+## 8. Cheatsheet
 
 ```bash
-# Isaac, default everything
+# Default everything (MuJoCo, bimanual reach, joint PD)
 python scripts/run.py
 
-# Isaac, bimanual reach + recorded episodes
+# Recorded episodes
 python scripts/run.py robot=p7_i1_l6_bimanual recorder=jsonl max_steps=600
 
-# MuJoCo, joint PD smoke
-python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+# Joint PD smoke
+python scripts/run.py controller=joint_pd_bimanual \
     task=bimanual_reach_ikpose policy=zeros max_steps=200
 
-# MuJoCo, IK absolute pose
-python scripts/run.py backend=mujoco controller=ik_pose_bimanual \
+# IK absolute pose
+python scripts/run.py controller=ik_pose_bimanual \
     task=bimanual_reach_ikpose
 
-# Replay real-robot data (MuJoCo)
+# Replay real-robot data
 python scripts/replay.py robot=a7_lite_l6_dc source=data_collection
 
 # Replay headless / clipped
@@ -427,7 +393,7 @@ bash packages/linker-robot-assets/src/linker_robot_assets/ci/check_drift.sh
 # Inspect a registry handle
 python -m linker_sim.tools.registry_show a7_lite_l6_dc
 
-# Live PD gain tuning (MuJoCo, edit /tmp/dex_pd_gains.json while running)
-python scripts/run.py backend=mujoco controller=joint_pd_bimanual \
+# Live PD gain tuning (edit /tmp/dex_pd_gains.json while running)
+python scripts/run.py controller=joint_pd_bimanual \
     task=bimanual_reach_ikpose policy=hold +gain_tuner=true
 ```

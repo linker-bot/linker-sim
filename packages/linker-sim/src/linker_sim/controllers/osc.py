@@ -32,7 +32,7 @@ class OscControllerCfg:
 
 
 class OscController:
-    """Isaac-backed OSC controller — stub, not implemented."""
+    """OSC controller — stub, not implemented."""
 
     role: str
     command_dim: int = 6

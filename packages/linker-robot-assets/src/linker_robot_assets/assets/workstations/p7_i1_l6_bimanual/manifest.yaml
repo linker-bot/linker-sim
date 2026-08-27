@@ -1,7 +1,7 @@
 schema_version: 1
 name: p7_i1_l6_bimanual
 composer_version: 0.1.0
-recipe_sha256: 9f441e44f3dc881b2e05ab4b5e3c0adc2b3ba72bb6e4358559e69c996ac68977
+recipe_sha256: 0615ea6b9cf6716142fa1cade48acd3cc2c0d6a08e2e5022e334d86b00e7dafb
 components:
   base:
     name: bases/p7_torso
@@ -10,11 +10,11 @@ components:
   arm_left:
     name: arms/p7
     variant: left
-    sha256: ad3cb26790ca9ffd67d8e1299b6e9e371c7660d6987fd703d28ca40289440916
+    sha256: c3cadd40a8ccde60710f66c389095ee82a811850ca79ef03a00a60ffc218af09
   arm_right:
     name: arms/p7
     variant: right
-    sha256: e5f5a6a27fdc64ffe0c0eca4eb76c365af551a74bdbd3e5521740b1d8fcf77c1
+    sha256: 143148c48411011dd9deb6c322d20e620b670a3d2cbc8abd3b0c70c66133a01d
   hand_left:
     name: hands/linkerhand_l6
     variant: left
@@ -26,8 +26,8 @@ components:
 artifacts:
   urdf: workstation.urdf
   mjcf: workstation.mjcf
-  urdf_sha256: ca7055d8ec9ea9004c5333ac6f71bfba2c13499e9cdc02d28b3394eb23142b9d
-  mjcf_sha256: 04a445473d642da9dc0424d9d728cf7c02bd5aae94ce0fe06867b00d323a1dcf
+  urdf_sha256: f733c6427f62846c4914f5950e991b7e660d58f0dbdad8dd24da762080623108
+  mjcf_sha256: 2b51d71bd026823390abd62ce8d72f92bc309f0a44e953b189358280cbbcda7a
 joints:
   base: []
   arm_left:

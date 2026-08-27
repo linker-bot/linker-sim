@@ -1,8 +1,8 @@
 """Replay external real-robot data through the sim.
 
 A `ReplaySource` (see `sim/io/replay/sources.py`) supplies per-frame
-joint targets keyed by composer role. This entrypoint wires it to a
-backend (mujoco or isaac) and a robot, then runs `sim.runtime.replay`
+joint targets keyed by composer role. This entrypoint wires it to the
+MuJoCo backend and a robot, then runs `sim.runtime.replay`
 — bypassing controllers, tasks, and `BaseEnv` entirely.
 
 Usage:
@@ -21,7 +21,6 @@ Config docs: `sim/configs/replay.yaml`. New recordings just need a
 
 from __future__ import annotations
 
-import argparse
 import os
 import sys
 from pathlib import Path
@@ -43,12 +42,11 @@ OmegaConf.register_new_resolver("div", lambda a, b: a / b, replace=True)
 def main(cfg: DictConfig) -> None:
     print("[replay] resolved cfg:\n" + OmegaConf.to_yaml(cfg), flush=True)
 
-    if cfg.backend.name == "mujoco":
-        _replay_mujoco(cfg)
-    elif cfg.backend.name == "viser":
-        _replay_viser(cfg)
-    else:
-        _replay_isaac(cfg)
+    if cfg.backend.name != "mujoco":
+        raise SystemExit(
+            f"error: unknown backend {cfg.backend.name!r} (only 'mujoco' is supported)."
+        )
+    _replay_mujoco(cfg)
 
 
 def _replay_mujoco(cfg: DictConfig) -> None:
@@ -99,32 +97,6 @@ def _replay_mujoco(cfg: DictConfig) -> None:
                    restart_flag=restart_flag)
 
 
-def _replay_viser(cfg: DictConfig) -> None:
-    from linker_sim.backends.viser.backend import ViserBackendCfg, ViserSimBackend
-    from linker_sim.runtime.replay import run_replay
-
-    source = instantiate(cfg.source)
-    backend = ViserSimBackend(ViserBackendCfg(
-        workstations={cfg.robot.role_name: cfg.robot.workstation_name},
-        num_envs=int(cfg.num_envs),
-        dt=float(cfg.backend.dt),
-        device="cpu",
-        host=str(cfg.backend.host),
-        port=int(cfg.backend.port),
-        headless=bool(cfg.headless),
-    ))
-    try:
-        robot = backend.robots[cfg.robot.role_name]
-        run_replay(
-            backend, robot, source,
-            realtime=bool(cfg.realtime),
-            max_frames=cfg.max_frames,
-            loop=not bool(cfg.headless),
-        )
-    finally:
-        backend.close()
-
-
 def _configure_mujoco_replay_camera(viewer, model) -> None:
     """Use a wide fixed default view so the replay robot is fully visible."""
 
@@ -147,77 +119,6 @@ def _configure_mujoco_replay_camera(viewer, model) -> None:
         viewer.cam.distance = distance
         viewer.cam.azimuth = float(os.environ.get("MUJOCO_REPLAY_CAMERA_AZIMUTH", "180"))
         viewer.cam.elevation = float(os.environ.get("MUJOCO_REPLAY_CAMERA_ELEVATION", "-15"))
-
-
-def _replay_isaac(cfg: DictConfig) -> None:
-    from isaaclab.app import AppLauncher
-
-    parser = argparse.ArgumentParser(add_help=False)
-    AppLauncher.add_app_launcher_args(parser)
-    launch_args = parser.parse_args([])
-    launch_args.headless = bool(cfg.headless)
-    launch_args.device = str(cfg.device)
-    app_launcher = AppLauncher(launch_args)
-    simulation_app = app_launcher.app
-
-    import traceback
-    try:
-        import carb.input
-        import omni.appwindow
-
-        from linker_sim.backends.isaac.backend import IsaacBackendCfg, IsaacSimBackend
-        from linker_sim.runtime.replay import run_replay
-
-        rigid_bodies = {}
-        if getattr(cfg.robot, "rigid_bodies", None):
-            for name, spec in cfg.robot.rigid_bodies.items():
-                rigid_bodies[name] = instantiate(spec)
-
-        source = instantiate(cfg.source)
-        backend = IsaacSimBackend(IsaacBackendCfg(
-            workstations={cfg.robot.role_name: cfg.robot.workstation_name},
-            rigid_bodies=rigid_bodies,
-            num_envs=int(cfg.num_envs),
-            env_spacing=float(cfg.get("env_spacing", 2.5)),
-            dt=float(cfg.backend.dt),
-            render_interval=int(cfg.backend.render_interval),
-            device=str(cfg.device),
-            ground=bool(cfg.backend.ground),
-            dome_light=bool(cfg.backend.dome_light),
-        ))
-        robot = backend.robots[cfg.robot.role_name]
-
-        stop_flag = [False]
-        restart_flag = [False]
-
-        app_window = omni.appwindow.get_default_app_window()
-        input_iface = carb.input.acquire_input_interface()
-        keyboard = app_window.get_keyboard()
-
-        def _on_key(event, *args):
-            if event.type == carb.input.KeyboardEventType.KEY_PRESS:
-                if event.input == carb.input.KeyboardInput.R:
-                    restart_flag[0] = True
-                elif event.input == carb.input.KeyboardInput.Q:
-                    stop_flag[0] = True
-            return True
-
-        kb_sub = input_iface.subscribe_to_keyboard_events(keyboard, _on_key)
-        print("[replay] hotkeys: 'R' restart, 'Q' quit")
-
-        run_replay(backend, robot, source,
-                   realtime=bool(cfg.realtime),
-                   max_frames=cfg.max_frames,
-                   stop_flag=stop_flag,
-                   loop=True,
-                   restart_flag=restart_flag)
-
-        input_iface.unsubscribe_to_keyboard_events(keyboard, kb_sub)
-    except BaseException:
-        traceback.print_exc()
-        raise
-    finally:
-        simulation_app.close()
 
 
 if __name__ == "__main__":

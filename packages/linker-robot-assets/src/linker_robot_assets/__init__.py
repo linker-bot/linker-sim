@@ -2,7 +2,7 @@
 
 This package ships:
 
-- the asset tree at ``linker_robot_assets/assets/`` (URDF / MJCF / XRDF +
+- the asset tree at ``linker_robot_assets/assets/`` (URDF / MJCF +
   meshes, organised by ``components/`` and ``workstations/``);
 - the composer that builds workstation URDFs from components
   (``linker_robot_assets.composer``);

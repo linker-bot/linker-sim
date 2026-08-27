@@ -8,8 +8,8 @@ defaults:
   - _self_
 
 num_envs: 1
-decimation: 4      # isaac render_interval; matches substeps so we render once per replay frame
-device: cpu        # mujoco-only for now; switch to cuda:0 with backend=isaac
+decimation: 4      # physics sub-steps per replay frame
+device: cpu        # mujoco runs CPU-only
 seed: 0
 headless: false
 realtime: true     # pace loop to source.hz wall-clock

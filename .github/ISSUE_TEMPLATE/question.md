@@ -19,7 +19,6 @@ assignees: []
 
 - **OS** (e.g. Ubuntu 22.04):
 - **Python version**:
-- **Backend** (mujoco / isaac / viser):
 - **Workstation** (if relevant):
 
 ## Additional context

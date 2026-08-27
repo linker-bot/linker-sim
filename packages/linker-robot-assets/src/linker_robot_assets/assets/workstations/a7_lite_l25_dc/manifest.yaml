@@ -6,7 +6,7 @@ components:
   base:
     name: bases/a7_lite_torso
     variant: default
-    sha256: b4e579ad75e96a887a52109f6fa1fd4c6619fbb7d8529d981fb400b37d467f83
+    sha256: 9a515a95f087de492fb8ce130449c34ea6cee19a7e83e807838ede5a4079ccd3
   arm_left:
     name: arms/a7_lite
     variant: left

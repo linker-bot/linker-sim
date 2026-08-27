@@ -33,8 +33,8 @@
     </inertial>
     <!-- Visual uses the full-resolution 527k-face vendor mesh; collision uses
          the 100k decimation. MuJoCo's MJCF caps STL at 200k faces, so base.mjcf
-         references the decimated mesh for both; yourdfpy/Viser and Isaac read
-         this URDF's full-res <visual>. See base_link_visual.STL. -->
+         references the decimated mesh for both; URDF consumers read this URDF's
+         full-res <visual>. See base_link_visual.STL. -->
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>

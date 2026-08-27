@@ -2,7 +2,7 @@
 
 Uses a fake backend + fake robot + fake controllers so the loop,
 decimation, action slicing, and reset flow are exercised without
-bringing in Isaac. The fakes live in this file (they're small).
+bringing in a real sim backend. The fakes live in this file (they're small).
 """
 
 from __future__ import annotations
@@ -33,7 +33,6 @@ def _make_handle(n_arm=7, n_hand=6) -> WorkstationHandle:
         default_gains={"arm": Gains(1.0, 0.1), "hand": Gains(2.0, 0.2)},
         gain_profiles={},
         components={"arm": ComponentRef("arms/fake", "left", "x")},
-        xrdf_paths={},
         raw_manifest={},
     )
 
