@@ -153,6 +153,8 @@ class MujocoSimBackend:
         mujoco.mj_kinematics(self._model, self._data)
 
     def step(self) -> None:
+        for robot in self.robots.values():
+            robot.apply_pd()
         mujoco.mj_step(self._model, self._data)
         self._apply_mimic_snap()
 
@@ -165,6 +167,8 @@ class MujocoSimBackend:
         self._data.qvel[:] = self._default_qvel
         self._data.ctrl[:] = 0.0
         self._data.qfrc_applied[:] = 0.0
+        for robot in self.robots.values():
+            robot._pd_target.clear()
         mujoco.mj_forward(self._model, self._data)
         self._apply_mimic_snap()
 

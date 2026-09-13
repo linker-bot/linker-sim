@@ -115,7 +115,7 @@ def test_clip_outside_0_100():
 
 
 def test_channel_count_mismatch_raises():
-    with pytest.raises(ValueError, match="channels"):
+    with pytest.raises(ValueError, match="columns"):
         decode_hand("linkerhand_l6", "right", np.zeros(7))  # l6 has 6
 
 
