@@ -55,9 +55,18 @@ collection workflows.
 Quick setup:
 
 ```bash
+# robot assets live in the linker-sim-assets submodule (git-LFS meshes)
+git submodule update --init
+git -C packages/linker-robot-assets lfs pull   # requires git-lfs installed
+
 python3 -m venv .venv-mujoco && source .venv-mujoco/bin/activate
 pip install -e packages/linker-robot-assets -e packages/linker-sim[mujoco]
 ```
+
+> **Submodule + LFS.** `packages/linker-robot-assets` is a git submodule
+> ([linker-sim-assets](https://github.com/linker-bot/linker-sim-assets)),
+> pinned to a release commit. Clone with `--recurse-submodules` (or run the
+> two commands above), and `git lfs pull` inside it so the meshes materialize.
 
 > **Source-checkout only.** Use editable installs (`pip install -e`).
 > The composer assets, Hydra configs, and `scripts/` entrypoints are

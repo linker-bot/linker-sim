@@ -1,0 +1,3 @@
+[submodule "packages/linker-robot-assets"]
+	path = packages/linker-robot-assets
+	url = https://github.com/linker-bot/linker-sim-assets.git

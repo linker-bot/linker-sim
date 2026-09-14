@@ -16,12 +16,18 @@ composing/validating workstations.
 - Ubuntu 22.04 or 24.04
 - Python 3.11 or 3.12
 - `git`
+- `git-lfs` (robot-asset meshes are LFS-tracked in the submodule)
 - `uv` (or `pip`)
 
 ### Setup
 
 ```bash
 cd /path/to/linker-sim
+
+# Robot assets live in the linker-sim-assets submodule (git-LFS meshes),
+# pinned to a release commit. Initialize it and pull the meshes.
+git submodule update --init
+git -C packages/linker-robot-assets lfs pull
 
 # Create a venv with your system Python (3.11 or 3.12)
 python3 -m venv .venv-mujoco
