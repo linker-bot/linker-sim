@@ -88,23 +88,23 @@ def test_write_joint_state_roundtrip(robot):
     assert torch.allclose(got, target, atol=1e-6)
 
 
-def test_jointpd_writes_data_ctrl(backend, robot):
+def test_jointpd_applies_pd_torque(backend, robot):
+    # The composed MJCF uses <motor> actuators (no position feedback), so
+    # JointPD tracks position by applying PD torque via qfrc_applied. Right
+    # after apply() (q=default, qdot=0) the torque is kp * (action_scale * cmd).
     ctrl = JointPDController(JointPDControllerCfg(role="arm_left", action_scale=0.1))
     ctrl.attach(robot)
     cmd = torch.ones(1, ctrl.command_dim) * 0.5
     ctrl.set_command(cmd, robot)
     ctrl.apply(robot)
-    expected = (robot.joint_pos_default[0, :ARM_N] + 0.1 * 0.5).numpy()
-    arm_actuator_ids = []
-    for jname in robot.handle.joints["arm_left"]:
-        jid = mujoco.mj_name2id(backend._model, mujoco.mjtObj.mjOBJ_JOINT, jname)
-        for a in range(backend._model.nu):
-            if int(backend._model.actuator_trnid[a, 0]) == jid:
-                arm_actuator_ids.append(a)
-                break
-    assert len(arm_actuator_ids) == ARM_N
-    for a, exp in zip(arm_actuator_ids, expected, strict=True):
-        assert abs(float(backend._data.ctrl[a]) - float(exp)) < 1e-6
+    robot.apply_pd()  # PD torque is written per-substep by the backend; force it here
+    kp = robot.handle.default_gains["arm_left"].stiffness
+    expected = kp * (0.1 * 0.5)
+    arm_cols = robot.actuated_joint_ids_of("arm_left").tolist()
+    assert len(arm_cols) == ARM_N
+    for col in arm_cols:
+        dof = robot._dof_adr[col]
+        assert abs(float(backend._data.qfrc_applied[dof]) - expected) < 1e-4
 
 
 def test_zero_command_rollout_holds_default(backend, robot):

@@ -133,17 +133,31 @@ class MujocoRobot:
             mj_id: i for i, mj_id in enumerate(self._joint_mj_ids)
         }
 
-        # MuJoCo joint id -> actuator id (position actuators only)
-        self._actuator_for_joint: dict[int, int] = {}
-        for a in range(model.nu):
-            jid = int(model.actuator_trnid[a, 0])
-            if jid >= 0:
-                self._actuator_for_joint[jid] = a
-
         self._default_qpos = torch.tensor(
             model.qpos0[self._qpos_adr_np], dtype=torch.float32, device=self.device
         ).unsqueeze(0)
         self._default_qvel = torch.zeros(1, self._n_joints, device=self.device)
+
+        # Per-joint PD gains for torque control. The composed MJCF uses <motor>
+        # (torque) actuators, so joint position tracking is done here in Python:
+        # tau = kp*(target - q) - kv*qdot, applied via qfrc_applied. Gains come
+        # from the manifest default_gains (per role); write_gains overrides them.
+        self._kp = np.zeros(self._n_joints, dtype=np.float64)
+        self._kv = np.zeros(self._n_joints, dtype=np.float64)
+        col = 0
+        for role in handle.joints:
+            n = len(handle.joints.get(role, [])) + len(handle.mimic_joints.get(role, []))
+            g = handle.default_gains.get(role)
+            if g is not None:
+                self._kp[col : col + n] = g.stiffness
+                self._kv[col : col + n] = g.damping
+            col += n
+
+        # Position targets (packed col -> target rad) for the Python PD. Applied
+        # as torque every physics substep by apply_pd(); the backend calls it
+        # before each mj_step so tracking is recomputed per substep (decimation),
+        # matching a MuJoCo <position> servo. Empty = no active position command.
+        self._pd_target: dict[int, float] = {}
 
         self._body_ids: dict[str, int] = {}
         self._resolve_body(self.handle.ee_link)
@@ -306,22 +320,37 @@ class MujocoRobot:
         eff = efforts.detach().cpu().numpy().reshape(-1)
         cols = joint_ids.detach().cpu().numpy().tolist()
         for i, col in enumerate(cols):
+            # Direct torque control: drop any position target so apply_pd()
+            # doesn't overwrite this joint's effort each substep.
+            self._pd_target.pop(int(col), None)
             dof = self._dof_adr[col]
             self._data.qfrc_applied[dof] = float(eff[i])
 
     def set_joint_position_target(
         self, targets: torch.Tensor, joint_ids: torch.Tensor
     ) -> None:
+        # Store the position target; the PD torque is (re)computed every physics
+        # substep by apply_pd(). The composed MJCF uses <motor> actuators (no
+        # position feedback of their own), so tracking is done here.
         tgt = targets.detach().cpu().numpy().reshape(-1)
         cols = joint_ids.detach().cpu().numpy().tolist()
         for i, col in enumerate(cols):
-            mj_jid = self._joint_mj_ids[col]
-            act_id = self._actuator_for_joint.get(mj_jid)
-            if act_id is None:
-                raise ValueError(
-                    f"no position actuator for joint {self._joint_names[col]!r}"
-                )
-            self._data.ctrl[act_id] = float(tgt[i])
+            self._pd_target[int(col)] = float(tgt[i])
+
+    def apply_pd(self) -> None:
+        """Write PD torque for every active position target to qfrc_applied.
+
+        The backend calls this before each mj_step so the servo is recomputed
+        from the current state per substep: tau = kp*(target-q) - kv*qdot.
+        """
+        for col, target in self._pd_target.items():
+            qadr = self._qpos_adr[col]
+            dof = self._dof_adr[col]
+            q = float(self._data.qpos[qadr])
+            qd = float(self._data.qvel[dof])
+            self._data.qfrc_applied[dof] = (
+                self._kp[col] * (target - q) - self._kv[col] * qd
+            )
 
     def write_joint_state(
         self,
@@ -386,11 +415,7 @@ class MujocoRobot:
         kds = _scalar_values(damping)
         cols = ids.detach().cpu().numpy().tolist()
         for col, kp, kd in zip(cols, kps, kds, strict=True):
-            mj_jid = self._joint_mj_ids[col]
-            act_id = self._actuator_for_joint.get(mj_jid)
-            if act_id is None:
-                continue
-            self._model.actuator_gainprm[act_id, 0] = kp
-            self._model.actuator_biasprm[act_id, 1] = -kp
-            dof = self._dof_adr[col]
-            self._model.dof_damping[dof] = kd
+            # Update the Python-side PD gains used by set_joint_position_target;
+            # the <motor> actuators carry no position feedback of their own.
+            self._kp[col] = kp
+            self._kv[col] = kd
